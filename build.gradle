@@ -46,9 +46,6 @@ def protobufVersion = '3.7.1'
 def protocVersion = '3.7.1'
 
 dependencies {
-    // This dependency is found on compile classpath of this component and consumers.
-    compile 'com.google.guava:guava:23.0'
-
     compile "com.google.api.grpc:proto-google-common-protos:1.15.0"
     compile "io.grpc:grpc-alts:${grpcVersion}"
 
@@ -73,6 +70,8 @@ dependencies {
 
     compile group: 'net.harawata', name: 'appdirs', version: '1.0.3'
     compile group: 'org.slf4j', name:'slf4j-log4j12', version: '1.7.2'
+
+    compile files('libs/lidar-libutil/build/libs/lidar-libutil.jar')
 }
 
 test {

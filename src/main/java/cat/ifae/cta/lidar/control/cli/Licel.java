@@ -1,7 +1,7 @@
 package cat.ifae.cta.lidar.control.cli;
 
 import cat.ifae.cta.lidar.*;
-import cat.ifae.cta.lidar.control.Helpers;
+import cat.ifae.cta.lidar.Helpers;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "licel", mixinStandardHelpOptions = true)

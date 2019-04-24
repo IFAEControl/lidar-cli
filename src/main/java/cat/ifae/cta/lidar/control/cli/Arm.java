@@ -4,7 +4,7 @@ import cat.ifae.cta.lidar.ArmGrpc;
 import cat.ifae.cta.lidar.Node;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.Point2D;
-import cat.ifae.cta.lidar.control.Helpers;
+import cat.ifae.cta.lidar.Helpers;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "arms", mixinStandardHelpOptions = true)

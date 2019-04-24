@@ -2,7 +2,7 @@ package cat.ifae.cta.lidar.control.cli;
 
 import cat.ifae.cta.lidar.DacConfig;
 import cat.ifae.cta.lidar.DacGrpc;
-import cat.ifae.cta.lidar.control.Helpers;
+import cat.ifae.cta.lidar.Helpers;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "dac", mixinStandardHelpOptions = true)

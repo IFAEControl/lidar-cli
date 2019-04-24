@@ -4,7 +4,7 @@ import cat.ifae.cta.lidar.*;
 import cat.ifae.cta.lidar.control.config.Component;
 import cat.ifae.cta.lidar.control.config.Config;
 import cat.ifae.cta.lidar.control.config.Program;
-import cat.ifae.cta.lidar.control.logging.Logging;
+import cat.ifae.cta.lidar.logging.Logging;
 import picocli.CommandLine;
 
 import java.text.MessageFormat;
