@@ -16,17 +16,10 @@ interface AbstractGrpc {
 
 class gRPCManager {
     final ManagedChannel channel;
-    private String token;
+    private String token = "";
 
-    gRPCManager(String host, int port, String password) {
+    gRPCManager(String host, int port) {
         this(ManagedChannelBuilder.forAddress(host, port).usePlaintext().build());
-
-        // Get Token
-        var stub = AuthGrpc.newBlockingStub(channel);
-
-        Password req = Password.newBuilder().setStr(password).build();
-        var resp = stub.getToken(req);
-        token = resp.getStr();
     }
 
     /*public  <T extends AbstractGrpc> T newStub(Object grpc) {
@@ -37,7 +30,17 @@ class gRPCManager {
         this.channel = channel;
     }
 
+    void setToken(String t) {
+        if(!token.equals(""))
+            throw new RuntimeException("Internal error: token was already set");
+
+        token = t;
+    }
+
     <T extends AbstractStub<T>> T addMetadata(T stub) {
+        if(token.equals(""))
+            throw new RuntimeException("Internal error: token should be already configured");
+
         Metadata header = new Metadata();
         var key = Metadata.Key.of("token", Metadata.ASCII_STRING_MARSHALLER);
         header.put(key, token);

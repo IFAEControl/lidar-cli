@@ -1,18 +1,69 @@
 package cat.ifae.cta.lidar.control.cli.session;
 
+import cat.ifae.cta.lidar.AuthGrpc;
+import cat.ifae.cta.lidar.Password;
 import io.grpc.ManagedChannel;
 import io.grpc.stub.AbstractStub;
+import net.harawata.appdirs.AppDirs;
+import net.harawata.appdirs.AppDirsFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+// TODO: Handle error if token has not valid characters
+// TODO: Handle received error if the token is invalid
 
 public class SessionManager {
     private static gRPCManager grpc;
 
+    private final static AppDirs appDirs = AppDirsFactory.getInstance();
+
     public SessionManager() {
+        var ip = getEnv("LIDAR_ADDR");
+        grpc = new gRPCManager(ip, 50051);
+
+        // After initializing gRPC get the auth token
         // XXX
         var password = getEnv("LIDAR_PASSWORD");
-        var ip = getEnv("LIDAR_ADDR");
+        var token = retrieveToken(password);
+        grpc.setToken(token);
+    }
 
-        grpc = new gRPCManager(ip, 50051, password);
+    private String retrieveToken(final String password) {
+        var cache_dir = appDirs.getUserCacheDir("lidar", "0.1", "ifae");
+        var token_cache = cache_dir + "/token";
+
+        System.out.println(token_cache);
+
+        // First try to read the token from the cache file
+        try {
+            return Files.readString(Paths.get(token_cache));
+        } catch (IOException e) {
+            System.err.println("Requesting a new token bc cant read it from cache: " + e.toString());
+        }
+
+        // If it fails request a new token and cache it
+        var t = requestNewToken(password);
+        try {
+            var dir = new File(cache_dir);
+            if(! dir.exists())
+                dir.mkdirs();
+
+            Files.write(Paths.get(token_cache), t.getBytes());
+        } catch(IOException e) {
+            System.err.println("Could not cache token");
+            e.printStackTrace();
+        }
+        return t;
+    }
+
+    private String requestNewToken(final String password) {
+        Password req = Password.newBuilder().setStr(password).build();
+        var stub = AuthGrpc.newBlockingStub(grpc.channel);
+        var resp = stub.getToken(req);
+        return resp.getStr();
     }
 
     private String getEnv(String s) {
