@@ -4,7 +4,7 @@ import cat.ifae.cta.lidar.DriversGrpc;
 import cat.ifae.cta.lidar.Index;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.StatusArray;
-import cat.ifae.cta.lidar.control.cli.Control;
+import cat.ifae.cta.lidar.control.cli.Licli;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "drivers", mixinStandardHelpOptions = true)
@@ -13,15 +13,15 @@ class  Drivers implements Runnable {
     private DriversGrpc.DriversBlockingStub stub;
 
     @CommandLine.ParentCommand
-    private Control parent;
+    private Licli parent;
 
     @CommandLine.Option(names = "-gs", description = "Get status")
     private boolean get_status;
 
     @Override
     public void run() {
-        stub = DriversGrpc.newBlockingStub(parent.grpc.channel);
-        stub = parent.grpc.addMetadata(stub);
+        stub = DriversGrpc.newBlockingStub(parent.sm.getCh());
+        stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

@@ -3,7 +3,7 @@ package cat.ifae.cta.lidar.control.cli.commands;
 import cat.ifae.cta.lidar.DacConfig;
 import cat.ifae.cta.lidar.DacGrpc;
 import cat.ifae.cta.lidar.Helpers;
-import cat.ifae.cta.lidar.control.cli.Control;
+import cat.ifae.cta.lidar.control.cli.Licli;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "dac", mixinStandardHelpOptions = true)
@@ -12,15 +12,15 @@ class Dac implements Runnable {
     private DacGrpc.DacBlockingStub stub;
 
     @CommandLine.ParentCommand
-    private Control parent;
+    private Licli parent;
 
     @CommandLine.Option(names = "-set-voltage", description = "Set voltage. format=dac:voltage")
     private String dac_setting;
 
     @Override
     public void run() {
-        stub = DacGrpc.newBlockingStub(parent.grpc.channel);
-        stub = parent.grpc.addMetadata(stub);
+        stub = DacGrpc.newBlockingStub(parent.sm.getCh());
+        stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

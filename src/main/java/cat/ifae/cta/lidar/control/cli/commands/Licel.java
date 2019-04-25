@@ -2,7 +2,7 @@ package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.*;
 import cat.ifae.cta.lidar.Helpers;
-import cat.ifae.cta.lidar.control.cli.Control;
+import cat.ifae.cta.lidar.control.cli.Licli;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "licel", mixinStandardHelpOptions = true)
@@ -11,7 +11,7 @@ class Licel implements Runnable {
     private LicelGrpc.LicelBlockingStub stub;
 
     @CommandLine.ParentCommand
-    private Control parent;
+    private Licli parent;
 
     // XXX: Insecure
     @CommandLine.Option(names = "-set-net", description = "Set network configuration. format=host:mask:port:gateway:passwd")
@@ -109,8 +109,8 @@ class Licel implements Runnable {
 
     @Override
     public void run() {
-        stub = LicelGrpc.newBlockingStub(parent.grpc.channel);
-        stub = parent.grpc.addMetadata(stub);
+        stub = LicelGrpc.newBlockingStub(parent.sm.getCh());
+        stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

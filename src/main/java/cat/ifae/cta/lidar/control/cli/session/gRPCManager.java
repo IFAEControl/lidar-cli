@@ -1,4 +1,4 @@
-package cat.ifae.cta.lidar.control.cli;
+package cat.ifae.cta.lidar.control.cli.session;
 
 import cat.ifae.cta.lidar.AuthGrpc;
 import cat.ifae.cta.lidar.Password;
@@ -14,11 +14,11 @@ interface AbstractGrpc {
     <T> T newBlockingStub(io.grpc.ManagedChannel ch);
 }
 
-public class gRPCControl {
-    final public ManagedChannel channel;
+class gRPCManager {
+    final ManagedChannel channel;
     private String token;
 
-    gRPCControl(String host, int port, String password) {
+    gRPCManager(String host, int port, String password) {
         this(ManagedChannelBuilder.forAddress(host, port).usePlaintext().build());
 
         // Get Token
@@ -33,11 +33,11 @@ public class gRPCControl {
         return ((T) grpc).newBlockingStub(channel);
     }*/
 
-    private gRPCControl(ManagedChannel channel) {
+    private gRPCManager(ManagedChannel channel) {
         this.channel = channel;
     }
 
-    public <T extends AbstractStub<T>> T addMetadata(T stub) {
+    <T extends AbstractStub<T>> T addMetadata(T stub) {
         Metadata header = new Metadata();
         var key = Metadata.Key.of("token", Metadata.ASCII_STRING_MARSHALLER);
         header.put(key, token);

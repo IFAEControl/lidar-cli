@@ -3,7 +3,7 @@ package cat.ifae.cta.lidar.control.cli.commands;
 import cat.ifae.cta.lidar.LaserGrpc;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.Power;
-import cat.ifae.cta.lidar.control.cli.Control;
+import cat.ifae.cta.lidar.control.cli.Licli;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "laser", mixinStandardHelpOptions = true)
@@ -12,7 +12,7 @@ class Laser implements Runnable {
     private LaserGrpc.LaserBlockingStub stub;
 
     @CommandLine.ParentCommand
-    private Control parent;
+    private Licli parent;
 
     @CommandLine.Option(names = "-init", description = "Initalize laser")
     private boolean is_init = false;
@@ -34,8 +34,8 @@ class Laser implements Runnable {
 
     @Override
     public final void run() {
-        stub = LaserGrpc.newBlockingStub(parent.grpc.channel);
-        stub = parent.grpc.addMetadata(stub);
+        stub = LaserGrpc.newBlockingStub(parent.sm.getCh());
+        stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

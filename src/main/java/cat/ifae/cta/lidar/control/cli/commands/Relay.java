@@ -1,7 +1,7 @@
 package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.*;
-import cat.ifae.cta.lidar.control.cli.Control;
+import cat.ifae.cta.lidar.control.cli.Licli;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "relay", mixinStandardHelpOptions = true)
@@ -33,12 +33,12 @@ class Relay implements  Runnable {
     private int status = -1;
 
     @CommandLine.ParentCommand
-    private Control parent;
+    private Licli parent;
 
     @Override
     public final void run() {
-        stub = RelayGrpc.newBlockingStub(parent.grpc.channel);
-        stub = parent.grpc.addMetadata(stub);
+        stub = RelayGrpc.newBlockingStub(parent.sm.getCh());
+        stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

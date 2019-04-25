@@ -1,13 +1,11 @@
 package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.*;
-import cat.ifae.cta.lidar.control.cli.Control;
+import cat.ifae.cta.lidar.control.cli.Licli;
 import io.grpc.stub.StreamObserver;
 import picocli.CommandLine;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicReference;
 
 @CommandLine.Command(name = "monitoring", mixinStandardHelpOptions = true)
 public
@@ -15,15 +13,15 @@ class Monitoring implements Runnable {
     private MonitoringGrpc.MonitoringStub stub;
 
     @CommandLine.ParentCommand
-    private Control parent;
+    private Licli parent;
 
     @CommandLine.Option(names = "-gs", description = "Get status")
     private boolean get_status;
 
     @Override
     public final void run() {
-        stub = MonitoringGrpc.newStub(parent.grpc.channel);
-        stub = parent.grpc.addMetadata(stub);
+        stub = MonitoringGrpc.newStub(parent.sm.getCh());
+        stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

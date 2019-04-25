@@ -1,7 +1,7 @@
 package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.*;
-import cat.ifae.cta.lidar.control.cli.Control;
+import cat.ifae.cta.lidar.control.cli.Licli;
 import cat.ifae.cta.lidar.control.config.Component;
 import cat.ifae.cta.lidar.control.config.Config;
 import cat.ifae.cta.lidar.control.config.Program;
@@ -24,7 +24,7 @@ class Micro implements Runnable {
     private boolean shutdown = false;
 
     @CommandLine.ParentCommand
-    private Control parent;
+    private Licli parent;
 
     private final static Logging log = new Logging(Micro.class);
 
@@ -34,14 +34,16 @@ class Micro implements Runnable {
 
     @Override
     public final void run() {
-        stub = MicroGrpc.newBlockingStub(parent.grpc.channel);
-        stub = parent.grpc.addMetadata(stub);
+        var ch = parent.sm.getCh();
 
-        sensors_stub = SensorsGrpc.newBlockingStub(parent.grpc.channel);
-        sensors_stub = parent.grpc.addMetadata(sensors_stub);
+        stub = MicroGrpc.newBlockingStub(ch);
+        stub = parent.sm.addMetadata(stub);
 
-        drivers_stub = DriversGrpc.newBlockingStub(parent.grpc.channel);
-        drivers_stub = parent.grpc.addMetadata(drivers_stub);
+        sensors_stub = SensorsGrpc.newBlockingStub(ch);
+        sensors_stub = parent.sm.addMetadata(sensors_stub);
+
+        drivers_stub = DriversGrpc.newBlockingStub(ch);
+        drivers_stub = parent.sm.addMetadata(drivers_stub);
 
         CommandLine.populateCommand(this);
 

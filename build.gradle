@@ -121,7 +121,7 @@ apply plugin: 'application'
 startScripts.enabled = false
 
 task controlClient(type: CreateStartScripts) {
-    mainClassName="cat.ifae.cta.lidar.control.cli.Control"
+    mainClassName="cat.ifae.cta.lidar.control.cli.Licli"
     applicationName = "control-cli"
     classpath = startScripts.classpath
     outputDir = startScripts.outputDir
@@ -135,5 +135,5 @@ applicationDistribution.into('bin') {
 task runCli(type:JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 
-    main = project.hasProperty("mainClass") ? project.getProperty("mainClass") : "cat.ifae.cta.lidar.control.cli.Control"
+    main = project.hasProperty("mainClass") ? project.getProperty("mainClass") : "cat.ifae.cta.lidar.control.cli.Licli"
 }

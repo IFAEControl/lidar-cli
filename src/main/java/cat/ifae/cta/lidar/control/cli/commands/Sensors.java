@@ -4,7 +4,7 @@ import cat.ifae.cta.lidar.Data;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.Raw;
 import cat.ifae.cta.lidar.SensorsGrpc;
-import cat.ifae.cta.lidar.control.cli.Control;
+import cat.ifae.cta.lidar.control.cli.Licli;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "sensors", mixinStandardHelpOptions = true)
@@ -19,12 +19,12 @@ class Sensors implements Runnable {
     private boolean get_conv = false;
 
     @CommandLine.ParentCommand
-    private Control parent;
+    private Licli parent;
 
     @Override
     public void run() {
-        stub = SensorsGrpc.newBlockingStub(parent.grpc.channel);
-        stub = parent.grpc.addMetadata(stub);
+        stub = SensorsGrpc.newBlockingStub(parent.sm.getCh());
+        stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

@@ -2,7 +2,7 @@ package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.TelescopTestsGrpc;
-import cat.ifae.cta.lidar.control.cli.Control;
+import cat.ifae.cta.lidar.control.cli.Licli;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "telescope", mixinStandardHelpOptions = true)
@@ -14,12 +14,12 @@ class Telescope implements Runnable {
     private boolean test = false;
 
     @CommandLine.ParentCommand
-    private Control parent;
+    private Licli parent;
 
     @Override
     public void run() {
-        stub = TelescopTestsGrpc.newBlockingStub(parent.grpc.channel);
-        stub = parent.grpc.addMetadata(stub);
+        stub = TelescopTestsGrpc.newBlockingStub(parent.sm.getCh());
+        stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 
