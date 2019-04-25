@@ -122,7 +122,7 @@ startScripts.enabled = false
 
 task controlClient(type: CreateStartScripts) {
     mainClassName="cat.ifae.cta.lidar.control.cli.Licli"
-    applicationName = "control-cli"
+    applicationName = "licli"
     classpath = startScripts.classpath
     outputDir = startScripts.outputDir
 }
@@ -134,6 +134,8 @@ applicationDistribution.into('bin') {
 
 task runCli(type:JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
+
+    standardInput = System.in
 
     main = project.hasProperty("mainClass") ? project.getProperty("mainClass") : "cat.ifae.cta.lidar.control.cli.Licli"
 }

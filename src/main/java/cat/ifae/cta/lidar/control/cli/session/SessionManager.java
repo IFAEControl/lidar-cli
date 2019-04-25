@@ -11,9 +11,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 // TODO: Handle error if token has not valid characters
 // TODO: Handle received error if the token is invalid
+// TODO: Don't request password if token is cached
 
 public class SessionManager {
     private static gRPCManager grpc;
@@ -25,13 +27,11 @@ public class SessionManager {
         grpc = new gRPCManager(ip, 50051);
 
         // After initializing gRPC get the auth token
-        // XXX
-        var password = getEnv("LIDAR_PASSWORD");
-        var token = retrieveToken(password);
+        var token = retrieveToken();
         grpc.setToken(token);
     }
 
-    private String retrieveToken(final String password) {
+    private String retrieveToken() {
         var cache_dir = appDirs.getUserCacheDir("lidar", "0.1", "ifae");
         var token_cache = cache_dir + "/token";
 
@@ -42,10 +42,11 @@ public class SessionManager {
             return Files.readString(Paths.get(token_cache));
         } catch (IOException e) {
             System.err.println("Requesting a new token bc cant read it from cache: " + e.toString());
+            System.err.flush();
         }
 
         // If it fails request a new token and cache it
-        var t = requestNewToken(password);
+        var t = requestNewToken();
         try {
             var dir = new File(cache_dir);
             if(! dir.exists())
@@ -59,7 +60,14 @@ public class SessionManager {
         return t;
     }
 
-    private String requestNewToken(final String password) {
+    private String requestNewToken() {
+        System.out.print("\nEnter password: ");
+        System.out.flush();
+
+        var scanner = new Scanner(System. in);
+        var password = scanner.nextLine();
+        scanner.close();
+
         Password req = Password.newBuilder().setStr(password).build();
         var stub = AuthGrpc.newBlockingStub(grpc.channel);
         var resp = stub.getToken(req);
