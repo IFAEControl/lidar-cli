@@ -1,10 +1,12 @@
-package cat.ifae.cta.lidar.control.cli;
+package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.TelescopTestsGrpc;
+import cat.ifae.cta.lidar.control.cli.Control;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "telescope", mixinStandardHelpOptions = true)
+public
 class Telescope implements Runnable {
     private TelescopTestsGrpc.TelescopTestsBlockingStub stub;
 

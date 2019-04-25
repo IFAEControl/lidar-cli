@@ -1,11 +1,13 @@
-package cat.ifae.cta.lidar.control.cli;
+package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.LaserGrpc;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.Power;
+import cat.ifae.cta.lidar.control.cli.Control;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "laser", mixinStandardHelpOptions = true)
+public
 class Laser implements Runnable {
     private LaserGrpc.LaserBlockingStub stub;
 

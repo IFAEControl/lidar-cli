@@ -1,6 +1,7 @@
-package cat.ifae.cta.lidar.control.cli;
+package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.*;
+import cat.ifae.cta.lidar.control.cli.Control;
 import cat.ifae.cta.lidar.control.config.Component;
 import cat.ifae.cta.lidar.control.config.Config;
 import cat.ifae.cta.lidar.control.config.Program;
@@ -10,6 +11,7 @@ import picocli.CommandLine;
 import java.text.MessageFormat;
 
 @CommandLine.Command(name = "micro", mixinStandardHelpOptions = true)
+public
 class Micro implements Runnable {
     private MicroGrpc.MicroBlockingStub stub;
     private SensorsGrpc.SensorsBlockingStub sensors_stub;

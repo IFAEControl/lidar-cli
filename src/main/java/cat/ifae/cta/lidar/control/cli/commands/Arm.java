@@ -1,14 +1,15 @@
-package cat.ifae.cta.lidar.control.cli;
+package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.ArmGrpc;
 import cat.ifae.cta.lidar.Node;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.Point2D;
 import cat.ifae.cta.lidar.Helpers;
+import cat.ifae.cta.lidar.control.cli.Control;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "arms", mixinStandardHelpOptions = true)
-class Arm implements Runnable {
+public class Arm implements Runnable {
     private ArmGrpc.ArmBlockingStub stub;
 
     @CommandLine.ParentCommand

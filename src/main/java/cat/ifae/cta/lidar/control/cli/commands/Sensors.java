@@ -1,12 +1,14 @@
-package cat.ifae.cta.lidar.control.cli;
+package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.Data;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.Raw;
 import cat.ifae.cta.lidar.SensorsGrpc;
+import cat.ifae.cta.lidar.control.cli.Control;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "sensors", mixinStandardHelpOptions = true)
+public
 class Sensors implements Runnable {
     private SensorsGrpc.SensorsBlockingStub stub;
 

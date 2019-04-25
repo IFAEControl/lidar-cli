@@ -1,9 +1,11 @@
-package cat.ifae.cta.lidar.control.cli;
+package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.*;
+import cat.ifae.cta.lidar.control.cli.Control;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "relay", mixinStandardHelpOptions = true)
+public
 class Relay implements  Runnable {
     private RelayGrpc.RelayBlockingStub stub;
     private static final int LASER_RELAY = 0;

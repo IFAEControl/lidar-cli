@@ -1,12 +1,14 @@
-package cat.ifae.cta.lidar.control.cli;
+package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.DriversGrpc;
 import cat.ifae.cta.lidar.Index;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.StatusArray;
+import cat.ifae.cta.lidar.control.cli.Control;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "drivers", mixinStandardHelpOptions = true)
+public
 class  Drivers implements Runnable {
     private DriversGrpc.DriversBlockingStub stub;
 

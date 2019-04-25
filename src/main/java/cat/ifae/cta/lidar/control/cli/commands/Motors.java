@@ -1,9 +1,11 @@
-package cat.ifae.cta.lidar.control.cli;
+package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.*;
+import cat.ifae.cta.lidar.control.cli.Control;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "motors", mixinStandardHelpOptions = true)
+public
 class Motors implements Runnable {
     private MotorsGrpc.MotorsBlockingStub stub = null;
 

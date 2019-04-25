@@ -1,11 +1,13 @@
-package cat.ifae.cta.lidar.control.cli;
+package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.DacConfig;
 import cat.ifae.cta.lidar.DacGrpc;
 import cat.ifae.cta.lidar.Helpers;
+import cat.ifae.cta.lidar.control.cli.Control;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "dac", mixinStandardHelpOptions = true)
+public
 class Dac implements Runnable {
     private DacGrpc.DacBlockingStub stub;
 

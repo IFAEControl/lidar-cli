@@ -1,10 +1,12 @@
-package cat.ifae.cta.lidar.control.cli;
+package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.HotwindGrpc;
 import cat.ifae.cta.lidar.Null;
+import cat.ifae.cta.lidar.control.cli.Control;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "hotwind", mixinStandardHelpOptions = true)
+public
 class HotWind implements Runnable {
     private HotwindGrpc.HotwindBlockingStub stub;
 

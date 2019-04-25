@@ -1,10 +1,12 @@
-package cat.ifae.cta.lidar.control.cli;
+package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.*;
 import cat.ifae.cta.lidar.Helpers;
+import cat.ifae.cta.lidar.control.cli.Control;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "licel", mixinStandardHelpOptions = true)
+public
 class Licel implements Runnable {
     private LicelGrpc.LicelBlockingStub stub;
 
