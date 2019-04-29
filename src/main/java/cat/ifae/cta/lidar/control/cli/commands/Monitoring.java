@@ -32,8 +32,7 @@ class Monitoring implements Runnable {
                 }
 
                 public void onError(Throwable t) {
-                    System.out.println("on error");
-                    t.printStackTrace();
+                    System.out.println("Error: " + t.getMessage());
                     finishedLatch.countDown();
                 }
 
