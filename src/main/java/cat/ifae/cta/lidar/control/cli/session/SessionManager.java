@@ -3,6 +3,7 @@ package cat.ifae.cta.lidar.control.cli.session;
 import cat.ifae.cta.lidar.AuthGrpc;
 import cat.ifae.cta.lidar.Password;
 import io.grpc.ManagedChannel;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractStub;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
@@ -20,28 +21,39 @@ public class SessionManager {
     private static gRPCManager grpc;
 
     private final static AppDirs appDirs = AppDirsFactory.getInstance();
+    private Scanner scanner = new Scanner(System. in);
 
     public SessionManager() {
         var ip = getEnv("LIDAR_ADDR");
         grpc = new gRPCManager(ip, 50051);
 
-        // After initializing gRPC get the auth token
-        var token = retrieveToken();
-        grpc.setToken(token);
+        initializeToken();
+        scanner.close();
+    }
+
+    private void initializeToken() {
+        try {
+            // After initializing gRPC get the auth token
+            var token = retrieveToken();
+            grpc.setToken(token);
+        } catch(StatusRuntimeException e) {
+            System.err.println("Error: " + e.getMessage().toString());
+            System.err.println("Try again");
+            System.err.flush();
+            this.initializeToken();
+        }
     }
 
     private String retrieveToken() {
         var cache_dir = appDirs.getUserCacheDir("lidar", "0.1", "ifae");
         var token_cache = cache_dir + "/token";
 
-        System.out.println(token_cache);
-
         // First try to read the token from the cache file
         try {
             return Files.readString(Paths.get(token_cache));
         } catch (IOException e) {
-            System.err.println("Requesting a new token bc cant read it from cache: " + e.toString());
-            System.err.flush();
+            //System.err.println("Token not cached, requesting a new one");
+            //System.err.flush();
         }
 
         // If it fails request a new token and cache it
@@ -63,9 +75,7 @@ public class SessionManager {
         System.out.print("\nEnter password: ");
         System.out.flush();
 
-        var scanner = new Scanner(System. in);
         var password = scanner.nextLine();
-        scanner.close();
 
         Password req = Password.newBuilder().setStr(password).build();
         var stub = AuthGrpc.newBlockingStub(grpc.channel);

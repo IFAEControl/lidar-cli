@@ -15,9 +15,6 @@ class Monitoring implements Runnable {
     @CommandLine.ParentCommand
     private Licli parent;
 
-    @CommandLine.Option(names = "-gs", description = "Get status")
-    private boolean get_status;
-
     @Override
     public final void run() {
         stub = MonitoringGrpc.newStub(parent.sm.getCh());
@@ -31,18 +28,20 @@ class Monitoring implements Runnable {
             Str req = Str.newBuilder().setText("a").build();
             stub.variable(req, new StreamObserver<Str>() {
                 public void onNext(Str response) {
-                    System.out.println(response);
+                    System.out.print(response);
                 }
+
                 public void onError(Throwable t) {
                     System.out.println("on error");
                     t.printStackTrace();
                     finishedLatch.countDown();
                 }
+
                 public void onCompleted() {
-                    System.out.println("A");
                     finishedLatch.countDown();
                 }
             });
+
             finishedLatch.await();
         } catch(InterruptedException | RuntimeException e) {
             System.out.println(e.toString());
