@@ -1,13 +1,12 @@
 package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.*;
+import cat.ifae.cta.lidar.config.Config;
 import cat.ifae.cta.lidar.control.cli.Licli;
-import cat.ifae.cta.lidar.control.config.Component;
-import cat.ifae.cta.lidar.control.config.Config;
-import cat.ifae.cta.lidar.control.config.Program;
 import cat.ifae.cta.lidar.logging.Logging;
 import picocli.CommandLine;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 
 @CommandLine.Command(name = "micro", mixinStandardHelpOptions = true)
@@ -28,9 +27,13 @@ class Micro implements Runnable {
 
     private final static Logging log = new Logging(Micro.class);
 
-    private static Config cfg = new Config(Program.CLI, Component.MICRO_INIT_SEQUENCE);
+    private static Config cfg;
 
     private static final int all_dacs = 4;
+
+    Micro() throws IOException {
+        cfg = new Config("client", "micro_init_sequence");
+    }
 
     @Override
     public final void run() {

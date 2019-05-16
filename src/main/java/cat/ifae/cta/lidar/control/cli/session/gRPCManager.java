@@ -46,7 +46,7 @@ class gRPCManager {
         header.put(key, token);
 
         var type = Metadata.Key.of("type", Metadata.ASCII_STRING_MARSHALLER);
-        header.put(type, "CLI");
+        header.put(type, "cli");
 
         return MetadataUtils.attachHeaders(stub, header);
     }

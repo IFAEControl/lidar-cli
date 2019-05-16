@@ -8,3 +8,7 @@
  */
 
 rootProject.name = 'lidar-cli'
+
+include  ':libutil'
+
+project(':libutil').projectDir = new File(settingsDir, 'libs/lidar-libutil')

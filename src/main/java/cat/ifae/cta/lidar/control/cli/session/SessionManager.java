@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 // TODO: Handle error if token has not valid characters
-// TODO: Handle received error if the token is invalid
 
 public class SessionManager {
     private static gRPCManager grpc;
