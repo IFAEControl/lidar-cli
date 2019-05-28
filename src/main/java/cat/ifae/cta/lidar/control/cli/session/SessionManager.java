@@ -78,6 +78,7 @@ public class SessionManager {
 
         Password req = Password.newBuilder().setStr(password).build();
         var stub = AuthGrpc.newBlockingStub(grpc.channel);
+        stub = addMetadata(stub);
         var resp = stub.getToken(req);
         return resp.getStr();
     }

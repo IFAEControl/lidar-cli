@@ -38,9 +38,6 @@ class gRPCManager {
     }
 
     <T extends AbstractStub<T>> T addMetadata(T stub) {
-        if(token.equals(""))
-            throw new RuntimeException("Internal error: token should be already configured");
-
         Metadata header = new Metadata();
         var key = Metadata.Key.of("token", Metadata.ASCII_STRING_MARSHALLER);
         header.put(key, token);
