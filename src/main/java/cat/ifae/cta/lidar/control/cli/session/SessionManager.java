@@ -86,7 +86,7 @@ public class SessionManager {
     private String getEnv(String s) {
         var ip = System.getenv(s);
         if(ip == null || ip.isBlank())
-            throw new RuntimeException(s + "env variable is not set");
+            throw new RuntimeException(s + " env variable is not set");
 
         return ip;
     }
