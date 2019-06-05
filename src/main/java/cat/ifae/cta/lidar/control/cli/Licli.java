@@ -7,7 +7,8 @@ import picocli.CommandLine;
 
 
 @CommandLine.Command(mixinStandardHelpOptions = true, subcommands = {Arm.class, Dac.class, Drivers.class, HotWind.class,
-        Laser.class, Licel.class, Micro.class, Monitoring.class, Motors.class, Relay.class, Sensors.class, Telescope.class})
+        Laser.class, Licel.class, Micro.class, Monitoring.class, Motors.class, Relay.class, Sensors.class, Telescope.class,
+        Alarms.class})
 public class Licli implements Runnable {
     public static SessionManager sm = new SessionManager();
 

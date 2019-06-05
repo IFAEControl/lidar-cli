@@ -47,6 +47,9 @@ class Sensors implements Runnable {
     private void getConvertedData() {
         Null req = Null.newBuilder().build();
         Data resp = stub.getConvertedData(req);
-        System.out.println(resp);
+        for(int i = 0; i < resp.getDataCount(); i++) {
+            System.out.println(resp.getName(i) + ": " + resp.getData(i) + resp.getUnit(i));
+        }
+
     }
 }
