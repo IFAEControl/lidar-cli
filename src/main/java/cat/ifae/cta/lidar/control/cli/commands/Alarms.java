@@ -29,7 +29,7 @@ public class Alarms implements Runnable {
             Null req = Null.newBuilder().build();
             stub.listenAlarms(req, new StreamObserver<AlarmMessage>() {
                 public void onNext(AlarmMessage response) {
-                    System.out.print(response);
+                    System.out.println(response.getMsg());
                 }
 
                 public void onError(Throwable t) {
