@@ -27,7 +27,7 @@ public class Alarms implements Runnable {
             //var requestObserverRef = new AtomicReference<>();
             var finishedLatch = new CountDownLatch(1);
             Null req = Null.newBuilder().build();
-            stub.listenAlarms(req, new StreamObserver<AlarmMessage>() {
+            stub.listenAlarms(req, new StreamObserver<>() {
                 public void onNext(AlarmMessage response) {
                     System.out.println(response.getMsg());
                 }
