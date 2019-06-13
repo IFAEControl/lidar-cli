@@ -25,8 +25,8 @@ class Monitoring implements Runnable {
         try {
             //var requestObserverRef = new AtomicReference<>();
             var finishedLatch = new CountDownLatch(1);
-            Str req = Str.newBuilder().setText("a").build();
-            stub.variable(req, new StreamObserver<Str>() {
+            Str req = Str.newBuilder().setText("some_variable").build();
+            stub.watchVariable(req, new StreamObserver<Str>() {
                 public void onNext(Str response) {
                     System.out.print(response);
                 }
