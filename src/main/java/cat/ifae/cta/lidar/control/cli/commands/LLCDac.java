@@ -1,15 +1,15 @@
 package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.DacConfig;
-import cat.ifae.cta.lidar.DacGrpc;
+import cat.ifae.cta.lidar.LLCDacGrpc;
 import cat.ifae.cta.lidar.Helpers;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "dac", mixinStandardHelpOptions = true)
 public
-class Dac implements Runnable {
-    private DacGrpc.DacBlockingStub stub;
+class LLCDac implements Runnable {
+    private LLCDacGrpc.LLCDacBlockingStub stub;
 
     @CommandLine.ParentCommand
     private Licli parent;
@@ -19,7 +19,7 @@ class Dac implements Runnable {
 
     @Override
     public void run() {
-        stub = DacGrpc.newBlockingStub(parent.sm.getCh());
+        stub = LLCDacGrpc.newBlockingStub(parent.sm.getCh());
         stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);

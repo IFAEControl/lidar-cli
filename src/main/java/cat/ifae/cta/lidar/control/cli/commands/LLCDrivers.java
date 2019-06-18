@@ -1,6 +1,6 @@
 package cat.ifae.cta.lidar.control.cli.commands;
 
-import cat.ifae.cta.lidar.DriversGrpc;
+import cat.ifae.cta.lidar.LLCDriversGrpc;
 import cat.ifae.cta.lidar.Index;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.StatusArray;
@@ -9,8 +9,8 @@ import picocli.CommandLine;
 
 @CommandLine.Command(name = "drivers", mixinStandardHelpOptions = true)
 public
-class  Drivers implements Runnable {
-    private DriversGrpc.DriversBlockingStub stub;
+class LLCDrivers implements Runnable {
+    private LLCDriversGrpc.LLCDriversBlockingStub stub;
 
     @CommandLine.ParentCommand
     private Licli parent;
@@ -20,7 +20,7 @@ class  Drivers implements Runnable {
 
     @Override
     public void run() {
-        stub = DriversGrpc.newBlockingStub(parent.sm.getCh());
+        stub = LLCDriversGrpc.newBlockingStub(parent.sm.getCh());
         stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);

@@ -1,14 +1,14 @@
 package cat.ifae.cta.lidar.control.cli.commands;
 
-import cat.ifae.cta.lidar.HotwindGrpc;
+import cat.ifae.cta.lidar.LLCHotwindGrpc;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "hotwind", mixinStandardHelpOptions = true)
 public
-class HotWind implements Runnable {
-    private HotwindGrpc.HotwindBlockingStub stub;
+class LLCHotWind implements Runnable {
+    private LLCHotwindGrpc.LLCHotwindBlockingStub stub;
 
     @CommandLine.Option(names = "-lock", description = "Lock")
     private boolean is_lock = false;
@@ -25,7 +25,7 @@ class HotWind implements Runnable {
 
     @Override
     public void run() {
-        stub = HotwindGrpc.newBlockingStub(parent.sm.getCh());
+        stub = LLCHotwindGrpc.newBlockingStub(parent.sm.getCh());
         stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);

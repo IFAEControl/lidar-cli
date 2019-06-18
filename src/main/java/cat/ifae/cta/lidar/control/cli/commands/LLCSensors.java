@@ -3,14 +3,14 @@ package cat.ifae.cta.lidar.control.cli.commands;
 import cat.ifae.cta.lidar.Data;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.Raw;
-import cat.ifae.cta.lidar.SensorsGrpc;
+import cat.ifae.cta.lidar.LLCSensorsGrpc;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "sensors", mixinStandardHelpOptions = true)
 public
-class Sensors implements Runnable {
-    private SensorsGrpc.SensorsBlockingStub stub;
+class LLCSensors implements Runnable {
+    private LLCSensorsGrpc.LLCSensorsBlockingStub stub;
 
     @CommandLine.Option(names = "-raw", description = "If true get raw data, otherwise get converted data")
     private boolean get_raw = false;
@@ -23,7 +23,7 @@ class Sensors implements Runnable {
 
     @Override
     public void run() {
-        stub = SensorsGrpc.newBlockingStub(parent.sm.getCh());
+        stub = LLCSensorsGrpc.newBlockingStub(parent.sm.getCh());
         stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);

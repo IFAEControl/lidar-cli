@@ -1,6 +1,6 @@
 package cat.ifae.cta.lidar.control.cli.commands;
 
-import cat.ifae.cta.lidar.LaserGrpc;
+import cat.ifae.cta.lidar.LLCLaserGrpc;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.Power;
 import cat.ifae.cta.lidar.control.cli.Licli;
@@ -8,8 +8,8 @@ import picocli.CommandLine;
 
 @CommandLine.Command(name = "laser", mixinStandardHelpOptions = true)
 public
-class Laser implements Runnable {
-    private LaserGrpc.LaserBlockingStub stub;
+class LLCLaser implements Runnable {
+    private LLCLaserGrpc.LLCLaserBlockingStub stub;
 
     @CommandLine.ParentCommand
     private Licli parent;
@@ -34,7 +34,7 @@ class Laser implements Runnable {
 
     @Override
     public final void run() {
-        stub = LaserGrpc.newBlockingStub(parent.sm.getCh());
+        stub = LLCLaserGrpc.newBlockingStub(parent.sm.getCh());
         stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);

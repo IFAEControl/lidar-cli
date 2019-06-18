@@ -13,8 +13,8 @@ import java.text.MessageFormat;
 public
 class Micro implements Runnable {
     private MicroGrpc.MicroBlockingStub stub;
-    private SensorsGrpc.SensorsBlockingStub sensors_stub;
-    private DriversGrpc.DriversBlockingStub drivers_stub;
+    private LLCSensorsGrpc.LLCSensorsBlockingStub sensors_stub;
+    private LLCDriversGrpc.LLCDriversBlockingStub drivers_stub;
 
     @CommandLine.Option(names = "-init", description = "Initialization sequence")
     private boolean initialize = false;
@@ -42,10 +42,10 @@ class Micro implements Runnable {
         stub = MicroGrpc.newBlockingStub(ch);
         stub = parent.sm.addMetadata(stub);
 
-        sensors_stub = SensorsGrpc.newBlockingStub(ch);
+        sensors_stub = LLCSensorsGrpc.newBlockingStub(ch);
         sensors_stub = parent.sm.addMetadata(sensors_stub);
 
-        drivers_stub = DriversGrpc.newBlockingStub(ch);
+        drivers_stub = LLCDriversGrpc.newBlockingStub(ch);
         drivers_stub = parent.sm.addMetadata(drivers_stub);
 
         CommandLine.populateCommand(this);

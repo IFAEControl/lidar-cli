@@ -6,8 +6,8 @@ import picocli.CommandLine;
 
 @CommandLine.Command(name = "relay", mixinStandardHelpOptions = true)
 public
-class Relay implements  Runnable {
-    private RelayGrpc.RelayBlockingStub stub;
+class LLCRelay implements  Runnable {
+    private LLCRelayGrpc.LLCRelayBlockingStub stub;
     private static final int LASER_RELAY = 0;
     private static final int HOTWIND_RELAY = 1;
 
@@ -17,10 +17,10 @@ class Relay implements  Runnable {
     @CommandLine.Option(names = "-device", description = "Device to set")
     private int device_number = -1;
 
-    @CommandLine.Option(names = "-laser-on", description = "Power On Laser")
+    @CommandLine.Option(names = "-laser-on", description = "Power On LLCLaser")
     private boolean laser_on = false;
 
-    @CommandLine.Option(names = "-laser-off", description = "Power Off Laser")
+    @CommandLine.Option(names = "-laser-off", description = "Power Off LLCLaser")
     private boolean laser_off = false;
 
     @CommandLine.Option(names = "-hotwind-on", description = "Power On Hotwind")
@@ -37,7 +37,7 @@ class Relay implements  Runnable {
 
     @Override
     public final void run() {
-        stub = RelayGrpc.newBlockingStub(parent.sm.getCh());
+        stub = LLCRelayGrpc.newBlockingStub(parent.sm.getCh());
         stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
@@ -62,7 +62,7 @@ class Relay implements  Runnable {
     private void getStatus() {
         Null req = Null.newBuilder().build();
         StatusArray resp = stub.getStatus(req);
-        System.out.println("Relay's Status: ");
+        System.out.println("LLCRelay's Status: ");
         for (int i=0; i < resp.getStatusCount(); i++){
             if(resp.getStatus(i).getStatus()) System.out.print("ON");
             else System.out.print("OFF");

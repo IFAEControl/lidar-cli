@@ -1,6 +1,6 @@
 package cat.ifae.cta.lidar.control.cli.commands;
 
-import cat.ifae.cta.lidar.ArmGrpc;
+import cat.ifae.cta.lidar.LLCArmGrpc;
 import cat.ifae.cta.lidar.Node;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.Point2D;
@@ -9,8 +9,8 @@ import cat.ifae.cta.lidar.control.cli.Licli;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "arms", mixinStandardHelpOptions = true)
-public class Arm implements Runnable {
-    private ArmGrpc.ArmBlockingStub stub;
+public class LLCArm implements Runnable {
+    private LLCArmGrpc.LLCArmBlockingStub stub;
 
     @CommandLine.ParentCommand
     private Licli parent;
@@ -35,7 +35,7 @@ public class Arm implements Runnable {
 
     @Override
     public void run() {
-        stub = ArmGrpc.newBlockingStub(parent.sm.getCh());
+        stub = LLCArmGrpc.newBlockingStub(parent.sm.getCh());
         stub = parent.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
