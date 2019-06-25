@@ -5,6 +5,8 @@ import cat.ifae.cta.lidar.Helpers;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import picocli.CommandLine;
 
+import java.text.MessageFormat;
+
 @CommandLine.Command(name = "licel", mixinStandardHelpOptions = true)
 public
 class Licel implements Runnable {
@@ -221,8 +223,8 @@ class Licel implements Runnable {
 
     private void getStatus() {
         Null req = Null.newBuilder().build();
-        LicelAnswer resp = stub.getStatus(req);
-        System.out.println(resp);
+        var resp = stub.getStatus(req);
+        System.out.println(MessageFormat.format("{0} {1} {2} {3}", resp.getAcqState(), resp.getMemory(), resp.getShotNumber(), resp.getRecording()));
     }
 
     private void multipleClearMemory() {
