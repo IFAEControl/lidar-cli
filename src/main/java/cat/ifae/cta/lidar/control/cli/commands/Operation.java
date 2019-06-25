@@ -30,7 +30,6 @@ public class Operation implements Runnable {
     @CommandLine.ParentCommand
     private Licli parent;
 
-    private static final int all_dacs = 4;
 
     private static Config cfg;
 
@@ -112,36 +111,18 @@ public class Operation implements Runnable {
     }
 
     private void initSequence() {
-        System.out.println("Starting Barcelona Raman LIDAR MicroController Systems Initialize Sequence!");
+        var p = getPosition();
+        var point_req = Point2D.newBuilder().setX(p.getX()).setY(p.getY()).build();
+        var req = InitSequenceOptions.newBuilder().setHotwindTmep(getTemperature()).setPosition(point_req).setPmtDacVoltage(getDacVoltage()).build();
+        blocking_stub.executeMicroInitSequence(req);
 
-        System.out.println("Executing powerOnLaser");
-        powerOnLaser();
-        System.out.println("Executing powerHotwindConditionally");
-        powerHotwindConditionally(getTemperature());
-        System.out.println("Executing initializeArm");
-        initializeArm();
-        System.out.println("Executing initializeLaser");
-        initializeLaser();
-        System.out.println("Executing moveArmToAlignmentPos");
-        moveArmToAlignmentPos(getPosition());
-        System.out.println("Executing rampDACs");
-        rampDACs(getDacVoltage());
-        System.out.println("Executing printDacsVoltage");
         printDacsVoltage();
-        System.out.println("Executing printDriversStatus");
         printDriversStatus();
-
-        System.out.println("Ending Barcelona Raman LIDAR MicroController Systems Initialize Sequence!");
     }
 
     private void shutdownSequence() {
-        System.out.println("Starting Barcelona Raman LIDAR MicroController Systems Shutdown Sequence!");
-
-        powerOffLaser();
-        powerOffHotwind();
-        rampDACs(0);
-
-        System.out.println("Ending Barcelona Raman LIDAR MicroController Systems Shutdown Sequence!");
+        var req = Null.newBuilder().build();
+        blocking_stub.executeMicroShutdownSequence(req);
     }
 
     private static java.awt.geom.Point2D getPosition() {
@@ -157,49 +138,6 @@ public class Operation implements Runnable {
 
     private static int getDacVoltage() {
         return cfg.getInteger("pmt_dac_voltage");
-    }
-
-    private void powerOnLaser() {
-        Null req = Null.newBuilder().build();
-        blocking_stub.powerOnLaser(req);
-    }
-
-    private void powerOffLaser() {
-        Null req = Null.newBuilder().build();
-        blocking_stub.powerOffLaser(req);
-    }
-
-    private void initializeArm() {
-        Null req = Null.newBuilder().build();
-        blocking_stub.initializeArm(req);
-    }
-
-    private void initializeLaser() {
-        Null req = Null.newBuilder().build();
-        blocking_stub.initializeLaser(req);
-    }
-
-    private void powerHotwindConditionally(float threshold) {
-        Temperature req = Temperature.newBuilder().setTemperature(threshold).build();
-        blocking_stub.powerHotwindConditionally(req);
-    }
-
-    private void powerOffHotwind() {
-        Null req = Null.newBuilder().build();
-        blocking_stub.powerOffHotwind(req);
-    }
-
-    private void moveArmToAlignmentPos(java.awt.geom.Point2D s) {
-        var x = s.getX();
-        var y = s.getY();
-
-        Point2D req = Point2D.newBuilder().setX(x).setY(y).build();
-        blocking_stub.moveArmToAlignmentPos(req);
-    }
-
-    private void rampDACs(int dacvoltage) {
-        DacConfig req = DacConfig.newBuilder().setNumber(all_dacs).setVoltage(dacvoltage).build();
-        blocking_stub.rampDACs(req);
     }
 
     private java.util.List getConvertedData() {
