@@ -40,6 +40,9 @@ class Licel implements Runnable {
     @CommandLine.Option(names = "-get-status", description = "Get status. format=number:memory:acq_state:recording")
     private boolean _is_get_status;
 
+    @CommandLine.Option(names = "-get-tr-type", description = "Get TR type")
+    private boolean _is_get_tr_type;
+
     @CommandLine.Option(names = "-multiple-clear-memory", description = "Multiple clear memory")
     private boolean _is_multiple_clean;
 
@@ -125,6 +128,7 @@ class Licel implements Runnable {
             else if(_is_clear) clearMemory();
             else if(_data_set != null) getDataSet(_data_set);
             else if(_is_get_status) getStatus();
+            else if(_is_get_tr_type) getTRType();
             else if(_is_multiple_clean) multipleClearMemory();
             else if(_multiple_wait_delay != -1) multipleWaitForReady(_multiple_wait_delay);
             else if(_tr_number != -1) selectTR(_tr_number);
@@ -225,6 +229,12 @@ class Licel implements Runnable {
         Null req = Null.newBuilder().build();
         var resp = stub.getStatus(req);
         System.out.println(MessageFormat.format("{0} {1} {2} {3}", resp.getAcqState(), resp.getMemory(), resp.getShotNumber(), resp.getRecording()));
+    }
+
+    private void getTRType() {
+        Null req = Null.newBuilder().build();
+        var resp = stub.getTRTYPE(req);
+        System.out.println(resp);
     }
 
     private void multipleClearMemory() {
