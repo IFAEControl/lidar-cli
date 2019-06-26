@@ -27,6 +27,9 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "-stop-telescope-test", description = "Stop telescope test")
     private boolean stop_telescope_test = false;
 
+    @CommandLine.Option(names = "-go-parking", description = "Go to parking position")
+    private boolean parking_position = false;
+
     @CommandLine.ParentCommand
     private Licli parent;
 
@@ -64,9 +67,10 @@ public class Operation implements Runnable {
             cfg.load();
 
             if(telescope_test) executeTelescopeTests();
-            if(stop_telescope_test) stopTelescopeTests();
-            if(micro_init) initSequence();
-            if(micro_shutdown) shutdownSequence();
+            else if(stop_telescope_test) stopTelescopeTests();
+            else if(micro_init) initSequence();
+            else if(micro_shutdown) shutdownSequence();
+            else if(parking_position) goToParkingPosition();
             else printHelp();
         } catch(Exception e) {
             e.printStackTrace();
@@ -99,6 +103,11 @@ public class Operation implements Runnable {
     private void stopTelescopeTests() {
         Null req = Null.newBuilder().build();
         blocking_stub.stopTelescopeTests(req);
+    }
+
+    private void goToParkingPosition() {
+        Null req = Null.newBuilder().build();
+        blocking_stub.goToParkingPosition(req);
     }
 
     // Micro
