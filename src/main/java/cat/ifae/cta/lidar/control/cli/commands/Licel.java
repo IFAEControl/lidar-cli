@@ -214,14 +214,14 @@ class Licel implements Runnable {
         String[] components = Helpers.split(d, 4);
 
         int device = Integer.parseInt(components[0]);
-        int data_set = Integer.parseInt(components[1]);
+        String data_set = components[1];
         int number = Integer.parseInt(components[2]);
         int memory = Integer.parseInt(components[3]);
 
         DataSet req = DataSet.newBuilder().setDevice(device).setDataSet(data_set).setNumberToRead(number)
                 .setMemory(memory).build();
         LicelAnswer resp = stub.getDatasets(req);
-        System.out.println(resp);
+        System.out.println(resp.getAnswer());
 
     }
 
