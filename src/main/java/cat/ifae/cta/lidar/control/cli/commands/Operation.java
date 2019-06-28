@@ -30,6 +30,12 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "-go-parking", description = "Go to parking position")
     private boolean parking_position = false;
 
+    @CommandLine.Option(names = "-acq-start", description = "Acquisition start")
+    private boolean acquisition_start = false;
+
+    @CommandLine.Option(names = "-acq-stop", description = "Acquisition stop")
+    private boolean acquisition_stop = false;
+
     @CommandLine.ParentCommand
     private Licli parent;
 
@@ -71,11 +77,25 @@ public class Operation implements Runnable {
             else if(micro_init) initSequence();
             else if(micro_shutdown) shutdownSequence();
             else if(parking_position) goToParkingPosition();
+            else if(acquisition_start) acquisitionStart();
+            else if(acquisition_stop) acquisitionStop();
             else printHelp();
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());
         }
+    }
+
+    private void acquisitionStart() {
+        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).build();
+        blocking_stub.acquisitionStart(req);
+    }
+
+    private void acquisitionStop() {
+        var req = AcqConfig.newBuilder().setMaxBins(16380).build();
+        var resp = blocking_stub.acquisitionStop(req);
+        System.out.println(resp.getData(0).getLsw().toByteArray().length);
+        System.out.println(resp.getData(1).getLsw().toByteArray().length);
     }
 
     private void executeTelescopeTests() throws InterruptedException {

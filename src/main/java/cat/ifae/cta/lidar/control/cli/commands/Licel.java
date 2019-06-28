@@ -220,7 +220,7 @@ class Licel implements Runnable {
 
         DataSet req = DataSet.newBuilder().setDevice(device).setDataSet(data_set).setNumberToRead(number)
                 .setMemory(memory).build();
-        LicelAnswer resp = stub.getDatasets(req);
+        var resp = stub.getDatasets(req);
         System.out.println(resp.getAnswer());
 
     }
