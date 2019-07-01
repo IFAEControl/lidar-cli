@@ -11,7 +11,61 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.concurrent.CountDownLatch;
 
-@CommandLine.Command(name = "operation", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "acq", mixinStandardHelpOptions = true)
+class Acquisition implements Runnable {
+    private final static Logging log = new Logging(Acquisition.class);
+
+    @CommandLine.Option(names = "-acq-start", description = "Acquisition start")
+    private boolean acquisition_start = false;
+
+    @CommandLine.Option(names = "-acq-stop", description = "Acquisition stop")
+    private boolean acquisition_stop = false;
+
+    @CommandLine.Option(names = "-acq-shots", description = "Acquire a number of shots")
+    private int acquire_shots = 0;
+
+    @CommandLine.ParentCommand
+    private Operation parent;
+
+    private OperationGrpc.OperationBlockingStub blocking_stub;
+
+    @Override
+    public void run() {
+        var ch = parent.parent.sm.getCh();
+
+        blocking_stub = OperationGrpc.newBlockingStub(ch);
+        blocking_stub = parent.parent.sm.addMetadata(blocking_stub);
+
+        try {
+            if(acquisition_start) acquisitionStart();
+            else if(acquisition_stop) acquisitionStop();
+            else if(acquire_shots != 0) acquireShots();
+        } catch(Exception e) {
+            e.printStackTrace();
+            log.error(e.toString());
+        }
+
+    }
+
+    private void acquireShots() {
+        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).setShots(acquire_shots).build();
+        blocking_stub.acquireShots(req);
+    }
+
+    private void acquisitionStart() {
+        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).build();
+        blocking_stub.acquisitionStart(req);
+    }
+
+    private void acquisitionStop() {
+        var req = AcqConfig.newBuilder().setMaxBins(16380).build();
+        var resp = blocking_stub.acquisitionStop(req);
+        System.out.println(resp.getData(0).getLsw().toByteArray().length);
+        System.out.println(resp.getData(1).getLsw().toByteArray().length);
+    }
+}
+
+@CommandLine.Command(name = "operation", mixinStandardHelpOptions = true, subcommands = {Acquisition.class})
 public class Operation implements Runnable {
     private final static Logging log = new Logging(Operation.class);
 
@@ -30,17 +84,8 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "-go-parking", description = "Go to parking position")
     private boolean parking_position = false;
 
-    @CommandLine.Option(names = "-acq-start", description = "Acquisition start")
-    private boolean acquisition_start = false;
-
-    @CommandLine.Option(names = "-acq-stop", description = "Acquisition stop")
-    private boolean acquisition_stop = false;
-
-    @CommandLine.Option(names = "-acq-shots", description = "Acquire a number of shots")
-    private int acquire_shots = 0;
-
     @CommandLine.ParentCommand
-    private Licli parent;
+    Licli parent;
 
 
     private static Config cfg;
@@ -80,31 +125,11 @@ public class Operation implements Runnable {
             else if(micro_init) initSequence();
             else if(micro_shutdown) shutdownSequence();
             else if(parking_position) goToParkingPosition();
-            else if(acquisition_start) acquisitionStart();
-            else if(acquisition_stop) acquisitionStop();
-            else if(acquire_shots != 0) acquireShots();
             else printHelp();
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());
         }
-    }
-
-    private void acquireShots() {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).setShots(acquire_shots).build();
-        blocking_stub.acquireShots(req);
-    }
-
-    private void acquisitionStart() {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).build();
-        blocking_stub.acquisitionStart(req);
-    }
-
-    private void acquisitionStop() {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).build();
-        var resp = blocking_stub.acquisitionStop(req);
-        System.out.println(resp.getData(0).getLsw().toByteArray().length);
-        System.out.println(resp.getData(1).getLsw().toByteArray().length);
     }
 
     private void executeTelescopeTests() throws InterruptedException {
