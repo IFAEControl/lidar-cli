@@ -15,13 +15,13 @@ import java.util.concurrent.CountDownLatch;
 class Acquisition implements Runnable {
     private final static Logging log = new Logging(Acquisition.class);
 
-    @CommandLine.Option(names = "-acq-start", description = "Acquisition start")
+    @CommandLine.Option(names = "-start", description = "Start acquisition manually")
     private boolean acquisition_start = false;
 
-    @CommandLine.Option(names = "-acq-stop", description = "Acquisition stop")
+    @CommandLine.Option(names = "-stop", description = "Stop Acquisition manually")
     private boolean acquisition_stop = false;
 
-    @CommandLine.Option(names = "-acq-shots", description = "Acquire a number of shots")
+    @CommandLine.Option(names = "-shots", description = "Acquire a given number of shots")
     private int acquire_shots = 0;
 
     @CommandLine.ParentCommand
