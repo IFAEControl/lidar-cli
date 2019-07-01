@@ -36,6 +36,9 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "-acq-stop", description = "Acquisition stop")
     private boolean acquisition_stop = false;
 
+    @CommandLine.Option(names = "-acq-shots", description = "Acquire a number of shots")
+    private int acquire_shots = 0;
+
     @CommandLine.ParentCommand
     private Licli parent;
 
@@ -79,11 +82,17 @@ public class Operation implements Runnable {
             else if(parking_position) goToParkingPosition();
             else if(acquisition_start) acquisitionStart();
             else if(acquisition_stop) acquisitionStop();
+            else if(acquire_shots != 0) acquireShots();
             else printHelp();
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());
         }
+    }
+
+    private void acquireShots() {
+        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).setShots(acquire_shots).build();
+        blocking_stub.acquireShots(req);
     }
 
     private void acquisitionStart() {
