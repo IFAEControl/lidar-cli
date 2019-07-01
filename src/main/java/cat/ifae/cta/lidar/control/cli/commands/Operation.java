@@ -65,71 +65,40 @@ class Acquisition implements Runnable {
     }
 }
 
-@CommandLine.Command(name = "operation", mixinStandardHelpOptions = true, subcommands = {Acquisition.class})
-public class Operation implements Runnable {
-    private final static Logging log = new Logging(Operation.class);
+@CommandLine.Command(name = "telescope", mixinStandardHelpOptions = true)
+class Telescope implements Runnable {
+    private final static Logging log = new Logging(Telescope.class);
 
-    @CommandLine.Option(names = "-micro-init", description = "Micro initialization sequence")
-    private boolean micro_init = false;
+    @CommandLine.Option(names = "-start-test", description = "Start telescope test")
+    private boolean telescope_test_start = false;
 
-    @CommandLine.Option(names = "-micro-shutdown", description = "Micro shutdown sequence")
-    private boolean micro_shutdown = false;
-
-    @CommandLine.Option(names = "-telescope-test", description = "Execute telescope test")
-    private boolean telescope_test = false;
-
-    @CommandLine.Option(names = "-stop-telescope-test", description = "Stop telescope test")
-    private boolean stop_telescope_test = false;
-
-    @CommandLine.Option(names = "-go-parking", description = "Go to parking position")
-    private boolean parking_position = false;
+    @CommandLine.Option(names = "-stop-test", description = "Stop telescope test")
+    private boolean teelescope_test_stop = false;
 
     @CommandLine.ParentCommand
-    Licli parent;
-
-
-    private static Config cfg;
+    private Operation parent;
 
     private OperationGrpc.OperationStub stub;
     private OperationGrpc.OperationBlockingStub blocking_stub;
-    private LLCDriversGrpc.LLCDriversBlockingStub drivers_stub;
-    private LLCSensorsGrpc.LLCSensorsBlockingStub sensors_stub;
-
-    public Operation() throws IOException {
-         cfg = new Config("client", "micro_init_sequence");
-    }
 
     @Override
     public void run() {
-        var ch = parent.sm.getCh();
-
-        stub = OperationGrpc.newStub(ch);
-        stub = parent.sm.addMetadata(stub);
+        var ch = parent.parent.sm.getCh();
 
         blocking_stub = OperationGrpc.newBlockingStub(ch);
-        blocking_stub = parent.sm.addMetadata(blocking_stub);
+        blocking_stub = parent.parent.sm.addMetadata(blocking_stub);
 
-        drivers_stub = LLCDriversGrpc.newBlockingStub(ch);
-        drivers_stub = parent.sm.addMetadata(drivers_stub);
-
-        sensors_stub = LLCSensorsGrpc.newBlockingStub(ch);
-        sensors_stub = parent.sm.addMetadata(sensors_stub);
-
-        CommandLine.populateCommand(this);
+        stub = OperationGrpc.newStub(ch);
+        stub = parent.parent.sm.addMetadata(stub);
 
         try {
-            cfg.load();
-
-            if(telescope_test) executeTelescopeTests();
-            else if(stop_telescope_test) stopTelescopeTests();
-            else if(micro_init) initSequence();
-            else if(micro_shutdown) shutdownSequence();
-            else if(parking_position) goToParkingPosition();
-            else printHelp();
+            if(telescope_test_start) executeTelescopeTests();
+            else if(teelescope_test_stop) stopTelescopeTests();
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());
         }
+
     }
 
     private void executeTelescopeTests() throws InterruptedException {
@@ -157,6 +126,63 @@ public class Operation implements Runnable {
     private void stopTelescopeTests() {
         Null req = Null.newBuilder().build();
         blocking_stub.stopTelescopeTests(req);
+    }
+}
+
+@CommandLine.Command(name = "operation", mixinStandardHelpOptions = true, subcommands = {Acquisition.class,
+                                                                                         Telescope.class})
+public class Operation implements Runnable {
+    private final static Logging log = new Logging(Operation.class);
+
+    @CommandLine.Option(names = "-micro-init", description = "Micro initialization sequence")
+    private boolean micro_init = false;
+
+    @CommandLine.Option(names = "-micro-shutdown", description = "Micro shutdown sequence")
+    private boolean micro_shutdown = false;
+
+    @CommandLine.Option(names = "-go-parking", description = "Go to parking position")
+    private boolean parking_position = false;
+
+    @CommandLine.ParentCommand
+    Licli parent;
+
+
+    private static Config cfg;
+
+    private OperationGrpc.OperationBlockingStub blocking_stub;
+    private LLCDriversGrpc.LLCDriversBlockingStub drivers_stub;
+    private LLCSensorsGrpc.LLCSensorsBlockingStub sensors_stub;
+
+    public Operation() throws IOException {
+         cfg = new Config("client", "micro_init_sequence");
+    }
+
+    @Override
+    public void run() {
+        var ch = parent.sm.getCh();
+
+        blocking_stub = OperationGrpc.newBlockingStub(ch);
+        blocking_stub = parent.sm.addMetadata(blocking_stub);
+
+        drivers_stub = LLCDriversGrpc.newBlockingStub(ch);
+        drivers_stub = parent.sm.addMetadata(drivers_stub);
+
+        sensors_stub = LLCSensorsGrpc.newBlockingStub(ch);
+        sensors_stub = parent.sm.addMetadata(sensors_stub);
+
+        CommandLine.populateCommand(this);
+
+        try {
+            cfg.load();
+
+            if(micro_init) initSequence();
+            else if(micro_shutdown) shutdownSequence();
+            else if(parking_position) goToParkingPosition();
+            else printHelp();
+        } catch(Exception e) {
+            e.printStackTrace();
+            log.error(e.toString());
+        }
     }
 
     private void goToParkingPosition() {
