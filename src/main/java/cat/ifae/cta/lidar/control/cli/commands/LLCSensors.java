@@ -18,13 +18,10 @@ class LLCSensors implements Runnable {
     @CommandLine.Option(names = "-converted", description = "If true get raw data, otherwise get converted data")
     private boolean get_conv = false;
 
-    @CommandLine.ParentCommand
-    private Licli parent;
-
     @Override
     public void run() {
-        stub = LLCSensorsGrpc.newBlockingStub(parent.sm.getCh());
-        stub = parent.sm.addMetadata(stub);
+        stub = LLCSensorsGrpc.newBlockingStub(Licli.sm.getCh());
+        stub = Licli.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

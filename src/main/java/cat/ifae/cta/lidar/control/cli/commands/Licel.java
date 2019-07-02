@@ -12,9 +12,6 @@ public
 class Licel implements Runnable {
     private LicelGrpc.LicelBlockingStub stub;
 
-    @CommandLine.ParentCommand
-    private Licli parent;
-
     // XXX: Insecure
     @CommandLine.Option(names = "-set-net", description = "Set network configuration. format=host:mask:port:gateway:passwd")
     private String _net_config;
@@ -114,8 +111,8 @@ class Licel implements Runnable {
 
     @Override
     public void run() {
-        stub = LicelGrpc.newBlockingStub(parent.sm.getCh());
-        stub = parent.sm.addMetadata(stub);
+        stub = LicelGrpc.newBlockingStub(Licli.sm.getCh());
+        stub = Licli.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

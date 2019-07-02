@@ -32,13 +32,10 @@ class LLCRelay implements  Runnable {
     @CommandLine.Option(names = "-status", description = "Status to set to the given device")
     private int status = -1;
 
-    @CommandLine.ParentCommand
-    private Licli parent;
-
     @Override
     public final void run() {
-        stub = LLCRelayGrpc.newBlockingStub(parent.sm.getCh());
-        stub = parent.sm.addMetadata(stub);
+        stub = LLCRelayGrpc.newBlockingStub(Licli.sm.getCh());
+        stub = Licli.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

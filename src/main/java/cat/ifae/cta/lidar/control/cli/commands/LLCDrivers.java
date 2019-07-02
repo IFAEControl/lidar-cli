@@ -12,16 +12,13 @@ public
 class LLCDrivers implements Runnable {
     private LLCDriversGrpc.LLCDriversBlockingStub stub;
 
-    @CommandLine.ParentCommand
-    private Licli parent;
-
     @CommandLine.Option(names = "-gs", description = "Get status")
     private boolean get_status;
 
     @Override
     public void run() {
-        stub = LLCDriversGrpc.newBlockingStub(parent.sm.getCh());
-        stub = parent.sm.addMetadata(stub);
+        stub = LLCDriversGrpc.newBlockingStub(Licli.sm.getCh());
+        stub = Licli.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

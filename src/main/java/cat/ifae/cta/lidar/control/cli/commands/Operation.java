@@ -24,17 +24,14 @@ class Acquisition implements Runnable {
     @CommandLine.Option(names = "-shots", description = "Acquire a given number of shots")
     private int acquire_shots = 0;
 
-    @CommandLine.ParentCommand
-    private Operation parent;
-
     private OperationGrpc.OperationBlockingStub blocking_stub;
 
     @Override
     public void run() {
-        var ch = parent.parent.sm.getCh();
+        var ch = Licli.sm.getCh();
 
         blocking_stub = OperationGrpc.newBlockingStub(ch);
-        blocking_stub = parent.parent.sm.addMetadata(blocking_stub);
+        blocking_stub = Licli.sm.addMetadata(blocking_stub);
 
         try {
             if(acquisition_start) acquisitionStart();
@@ -75,21 +72,18 @@ class Telescope implements Runnable {
     @CommandLine.Option(names = "-stop-test", description = "Stop telescope test")
     private boolean teelescope_test_stop = false;
 
-    @CommandLine.ParentCommand
-    private Operation parent;
-
     private OperationGrpc.OperationStub stub;
     private OperationGrpc.OperationBlockingStub blocking_stub;
 
     @Override
     public void run() {
-        var ch = parent.parent.sm.getCh();
+        var ch = Licli.sm.getCh();
 
         blocking_stub = OperationGrpc.newBlockingStub(ch);
-        blocking_stub = parent.parent.sm.addMetadata(blocking_stub);
+        blocking_stub = Licli.sm.addMetadata(blocking_stub);
 
         stub = OperationGrpc.newStub(ch);
-        stub = parent.parent.sm.addMetadata(stub);
+        stub = Licli.sm.addMetadata(stub);
 
         try {
             if(telescope_test_start) executeTelescopeTests();
@@ -143,10 +137,6 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "-go-parking", description = "Go to parking position")
     private boolean parking_position = false;
 
-    @CommandLine.ParentCommand
-    Licli parent;
-
-
     private static Config cfg;
 
     private OperationGrpc.OperationBlockingStub blocking_stub;
@@ -159,16 +149,16 @@ public class Operation implements Runnable {
 
     @Override
     public void run() {
-        var ch = parent.sm.getCh();
+        var ch = Licli.sm.getCh();
 
         blocking_stub = OperationGrpc.newBlockingStub(ch);
-        blocking_stub = parent.sm.addMetadata(blocking_stub);
+        blocking_stub = Licli.sm.addMetadata(blocking_stub);
 
         drivers_stub = LLCDriversGrpc.newBlockingStub(ch);
-        drivers_stub = parent.sm.addMetadata(drivers_stub);
+        drivers_stub = Licli.sm.addMetadata(drivers_stub);
 
         sensors_stub = LLCSensorsGrpc.newBlockingStub(ch);
-        sensors_stub = parent.sm.addMetadata(sensors_stub);
+        sensors_stub = Licli.sm.addMetadata(sensors_stub);
 
         CommandLine.populateCommand(this);
 

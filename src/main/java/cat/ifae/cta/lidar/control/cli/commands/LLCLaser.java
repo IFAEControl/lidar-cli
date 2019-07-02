@@ -11,9 +11,6 @@ public
 class LLCLaser implements Runnable {
     private LLCLaserGrpc.LLCLaserBlockingStub stub;
 
-    @CommandLine.ParentCommand
-    private Licli parent;
-
     @CommandLine.Option(names = "-init", description = "Initalize laser")
     private boolean is_init = false;
 
@@ -34,8 +31,8 @@ class LLCLaser implements Runnable {
 
     @Override
     public final void run() {
-        stub = LLCLaserGrpc.newBlockingStub(parent.sm.getCh());
-        stub = parent.sm.addMetadata(stub);
+        stub = LLCLaserGrpc.newBlockingStub(Licli.sm.getCh());
+        stub = Licli.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

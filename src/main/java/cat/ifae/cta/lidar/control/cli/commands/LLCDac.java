@@ -11,16 +11,13 @@ public
 class LLCDac implements Runnable {
     private LLCDacGrpc.LLCDacBlockingStub stub;
 
-    @CommandLine.ParentCommand
-    private Licli parent;
-
     @CommandLine.Option(names = "-set-voltage", description = "Set voltage. format=dac:voltage")
     private String dac_setting;
 
     @Override
     public void run() {
-        stub = LLCDacGrpc.newBlockingStub(parent.sm.getCh());
-        stub = parent.sm.addMetadata(stub);
+        stub = LLCDacGrpc.newBlockingStub(Licli.sm.getCh());
+        stub = Licli.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

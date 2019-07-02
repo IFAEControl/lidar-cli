@@ -13,13 +13,10 @@ import java.util.concurrent.CountDownLatch;
 public class Alarms implements Runnable {
     private AlarmsGrpc.AlarmsStub stub;
 
-    @CommandLine.ParentCommand
-    private Licli parent;
-
     @Override
     public void run() {
-        stub = AlarmsGrpc.newStub(parent.sm.getCh());
-        stub = parent.sm.addMetadata(stub);
+        stub = AlarmsGrpc.newStub(Licli.sm.getCh());
+        stub = Licli.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

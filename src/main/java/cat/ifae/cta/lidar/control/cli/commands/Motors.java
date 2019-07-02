@@ -147,12 +147,6 @@ public class Motors implements Runnable {
         }
     }
 
-    public final void echo(String m) {
-        Message request = Message.newBuilder().setText(m).build();
-        Echo resp = stub.testEcho(request);
-        System.out.println(resp.getText());
-    }
-
     private void getZenith() {
         Null req = Null.newBuilder().build();
         Position resp = stub.getZenith(req);

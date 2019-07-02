@@ -20,13 +20,10 @@ class LLCHotWind implements Runnable {
     @CommandLine.Option(names = "-error", description = "Error")
     private boolean error = false;
 
-    @CommandLine.ParentCommand
-    private Licli parent;
-
     @Override
     public void run() {
-        stub = LLCHotwindGrpc.newBlockingStub(parent.sm.getCh());
-        stub = parent.sm.addMetadata(stub);
+        stub = LLCHotwindGrpc.newBlockingStub(Licli.sm.getCh());
+        stub = Licli.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

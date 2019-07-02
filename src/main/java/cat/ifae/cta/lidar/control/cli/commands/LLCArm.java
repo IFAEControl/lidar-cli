@@ -12,9 +12,6 @@ import picocli.CommandLine;
 public class LLCArm implements Runnable {
     private LLCArmGrpc.LLCArmBlockingStub stub;
 
-    @CommandLine.ParentCommand
-    private Licli parent;
-
     @CommandLine.Option(names = "-init", description = "Initalize arms")
     private boolean is_init = false;
 
@@ -35,8 +32,8 @@ public class LLCArm implements Runnable {
 
     @Override
     public void run() {
-        stub = LLCArmGrpc.newBlockingStub(parent.sm.getCh());
-        stub = parent.sm.addMetadata(stub);
+        stub = LLCArmGrpc.newBlockingStub(Licli.sm.getCh());
+        stub = Licli.sm.addMetadata(stub);
 
         CommandLine.populateCommand(this);
 

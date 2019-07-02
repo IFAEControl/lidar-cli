@@ -16,20 +16,16 @@ class Monitoring implements Runnable {
     @CommandLine.Parameters(paramLabel = "NAME", description = "Name")
     private String name;
 
-
     @CommandLine.Option(names = "-last-value", description = "Get last value")
     private boolean last_value = false;
 
-    @CommandLine.ParentCommand
-    private Licli parent;
-
     @Override
     public final void run() {
-        stub = MonitoringGrpc.newStub(parent.sm.getCh());
-        stub = parent.sm.addMetadata(stub);
+        stub = MonitoringGrpc.newStub(Licli.sm.getCh());
+        stub = Licli.sm.addMetadata(stub);
 
-        blockingStub = MonitoringGrpc.newBlockingStub(parent.sm.getCh());
-        blockingStub = parent.sm.addMetadata(blockingStub);
+        blockingStub = MonitoringGrpc.newBlockingStub(Licli.sm.getCh());
+        blockingStub = Licli.sm.addMetadata(blockingStub);
 
         CommandLine.populateCommand(this);
 
