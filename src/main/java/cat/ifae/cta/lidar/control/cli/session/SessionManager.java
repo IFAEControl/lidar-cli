@@ -36,10 +36,10 @@ public class SessionManager {
             var token = retrieveToken();
             grpc.setToken(token);
         } catch(StatusRuntimeException e) {
-            System.err.println("Error: " + e.getMessage().toString());
+            System.err.println("Error: " + e.getMessage());
             System.err.println("Try again");
             System.err.flush();
-            this.initializeToken();
+            initializeToken();
         }
     }
 

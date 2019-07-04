@@ -48,7 +48,7 @@ class Monitoring implements Runnable {
     private void monitoring(String m) throws InterruptedException {
         var finishedLatch = new CountDownLatch(1);
         Str req = Str.newBuilder().setText(m).build();
-        stub.watchVariable(req, new StreamObserver<Str>() {
+        stub.watchVariable(req, new StreamObserver<>() {
             public void onNext(Str response) {
                 System.out.print(response);
             }
