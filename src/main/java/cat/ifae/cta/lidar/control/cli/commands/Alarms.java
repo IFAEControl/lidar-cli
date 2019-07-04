@@ -9,7 +9,7 @@ import picocli.CommandLine;
 
 import java.util.concurrent.CountDownLatch;
 
-@CommandLine.Command(name = "alarms", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "alarms", description = "Alarms commands", mixinStandardHelpOptions = true)
 public class Alarms implements Runnable {
     private AlarmsGrpc.AlarmsStub stub;
 

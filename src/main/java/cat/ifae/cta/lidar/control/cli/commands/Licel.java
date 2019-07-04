@@ -7,7 +7,7 @@ import picocli.CommandLine;
 
 import java.text.MessageFormat;
 
-@CommandLine.Command(name = "licel", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "licel", description = "Licel commands", mixinStandardHelpOptions = true)
 public
 class Licel implements Runnable {
     private LicelGrpc.LicelBlockingStub stub;

@@ -110,7 +110,8 @@ class Doors implements Runnable {
 }
 
 
-@CommandLine.Command(name = "motors", mixinStandardHelpOptions = true, subcommands = {Doors.class, Petals.class})
+@CommandLine.Command(name = "motors", description = "Motors commands",
+        mixinStandardHelpOptions = true, subcommands = {Doors.class, Petals.class})
 public class Motors implements Runnable {
     private MotorsGrpc.MotorsBlockingStub stub = null;
 

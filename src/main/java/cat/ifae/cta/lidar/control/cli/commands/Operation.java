@@ -123,8 +123,8 @@ class Telescope implements Runnable {
     }
 }
 
-@CommandLine.Command(name = "operation", mixinStandardHelpOptions = true, subcommands = {Acquisition.class,
-                                                                                         Telescope.class})
+@CommandLine.Command(name = "operation", description = "Operation commands",
+        mixinStandardHelpOptions = true, subcommands = {Acquisition.class, Telescope.class})
 public class Operation implements Runnable {
     private final static Logging log = new Logging(Operation.class);
 

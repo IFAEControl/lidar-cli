@@ -7,7 +7,7 @@ import picocli.CommandLine;
 
 import java.util.concurrent.CountDownLatch;
 
-@CommandLine.Command(name = "monitoring", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "monitoring", description = "Monitoring commands", mixinStandardHelpOptions = true)
 public
 class Monitoring implements Runnable {
     private MonitoringGrpc.MonitoringStub stub;

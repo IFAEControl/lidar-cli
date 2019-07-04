@@ -5,7 +5,7 @@ import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import picocli.CommandLine;
 
-@CommandLine.Command(name = "config", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "config", mixinStandardHelpOptions = true, description = "See or change server configuration")
 public class Config implements Runnable {
     private ConfigGrpc.ConfigBlockingStub stub;
 

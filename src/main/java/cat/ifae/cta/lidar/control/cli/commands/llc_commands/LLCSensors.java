@@ -1,4 +1,4 @@
-package cat.ifae.cta.lidar.control.cli.commands;
+package cat.ifae.cta.lidar.control.cli.commands.llc_commands;
 
 import cat.ifae.cta.lidar.Data;
 import cat.ifae.cta.lidar.Null;
