@@ -72,6 +72,15 @@ class Telescope implements Runnable {
     @CommandLine.Option(names = "--stop-test", description = "Stop telescope test")
     private boolean teelescope_test_stop = false;
 
+    @CommandLine.Option(names = "--to-max-zenith", description = "Move telescope zenith axis to maximum position")
+    private boolean to_max_zenith = false;
+
+    @CommandLine.Option(names = "--to-max-azimuth", description = "Move telescope azimuth axis to maximum position")
+    private boolean to_max_azimuth = false;
+
+    @CommandLine.Option(names = "--to-min-azimuth", description = "Move telescope azimuth axis to minimum position")
+    private boolean to_min_azimuth = false;
+
     private OperationGrpc.OperationStub stub;
     private OperationGrpc.OperationBlockingStub blocking_stub;
 
@@ -88,6 +97,9 @@ class Telescope implements Runnable {
         try {
             if(telescope_test_start) executeTelescopeTests();
             else if(teelescope_test_stop) stopTelescopeTests();
+            else if(to_max_zenith) goToMaximumZenith();
+            else if(to_max_azimuth) goToMaximumAzimuth();
+            else if(to_min_azimuth) goToMinimumAzimuth();
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());
@@ -121,6 +133,55 @@ class Telescope implements Runnable {
         Null req = Null.newBuilder().build();
         blocking_stub.stopTelescopeTests(req);
     }
+
+    private void goToMaximumZenith() throws InterruptedException {
+        var finishedLatch = new CountDownLatch(1);
+
+        Null req = Null.newBuilder().build();
+        stub.goToMaximumZenithPosition(req, new StreamObserver<>() {
+            public void onNext(EncoderPosition response) {
+                System.out.println(response.getName() + ": " + response.getPosition());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
+    }
+
+    private void goToMaximumAzimuth() throws InterruptedException {
+        var finishedLatch = new CountDownLatch(1);
+
+        Null req = Null.newBuilder().build();
+        stub.goToMaximumAzimuthPosition(req, new StreamObserver<>() {
+            public void onNext(EncoderPosition response) {
+                System.out.println(response.getName() + ": " + response.getPosition());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
+    }
+
+    private void goToMinimumAzimuth() {
+        Null req = Null.newBuilder().build();
+        blocking_stub.goToMinimumAzimuthPosition(req);
+    }
 }
 
 @CommandLine.Command(name = "operation", description = "Operation commands",
@@ -139,6 +200,9 @@ public class Operation implements Runnable {
 
     @CommandLine.Option(names = "--arm-init", description = "Initialize arm")
     private boolean arm_init = false;
+
+    @CommandLine.Option(names = "--arm-align", description = "Move arm to alignment position")
+    private boolean arm_align = false;
 
     private static Config cfg;
 
@@ -172,6 +236,7 @@ public class Operation implements Runnable {
             else if(micro_shutdown) shutdownSequence();
             else if(parking_position) goToParkingPosition();
             else if(arm_init) initializeArm();
+            else if(arm_align) moveArmToAlignmentPos();
             else printHelp();
         } catch(Exception e) {
             e.printStackTrace();
@@ -187,6 +252,14 @@ public class Operation implements Runnable {
     private void initializeArm() {
         var req = Null.newBuilder().build();
         blocking_stub.initializeArm(req);
+    }
+
+    private void moveArmToAlignmentPos() {
+        var p_x = cfg.getFloat("allignment_arm_X");
+        var p_y = cfg.getFloat("allignment_arm_Y");
+
+        var req = Point2D.newBuilder().setX(p_x).setY(p_y).build();
+        blocking_stub.moveArmToAlignmentPos(req);
     }
 
     // Micro
