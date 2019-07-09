@@ -11,25 +11,25 @@ class LLCRelay implements  Runnable {
     private static final int LASER_RELAY = 0;
     private static final int HOTWIND_RELAY = 1;
 
-    @CommandLine.Option(names = "-gs", description = "Get status")
+    @CommandLine.Option(names = "--gs", description = "Get status")
     private boolean get_status = false;
 
-    @CommandLine.Option(names = "-device", description = "Device to set")
+    @CommandLine.Option(names = "--device", description = "Device to set")
     private int device_number = -1;
 
-    @CommandLine.Option(names = "-laser-on", description = "Power On LLCLaser")
+    @CommandLine.Option(names = "--laser-on", description = "Power On LLCLaser")
     private boolean laser_on = false;
 
-    @CommandLine.Option(names = "-laser-off", description = "Power Off LLCLaser")
+    @CommandLine.Option(names = "--laser-off", description = "Power Off LLCLaser")
     private boolean laser_off = false;
 
-    @CommandLine.Option(names = "-hotwind-on", description = "Power On Hotwind")
+    @CommandLine.Option(names = "--hotwind-on", description = "Power On Hotwind")
     private boolean hotwind_on = false;
 
-    @CommandLine.Option(names = "-hotwind-off", description = "Power Off Hotwind")
+    @CommandLine.Option(names = "--hotwind-off", description = "Power Off Hotwind")
     private boolean hotwind_off = false;
 
-    @CommandLine.Option(names = "-status", description = "Status to set to the given device")
+    @CommandLine.Option(names = "--status", description = "Status to set to the given device")
     private int status = -1;
 
     @Override

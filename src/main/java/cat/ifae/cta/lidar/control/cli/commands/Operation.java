@@ -15,13 +15,13 @@ import java.util.concurrent.CountDownLatch;
 class Acquisition implements Runnable {
     private final static Logging log = new Logging(Acquisition.class);
 
-    @CommandLine.Option(names = "-start", description = "Start acquisition manually")
+    @CommandLine.Option(names = "--start", description = "Start acquisition manually")
     private boolean acquisition_start = false;
 
-    @CommandLine.Option(names = "-stop", description = "Stop Acquisition manually")
+    @CommandLine.Option(names = "--stop", description = "Stop Acquisition manually")
     private boolean acquisition_stop = false;
 
-    @CommandLine.Option(names = "-shots", description = "Acquire a given number of shots")
+    @CommandLine.Option(names = "--shots", description = "Acquire a given number of shots")
     private int acquire_shots = 0;
 
     private OperationGrpc.OperationBlockingStub blocking_stub;
@@ -66,10 +66,10 @@ class Acquisition implements Runnable {
 class Telescope implements Runnable {
     private final static Logging log = new Logging(Telescope.class);
 
-    @CommandLine.Option(names = "-start-test", description = "Start telescope test")
+    @CommandLine.Option(names = "--start-test", description = "Start telescope test")
     private boolean telescope_test_start = false;
 
-    @CommandLine.Option(names = "-stop-test", description = "Stop telescope test")
+    @CommandLine.Option(names = "--stop-test", description = "Stop telescope test")
     private boolean teelescope_test_stop = false;
 
     private OperationGrpc.OperationStub stub;
@@ -128,14 +128,17 @@ class Telescope implements Runnable {
 public class Operation implements Runnable {
     private final static Logging log = new Logging(Operation.class);
 
-    @CommandLine.Option(names = "-micro-init", description = "Micro initialization sequence")
+    @CommandLine.Option(names = "--micro-init", description = "Micro initialization sequence")
     private boolean micro_init = false;
 
-    @CommandLine.Option(names = "-micro-shutdown", description = "Micro shutdown sequence")
+    @CommandLine.Option(names = "--micro-shutdown", description = "Micro shutdown sequence")
     private boolean micro_shutdown = false;
 
-    @CommandLine.Option(names = "-go-parking", description = "Go to parking position")
+    @CommandLine.Option(names = "--go-parking", description = "Go to parking position")
     private boolean parking_position = false;
+
+    @CommandLine.Option(names = "--arm-init", description = "Initialize arm")
+    private boolean arm_init = false;
 
     private static Config cfg;
 
@@ -168,6 +171,7 @@ public class Operation implements Runnable {
             if(micro_init) initSequence();
             else if(micro_shutdown) shutdownSequence();
             else if(parking_position) goToParkingPosition();
+            else if(arm_init) initializeArm();
             else printHelp();
         } catch(Exception e) {
             e.printStackTrace();
@@ -178,6 +182,11 @@ public class Operation implements Runnable {
     private void goToParkingPosition() {
         Null req = Null.newBuilder().build();
         blocking_stub.goToParkingPosition(req);
+    }
+
+    private void initializeArm() {
+        var req = Null.newBuilder().build();
+        blocking_stub.initializeArm(req);
     }
 
     // Micro

@@ -12,22 +12,22 @@ import picocli.CommandLine;
 public class LLCArm implements Runnable {
     private LLCArmGrpc.LLCArmBlockingStub stub;
 
-    @CommandLine.Option(names = "-init", description = "Initalize arms")
+    @CommandLine.Option(names = "--init", description = "Initalize arms")
     private boolean is_init = false;
 
-    @CommandLine.Option(names = "-get-pos", description = "Get arms position")
+    @CommandLine.Option(names = "--get-pos", description = "Get arms position")
     private boolean is_get_position = false;
 
-    @CommandLine.Option(names = "-check-node", description = "Check communications with node N")
+    @CommandLine.Option(names = "--check-node", description = "Check communications with node N")
     private int node = -1;
 
-    @CommandLine.Option(names = "-set-speed", description = "Set speed of node. format=Axis:Speed")
+    @CommandLine.Option(names = "--set-speed", description = "Set speed of node. format=Axis:Speed")
     private String node_speed;
 
-    @CommandLine.Option(names = "-go", description = "Go to position. format=X:Y")
+    @CommandLine.Option(names = "--go", description = "Go to position. format=X:Y")
     private String position;
 
-    @CommandLine.Option(names = "-emergency-stop", description = "Stop arms")
+    @CommandLine.Option(names = "--emergency-stop", description = "Stop arms")
     private boolean is_stop = false;
 
     @Override

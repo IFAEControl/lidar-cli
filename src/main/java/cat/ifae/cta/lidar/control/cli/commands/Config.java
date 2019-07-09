@@ -9,7 +9,7 @@ import picocli.CommandLine;
 public class Config implements Runnable {
     private ConfigGrpc.ConfigBlockingStub stub;
 
-    @CommandLine.Option(names = "-get")
+    @CommandLine.Option(names = "--get")
     boolean is_get = false;
 
     @Override

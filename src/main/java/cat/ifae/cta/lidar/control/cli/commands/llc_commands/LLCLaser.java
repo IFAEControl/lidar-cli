@@ -11,22 +11,22 @@ public
 class LLCLaser implements Runnable {
     private LLCLaserGrpc.LLCLaserBlockingStub stub;
 
-    @CommandLine.Option(names = "-init", description = "Initalize laser")
+    @CommandLine.Option(names = "--init", description = "Initalize laser")
     private boolean is_init = false;
 
-    @CommandLine.Option(names = "-fire", description = "Fire laser")
+    @CommandLine.Option(names = "--fire", description = "Fire laser")
     private boolean is_fire = false;
 
-    @CommandLine.Option(names = "-stop", description = "Stop laser")
+    @CommandLine.Option(names = "--stop", description = "Stop laser")
     private boolean is_stop = false;
 
-    @CommandLine.Option(names = "-pause", description = "Pause laser")
+    @CommandLine.Option(names = "--pause", description = "Pause laser")
     private boolean is_pause = false;
 
-    @CommandLine.Option(names = "-check", description = "Check laser communications")
+    @CommandLine.Option(names = "--check", description = "Check laser communications")
     private boolean check = false;
 
-    @CommandLine.Option(names = "-power", description = "Set laser power")
+    @CommandLine.Option(names = "--power", description = "Set laser power")
     private int power = -1;
 
     @Override

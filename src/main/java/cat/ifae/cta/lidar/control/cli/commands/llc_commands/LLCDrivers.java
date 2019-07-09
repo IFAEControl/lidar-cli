@@ -12,7 +12,7 @@ public
 class LLCDrivers implements Runnable {
     private LLCDriversGrpc.LLCDriversBlockingStub stub;
 
-    @CommandLine.Option(names = "-gs", description = "Get status")
+    @CommandLine.Option(names = "--gs", description = "Get status")
     private boolean get_status;
 
     @Override

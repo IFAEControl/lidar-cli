@@ -11,7 +11,7 @@ public
 class LLCDac implements Runnable {
     private LLCDacGrpc.LLCDacBlockingStub stub;
 
-    @CommandLine.Option(names = "-set-voltage", description = "Set voltage. format=dac:voltage")
+    @CommandLine.Option(names = "--set-voltage", description = "Set voltage. format=dac:voltage")
     private String dac_setting;
 
     @Override

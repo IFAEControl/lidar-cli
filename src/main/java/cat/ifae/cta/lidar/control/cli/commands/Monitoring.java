@@ -16,7 +16,7 @@ class Monitoring implements Runnable {
     @CommandLine.Parameters(paramLabel = "NAME", description = "Name")
     private String name;
 
-    @CommandLine.Option(names = "-last-value", description = "Get last value")
+    @CommandLine.Option(names = "--last-value", description = "Get last value")
     private boolean last_value = false;
 
     @Override

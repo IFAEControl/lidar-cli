@@ -12,10 +12,10 @@ public
 class LLCSensors implements Runnable {
     private LLCSensorsGrpc.LLCSensorsBlockingStub stub;
 
-    @CommandLine.Option(names = "-raw", description = "If true get raw data, otherwise get converted data")
+    @CommandLine.Option(names = "--raw", description = "If true get raw data, otherwise get converted data")
     private boolean get_raw = false;
 
-    @CommandLine.Option(names = "-converted", description = "If true get raw data, otherwise get converted data")
+    @CommandLine.Option(names = "--converted", description = "If true get raw data, otherwise get converted data")
     private boolean get_conv = false;
 
     @Override

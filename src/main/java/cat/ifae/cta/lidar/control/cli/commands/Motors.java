@@ -6,13 +6,13 @@ import picocli.CommandLine;
 
 @CommandLine.Command(name = "petals", mixinStandardHelpOptions = true)
 class Petals implements Runnable {
-    @CommandLine.Option(names = "-status", description = "Get status of petals")
+    @CommandLine.Option(names = "--status", description = "Get status of petals")
     private boolean is_status = false;
 
-    @CommandLine.Option(names = "-close", description = "Start (1) or stop (0) closing petals")
+    @CommandLine.Option(names = "--close", description = "Start (1) or stop (0) closing petals")
     private int is_close = -1;
 
-    @CommandLine.Option(names = "-open", description = "Start (1) or stop (0) opening petals")
+    @CommandLine.Option(names = "--open", description = "Start (1) or stop (0) opening petals")
     private int is_open = -1;
 
     private MotorsGrpc.MotorsBlockingStub stub = null;
@@ -59,13 +59,13 @@ class Petals implements Runnable {
 
 @CommandLine.Command(name = "doors", mixinStandardHelpOptions = true)
 class Doors implements Runnable {
-    @CommandLine.Option(names = "-close", description = "Start (1) or stop (0) closing doors")
+    @CommandLine.Option(names = "--close", description = "Start (1) or stop (0) closing doors")
     private int is_close = -1;
 
-    @CommandLine.Option(names = "-open", description = "Start (1) or stop (0) opening doors")
+    @CommandLine.Option(names = "--open", description = "Start (1) or stop (0) opening doors")
     private int is_open = -1;
 
-    @CommandLine.Option(names = "-status", description = "Get status of doors")
+    @CommandLine.Option(names = "--status", description = "Get status of doors")
     private boolean is_status = false;
 
     private MotorsGrpc.MotorsBlockingStub stub = null;
@@ -115,19 +115,19 @@ class Doors implements Runnable {
 public class Motors implements Runnable {
     private MotorsGrpc.MotorsBlockingStub stub = null;
 
-    @CommandLine.Option(names = "-sz", paramLabel = "Steps", description = "Set zenith")
+    @CommandLine.Option(names = "--sz", paramLabel = "Steps", description = "Set zenith")
     private int zenith_steps = -1;
 
-    @CommandLine.Option(names = "-gz", description = "Get zenith")
+    @CommandLine.Option(names = "--gz", description = "Get zenith")
     private boolean get_zenith = false;
 
-    @CommandLine.Option(names = "-ga", description = "Get azimuth")
+    @CommandLine.Option(names = "--ga", description = "Get azimuth")
     private boolean get_azimuth = false;
 
-    @CommandLine.Option(names = "-sa", paramLabel = "Steps", description = "Set azimuth")
+    @CommandLine.Option(names = "--sa", paramLabel = "Steps", description = "Set azimuth")
     private int azimuth_steps = -1;
 
-    @CommandLine.Option(names = "-home", description = "Go home")
+    @CommandLine.Option(names = "--home", description = "Go home")
     private boolean home = false;
 
     @Override

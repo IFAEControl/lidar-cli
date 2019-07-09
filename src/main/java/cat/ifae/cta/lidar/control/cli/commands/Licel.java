@@ -13,99 +13,99 @@ class Licel implements Runnable {
     private LicelGrpc.LicelBlockingStub stub;
 
     // XXX: Insecure
-    @CommandLine.Option(names = "-set-net", description = "Set network configuration. format=host:mask:port:gateway:passwd")
+    @CommandLine.Option(names = "--set-net", description = "Set network configuration. format=host:mask:port:gateway:passwd")
     private String _net_config;
 
-    @CommandLine.Option(names = "-activate-dhcp", description = "Activate dhcp. format=port:passwd")
+    @CommandLine.Option(names = "--activate-dhcp", description = "Activate dhcp. format=port:passwd")
     private String _dhcp_settings;
 
-    @CommandLine.Option(names = "-get-id", description = "Get id")
+    @CommandLine.Option(names = "--get-id", description = "Get id")
     private boolean _is_get_id;
 
-    @CommandLine.Option(names = "-get-caps", description = "Is get capabilities")
+    @CommandLine.Option(names = "--get-caps", description = "Is get capabilities")
     private boolean _is_get_caps;
 
-    @CommandLine.Option(names = "-wait-ready", description = "Wait for ready")
+    @CommandLine.Option(names = "--wait-ready", description = "Wait for ready")
     private int _wait_delay = -1;
 
-    @CommandLine.Option(names = "-clear-memory", description = "clear memory")
+    @CommandLine.Option(names = "--clear-memory", description = "clear memory")
     private boolean _is_clear;
 
-    @CommandLine.Option(names = "-get-data-set", description = "Get data set. format=device:data_set:number_to_read:memory")
+    @CommandLine.Option(names = "--get-data-set", description = "Get data set. format=device:data_set:number_to_read:memory")
     private String _data_set;
 
-    @CommandLine.Option(names = "-get-status", description = "Get status. format=number:memory:acq_state:recording")
+    @CommandLine.Option(names = "--get-status", description = "Get status. format=number:memory:acq_state:recording")
     private boolean _is_get_status;
 
-    @CommandLine.Option(names = "-get-tr-type", description = "Get TR type")
+    @CommandLine.Option(names = "--get-tr-type", description = "Get TR type")
     private boolean _is_get_tr_type;
 
-    @CommandLine.Option(names = "-multiple-clear-memory", description = "Multiple clear memory")
+    @CommandLine.Option(names = "--multiple-clear-memory", description = "Multiple clear memory")
     private boolean _is_multiple_clean;
 
-    @CommandLine.Option(names = "-multiple-wait-ready", description = "Multiple wait for ready")
+    @CommandLine.Option(names = "--multiple-wait-ready", description = "Multiple wait for ready")
     private int _multiple_wait_delay = -1;
 
-    @CommandLine.Option(names = "-select-tr", description = "Select TR")
+    @CommandLine.Option(names = "--select-tr", description = "Select TR")
     private int _tr_number = -1;
 
     // TODO: @Option(names = "-x", split = ",") Picocli supports automating split
-    @CommandLine.Option(names = "-select-tr-list", description = "Select a list of TR. format=list_length:TR-1:TR-2:TR-N")
+    @CommandLine.Option(names = "--select-tr-list", description = "Select a list of TR. format=list_length:TR-1:TR-2:TR-N")
     private String _tr_list;
 
-    @CommandLine.Option(names = "-set-discrimination-level", description = "Set discrimination level")
+    @CommandLine.Option(names = "--set-discrimination-level", description = "Set discrimination level")
     private int _discrimination_level = -1;
 
-    @CommandLine.Option(names = "-input-range", description = "Set input ranges")
+    @CommandLine.Option(names = "--input-range", description = "Set input ranges")
     private int _input_range = -1;
 
-    @CommandLine.Option(names = "-slave-mode", description = "Set slave mode")
+    @CommandLine.Option(names = "--slave-mode", description = "Set slave mode")
     private boolean _is_slave_mode;
 
-    @CommandLine.Option(names = "-push-mode", description = "Set push mode. format=shots:dataset:number:memory")
+    @CommandLine.Option(names = "--push-mode", description = "Set push mode. format=shots:dataset:number:memory")
     private String _push_mode_info;
 
-    @CommandLine.Option(names = "-threshold-mode", description = "Set threshold mode")
+    @CommandLine.Option(names = "--threshold-mode", description = "Set threshold mode")
     private int _threshold = -1;
 
-    @CommandLine.Option(names = "-single-shot", description = "Single shot")
+    @CommandLine.Option(names = "--single-shot", description = "Single shot")
     private boolean _single_shot;
 
-    @CommandLine.Option(names = "-start-acq", description = "Start acquisition")
+    @CommandLine.Option(names = "--start-acq", description = "Start acquisition")
     private boolean _acq_start;
 
-    @CommandLine.Option(names = "-stop-acq", description = "Stop acquisition")
+    @CommandLine.Option(names = "--stop-acq", description = "Stop acquisition")
     private boolean _acq_stop;
 
-    @CommandLine.Option(names = "-continue-acq", description = "Continue acquisition")
+    @CommandLine.Option(names = "--continue-acq", description = "Continue acquisition")
     private boolean _acq_continue;
 
-    @CommandLine.Option(names = "-multi-continue-acq", description = "Multiple continue acquisition")
+    @CommandLine.Option(names = "--multi-continue-acq", description = "Multiple continue acquisition")
     private boolean _acq_continue_mul;
 
-    @CommandLine.Option(names = "-multi-start-acq", description = "Multiple start acquisition")
+    @CommandLine.Option(names = "--multi-start-acq", description = "Multiple start acquisition")
     private boolean _acq_start_mul;
 
-    @CommandLine.Option(names = "-multi-stop-acq", description = "Multiple stop acquisition")
+    @CommandLine.Option(names = "--multi-stop-acq", description = "Multiple stop acquisition")
     private boolean _acq_stop_mul;
 
-    @CommandLine.Option(names = "-inc-shots", description = "Increase shots")
+    @CommandLine.Option(names = "--inc-shots", description = "Increase shots")
     private int _inc_shots = -1;
 
-    @CommandLine.Option(names = "-shot-limit", description = "Set shots limit")
+    @CommandLine.Option(names = "--shot-limit", description = "Set shots limit")
     private int _shot_limit = -1;
 
-    @CommandLine.Option(names = "-pmt-get-status", description = "Get pmt status")
+    @CommandLine.Option(names = "--pmt-get-status", description = "Get pmt status")
     private int _pmt_get_status = -1;
 
-    @CommandLine.Option(names = "-pmt-set-gain", description = "Set pmt gain. format=pmt:gain")
+    @CommandLine.Option(names = "--pmt-set-gain", description = "Set pmt gain. format=pmt:gain")
     private String _pmt_info;
 
-    @CommandLine.Option(names = "-set-trigger-mode",
+    @CommandLine.Option(names = "--set-trigger-mode",
             description = "Set trigger mode. format=id:laser_on:pretrigger_on:q_switch_on:gating_on:is_master_trigger")
     private String _trigger_mode;
 
-    @CommandLine.Option(names = "-set-trigger-timing",
+    @CommandLine.Option(names = "--set-trigger-timing",
             description = "Set trigger timing. format=id:rate:pretrigger:pretr_length:q_switch:length")
     private String _trigger_timing;
 

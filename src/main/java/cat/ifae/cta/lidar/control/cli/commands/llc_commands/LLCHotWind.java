@@ -10,14 +10,14 @@ public
 class LLCHotWind implements Runnable {
     private LLCHotwindGrpc.LLCHotwindBlockingStub stub;
 
-    @CommandLine.Option(names = "-lock", description = "Lock")
+    @CommandLine.Option(names = "--lock", description = "Lock")
     private boolean is_lock = false;
 
-    @CommandLine.Option(names = "-unlock", description = "Unlock")
+    @CommandLine.Option(names = "--unlock", description = "Unlock")
     private boolean is_unlock = false;
 
     // XXX: WTF
-    @CommandLine.Option(names = "-error", description = "Error")
+    @CommandLine.Option(names = "--error", description = "Error")
     private boolean error = false;
 
     @Override
