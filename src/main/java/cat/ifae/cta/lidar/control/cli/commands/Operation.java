@@ -198,6 +198,12 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "--go-parking", description = "Go to parking position")
     private boolean parking_position = false;
 
+    @CommandLine.Option(names = "--go-zenith-parking", description = "Go to zenith parking position")
+    private boolean zenith_parking_position = false;
+
+    @CommandLine.Option(names = "--go-azimuth-parking", description = "Go to azimuth parking position")
+    private boolean azimuth_parking_postiion = false;
+
     @CommandLine.Option(names = "--arm-init", description = "Initialize arm")
     private boolean arm_init = false;
 
@@ -235,6 +241,8 @@ public class Operation implements Runnable {
             if(micro_init) initSequence();
             else if(micro_shutdown) shutdownSequence();
             else if(parking_position) goToParkingPosition();
+            else if(zenith_parking_position) goToZenithParkingPosition();
+            else if(azimuth_parking_postiion) goToAzimuthParkingPosition();
             else if(arm_init) initializeArm();
             else if(arm_align) moveArmToAlignmentPos();
             else printHelp();
@@ -247,6 +255,16 @@ public class Operation implements Runnable {
     private void goToParkingPosition() {
         Null req = Null.newBuilder().build();
         blocking_stub.goToParkingPosition(req);
+    }
+
+    private void goToZenithParkingPosition() {
+        Null req = Null.newBuilder().build();
+        blocking_stub.goToZenithParkingPosition(req);
+    }
+
+    private void goToAzimuthParkingPosition() {
+        Null req = Null.newBuilder().build();
+        blocking_stub.goToZenithParkingPosition(req);
     }
 
     private void initializeArm() {
