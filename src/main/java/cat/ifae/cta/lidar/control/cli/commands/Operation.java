@@ -210,6 +210,15 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "--arm-align", description = "Move arm to alignment position")
     private boolean arm_align = false;
 
+    @CommandLine.Option(names = "--laser-init", description = "Initialize laser")
+    private  boolean laser_init = false;
+
+    @CommandLine.Option(names = "--laser-power-on", description = "Initialize laser")
+    private  boolean laser_power_on = false;
+
+    @CommandLine.Option(names = "--laser-power-off", description = "Initialize laser")
+    private  boolean laser_power_off = false;
+
     private static Config cfg;
 
     private OperationGrpc.OperationBlockingStub blocking_stub;
@@ -245,6 +254,9 @@ public class Operation implements Runnable {
             else if(azimuth_parking_postiion) goToAzimuthParkingPosition();
             else if(arm_init) initializeArm();
             else if(arm_align) moveArmToAlignmentPos();
+            else if(laser_init) initalizeLaser();
+            else if(laser_power_on) laserPowerOn();
+            else if(laser_power_off) laserPowerOff();
             else printHelp();
         } catch(Exception e) {
             e.printStackTrace();
@@ -270,6 +282,21 @@ public class Operation implements Runnable {
     private void initializeArm() {
         var req = Null.newBuilder().build();
         blocking_stub.initializeArm(req);
+    }
+
+    private void initalizeLaser() {
+        var req = Null.newBuilder().build();
+        blocking_stub.initializeLaser(req);
+    }
+
+    private void laserPowerOn() {
+        var req = Null.newBuilder().build();
+        blocking_stub.powerOnLaser(req);
+    }
+
+    private void laserPowerOff() {
+        var req = Null.newBuilder().build();
+        blocking_stub.powerOffLaser(req);
     }
 
     private void moveArmToAlignmentPos() {

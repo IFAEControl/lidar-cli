@@ -29,6 +29,9 @@ class LLCLaser implements Runnable {
     @CommandLine.Option(names = "--power", description = "Set laser power")
     private int power = -1;
 
+    @CommandLine.Option(names = "--get-temp", description = "Get laser temperature")
+    private boolean laser_temp = false;
+
     @Override
     public final void run() {
         stub = LLCLaserGrpc.newBlockingStub(Licli.sm.getCh());
@@ -43,6 +46,7 @@ class LLCLaser implements Runnable {
             else if(is_pause) pause();
             else if(check) checkCommunications();
             else if(power > -1) setPower(power);
+            else if(laser_temp) getTemp();
         } catch(RuntimeException e) {
             System.out.println(e.toString());
         }
@@ -76,5 +80,11 @@ class LLCLaser implements Runnable {
     private void setPower(int power) {
         Power req = Power.newBuilder().setPower(power).build();
         stub.setPower(req);
+    }
+
+    private void getTemp() {
+        var req = Null.newBuilder().build();
+        var resp = stub.getTemperature(req);
+        System.out.println(resp.getTemperature());
     }
 }
