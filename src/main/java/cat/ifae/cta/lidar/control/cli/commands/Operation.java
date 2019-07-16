@@ -219,6 +219,12 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "--laser-power-off", description = "Initialize laser")
     private  boolean laser_power_off = false;
 
+    @CommandLine.Option(names = "--ramp-up", description = "Execute ramp up DACs")
+    private  boolean ramp_up = false;
+
+    @CommandLine.Option(names = "--ramp-down", description = "Execute ramp down DACs")
+    private  boolean ramp_down = false;
+
     private static Config cfg;
 
     private OperationGrpc.OperationBlockingStub blocking_stub;
@@ -257,11 +263,23 @@ public class Operation implements Runnable {
             else if(laser_init) initalizeLaser();
             else if(laser_power_on) laserPowerOn();
             else if(laser_power_off) laserPowerOff();
+            else if(ramp_up) rampUp();
+            else if(ramp_down) rampDown();
             else printHelp();
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());
         }
+    }
+
+    private void rampUp() {
+        var req = InitSequenceOptions.newBuilder().setPmtDacVoltage(getDacVoltage()).build();
+        blocking_stub.rampUpDACs(req);
+    }
+
+    private void rampDown() {
+        var req = Null.newBuilder().build();
+        blocking_stub.rampDownDACs(req);
     }
 
     private void goToParkingPosition() {
