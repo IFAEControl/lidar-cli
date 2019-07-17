@@ -1,7 +1,6 @@
 package cat.ifae.cta.lidar.control.cli.session;
 
 import cat.ifae.cta.lidar.AuthGrpc;
-import cat.ifae.cta.lidar.Helpers;
 import cat.ifae.cta.lidar.Password;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;

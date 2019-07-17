@@ -37,7 +37,7 @@ w_date
 licli operation --arm-init
 licli operation --arm-align
 w_date
-licli motors petals -open=1
+licli motors petals --open=1
 w_date
 licli operation telescope --to-max-zenith
 w_date
@@ -47,7 +47,7 @@ licli operation telescope --to-max-azimuth
 licli operation --go-azimuth-parking
 w_date
 licli operation --go-zenith-parking
-licli motors petals -close=1
+licli motors petals --close=1
 w_date
 w_sensors
 licli operation --laser-power-on
@@ -56,10 +56,14 @@ w_date
 LASER_TEMP="$(get_laser_temp)"
 while [[ "$LASER_TEMP" -lt 32 ]]; do
     licli llc relay --hotwind-on
-    LASER_TEMP="$(get_laser_temp)"
-    w_val "$LASER_TEMP"
-    sleep 30
 done
+while [[ "$LASER_TEMP" -lt 32 ]]; do
+    sleep 15
+    LASER_TEMP="$(get_laser_temp)"
+    echo $LASER_TEMP
+    w_val "$LASER_TEMP"
+done
+licli llc relay --hotwind-off
 w_date
 licli operation --ramp-up
 licli operation --ramp-down
@@ -67,4 +71,3 @@ licli operation acq --shots=3
 licli motors doors --close=1
 w_date
 w_sensors
-
