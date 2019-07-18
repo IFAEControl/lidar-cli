@@ -198,6 +198,9 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "--go-parking", description = "Go to parking position")
     private boolean parking_position = false;
 
+    @CommandLine.Option(names = "--get-parking", description =  "Get parking position")
+    private boolean get_parking_position = false;
+
     @CommandLine.Option(names = "--go-zenith-parking", description = "Go to zenith parking position")
     private boolean zenith_parking_position = false;
 
@@ -256,6 +259,7 @@ public class Operation implements Runnable {
             if(micro_init) initSequence();
             else if(micro_shutdown) shutdownSequence();
             else if(parking_position) goToParkingPosition();
+            else if(get_parking_position) getParkingPosition();
             else if(zenith_parking_position) goToZenithParkingPosition();
             else if(azimuth_parking_postiion) goToAzimuthParkingPosition();
             else if(arm_init) initializeArm();
@@ -287,6 +291,13 @@ public class Operation implements Runnable {
         blocking_stub.goToParkingPosition(req);
     }
 
+    private void getParkingPosition() {
+        var req = Null.newBuilder().build();
+        var resp = blocking_stub.getParkingPosition(req);
+        System.out.println("Azimuth=" + resp.getAzimuth());
+        System.out.println("Zenith=" + resp.getZenith());
+    }
+
     private void goToZenithParkingPosition() {
         Null req = Null.newBuilder().build();
         blocking_stub.goToZenithParkingPosition(req);
@@ -294,7 +305,7 @@ public class Operation implements Runnable {
 
     private void goToAzimuthParkingPosition() {
         Null req = Null.newBuilder().build();
-        blocking_stub.goToZenithParkingPosition(req);
+        blocking_stub.goToAzimuthParkingPosition(req);
     }
 
     private void initializeArm() {
