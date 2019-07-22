@@ -57,8 +57,14 @@ class Acquisition implements Runnable {
     private void acquisitionStop() {
         var req = AcqConfig.newBuilder().setMaxBins(16380).build();
         var resp = blocking_stub.acquisitionStop(req);
-        System.out.println(resp.getData(0).getLsw().toByteArray().length);
-        System.out.println(resp.getData(1).getLsw().toByteArray().length);
+        System.out.println(resp.getData(0).getLsw().toByteArray());
+        for(var v : resp.getData(1).getLsw().toByteArray()) {
+            System.out.println((int) v);
+        }
+        /*for(var v : resp.getData(1).getAnalogCombinedList()) {
+            System.out.println("Value: " + v.getValue());
+            System.out.println("Clipping: " + v.getClipping());
+        }*/
     }
 }
 
