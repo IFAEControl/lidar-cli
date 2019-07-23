@@ -29,8 +29,8 @@ class LLCRelay implements  Runnable {
     @CommandLine.Option(names = "--hotwind-off", description = "Power Off Hotwind")
     private boolean hotwind_off = false;
 
-    @CommandLine.Option(names = "--status", description = "Status to set to the given device")
-    private int status = -1;
+    @CommandLine.Option(names = "--set-status", description = "Set status to relay. format=relay_idx:status")
+    private String status;
 
     @Override
     public final void run() {
@@ -40,17 +40,12 @@ class LLCRelay implements  Runnable {
         CommandLine.populateCommand(this);
 
         try {
-            if (get_status) getStatus();
-            else if (laser_on) powerOnLaser();
-            else if (laser_off) powerOffLaser();
-            else if (hotwind_on) powerOnHotwind();
-            else if (hotwind_off) powerOffHotwind();
-            else if (device_number == -1)
-                System.out.println("Specify a device number");
-            else if (status < 0 || status > 1)
-                System.out.println("Status should be either True or False");
-            else
-                setStatus(device_number, status == 1);
+            if(get_status) getStatus();
+            else if(laser_on) powerOnLaser();
+            else if(laser_off) powerOffLaser();
+            else if(hotwind_on) powerOnHotwind();
+            else if(hotwind_off) powerOffHotwind();
+            else if(!status.isEmpty()) setStatus(status);
         } catch (RuntimeException e) {
             System.out.println(e.toString());
         }
@@ -69,8 +64,13 @@ class LLCRelay implements  Runnable {
         }
     }
 
-    private void setStatus(int device_number, boolean status) {
-        Status req = Status.newBuilder().setIdx(device_number).setStatus(status).build();
+    private void setStatus(String s) {
+        String[] components = Helpers.split(s, 2);
+
+        int idx = Integer.parseInt(components[0]);
+        boolean  status = Boolean.parseBoolean(components[1]);
+
+        var req = Status.newBuilder().setIdx(idx).setStatus(status).build();
         stub.setStatus(req);
     }
 
