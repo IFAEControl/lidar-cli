@@ -13,8 +13,11 @@ class Monitoring implements Runnable {
     private MonitoringGrpc.MonitoringStub stub;
     private MonitoringGrpc.MonitoringBlockingStub blockingStub;
 
-    @CommandLine.Parameters(paramLabel = "NAME", description = "Name")
-    private String name;
+    @CommandLine.Option(names = "--humidity")
+    private boolean humidity = false;
+
+    @CommandLine.Option(names = "--env-temperature")
+    private boolean env_temperature = false;
 
     @CommandLine.Option(names = "--last-value", description = "Get last value")
     private boolean last_value = false;
@@ -30,6 +33,13 @@ class Monitoring implements Runnable {
         CommandLine.populateCommand(this);
 
         try {
+            String name;
+            if(humidity) name = "humidity";
+            else if(env_temperature) name = "temperature";
+            else
+                throw new RuntimeException("Select one variable (and only one)");
+
+
             //var requestObserverRef = new AtomicReference<>();
             if(last_value) getLastValue(name);
             else monitoring(name);
