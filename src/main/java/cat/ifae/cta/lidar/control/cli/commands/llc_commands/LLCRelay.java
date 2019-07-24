@@ -10,8 +10,9 @@ class LLCRelay implements  Runnable {
     private LLCRelayGrpc.LLCRelayBlockingStub stub;
     private static final int LASER_RELAY = 0;
     private static final int HOTWIND_RELAY = 1;
+    private static final int LICEL_RELAY = 2;
 
-    @CommandLine.Option(names = "--gs", description = "Get status")
+    @CommandLine.Option(names = "--get-status", description = "Get status")
     private boolean get_status = false;
 
     @CommandLine.Option(names = "--device", description = "Device to set")
@@ -29,7 +30,13 @@ class LLCRelay implements  Runnable {
     @CommandLine.Option(names = "--hotwind-off", description = "Power Off Hotwind")
     private boolean hotwind_off = false;
 
-    @CommandLine.Option(names = "--set-status", description = "Set status to relay. format=relay_idx:status")
+    @CommandLine.Option(names = "--licel-on", description = "Power on Licel")
+    private boolean licel_on = false;
+
+    @CommandLine.Option(names = "--licel-off", description = "Power off licel")
+    private boolean licel_off = false;
+
+    @CommandLine.Option(names = "--set-status", description = "Set status to relay, status must be either 'true' or 'false'. format=relay_idx:status")
     private String status;
 
     @Override
@@ -45,6 +52,8 @@ class LLCRelay implements  Runnable {
             else if(laser_off) powerOffLaser();
             else if(hotwind_on) powerOnHotwind();
             else if(hotwind_off) powerOffHotwind();
+            else if(licel_on) powerOnLicel();
+            else if(licel_off) powerOffLicel();
             else if(!status.isEmpty()) setStatus(status);
         } catch (RuntimeException e) {
             System.out.println(e.toString());
@@ -67,8 +76,18 @@ class LLCRelay implements  Runnable {
     private void setStatus(String s) {
         String[] components = Helpers.split(s, 2);
 
+        try {
+            Integer.parseInt(components[1]);
+            System.err.println("Status must be either 'true' or 'false'");
+            return;
+        } catch(NumberFormatException e) {
+            // ignore
+        }
+
         int idx = Integer.parseInt(components[0]);
         boolean  status = Boolean.parseBoolean(components[1]);
+
+        System.out.println(components[1]);
 
         var req = Status.newBuilder().setIdx(idx).setStatus(status).build();
         stub.setStatus(req);
@@ -91,6 +110,16 @@ class LLCRelay implements  Runnable {
 
     private void powerOffHotwind() {
         Status req = Status.newBuilder().setIdx(HOTWIND_RELAY).setStatus(false).build();
+        stub.setStatus(req);
+    }
+
+    private void powerOnLicel() {
+        Status req = Status.newBuilder().setIdx(LICEL_RELAY).setStatus(true).build();
+        stub.setStatus(req);
+    }
+
+    private void powerOffLicel() {
+        Status req = Status.newBuilder().setIdx(LICEL_RELAY).setStatus(false).build();
         stub.setStatus(req);
     }
 }
