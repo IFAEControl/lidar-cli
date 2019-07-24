@@ -45,22 +45,23 @@ class Acquisition implements Runnable {
     }
 
     private void acquireShots() {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).setShots(acquire_shots).build();
+        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).setShots(acquire_shots).setPhoton(false).setPretrig(true).setThreshold(false).build();
         blocking_stub.acquireShots(req);
     }
 
     private void acquisitionStart() {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).build();
+        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).setThreshold(true).setPretrig(false).setPhoton(false).build();
         blocking_stub.acquisitionStart(req);
     }
 
     private void acquisitionStop() {
         var req = AcqConfig.newBuilder().setMaxBins(16380).build();
         var resp = blocking_stub.acquisitionStop(req);
-        System.out.println(resp.getData(0).getLsw().toByteArray());
         for(var v : resp.getData(1).getLsw().toByteArray()) {
-            System.out.println((int) v);
+            System.out.print((int) v + " ");
         }
+        System.out.println(resp.getData(0).getLsw().toByteArray());
+
         /*for(var v : resp.getData(1).getAnalogCombinedList()) {
             System.out.println("Value: " + v.getValue());
             System.out.println("Clipping: " + v.getClipping());
