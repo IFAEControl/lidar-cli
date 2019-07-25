@@ -7,6 +7,8 @@ import cat.ifae.cta.lidar.logging.Logging;
 import io.grpc.stub.StreamObserver;
 import picocli.CommandLine;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.concurrent.CountDownLatch;
@@ -44,28 +46,87 @@ class Acquisition implements Runnable {
 
     }
 
-    private void acquireShots() {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).setShots(acquire_shots).setPhoton(false).setPretrig(true).setThreshold(false).build();
-        blocking_stub.acquireShots(req);
+    private void acquireShots() throws IOException {
+        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).setShots(acquire_shots).setPretrig(true).setThreshold(false).build();
+        var resp = blocking_stub.acquireShots(req);
+        writeDataToFiles(resp);
     }
 
     private void acquisitionStart() {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).setThreshold(true).setPretrig(false).setPhoton(false).build();
+        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).setThreshold(true).setPretrig(false).build();
         blocking_stub.acquisitionStart(req);
     }
 
-    private void acquisitionStop() {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).build();
+    private void acquisitionStop() throws IOException {
+        var req = AcqConfig.newBuilder().setMaxBins(16380).setPhoton(true).build();
         var resp = blocking_stub.acquisitionStop(req);
-        for(var v : resp.getData(1).getLsw().toByteArray()) {
-            System.out.print((int) v + " ");
-        }
-        System.out.println(resp.getData(0).getLsw().toByteArray());
+        writeDataToFiles(resp);
+    }
 
-        /*for(var v : resp.getData(1).getAnalogCombinedList()) {
-            System.out.println("Value: " + v.getValue());
-            System.out.println("Clipping: " + v.getClipping());
-        }*/
+    private void writeDataToFiles(LicelData resp) throws IOException {
+        {
+            var writer = new BufferedWriter(new FileWriter("data/analog_combined_data_0.out"));
+            for (var v : resp.getData(0).getAnalogCombinedList())
+                writer.write(MessageFormat.format("{0} {1} ", String.valueOf(v.getValue()), v.getClipping()));
+
+            writer.close();
+        }
+
+        {
+            var writer = new BufferedWriter(new FileWriter("data/analog_combined_data_1.out"));
+            for (var v : resp.getData(1).getAnalogCombinedList())
+                writer.write(MessageFormat.format("{0} {1} ", String.valueOf(v.getValue()), v.getClipping()));
+
+            writer.close();
+        }
+
+        {
+            var writer = new BufferedWriter(new FileWriter("data/ch0_lsw.out"));
+            for (var v : resp.getData(0).getLsw().toByteArray())
+                writer.write(MessageFormat.format("{0} ", (int) v));
+
+            writer.close();
+        }
+
+        {
+            var writer = new BufferedWriter(new FileWriter("data/ch0_msw.out"));
+            for (var v : resp.getData(0).getMsw().toByteArray())
+                writer.write(MessageFormat.format("{0} ", (int) v));
+
+            writer.close();
+        }
+
+        {
+            var writer = new BufferedWriter(new FileWriter("data/ch1_lsw.out"));
+            for (var v : resp.getData(1).getLsw().toByteArray())
+                writer.write(MessageFormat.format("{0} ", (int) v));
+
+            writer.close();
+        }
+
+        {
+            var writer = new BufferedWriter(new FileWriter("data/ch0_msw.out"));
+            for (var v : resp.getData(1).getMsw().toByteArray())
+                writer.write(MessageFormat.format("{0} ", (int) v));
+
+            writer.close();
+        }
+
+        {
+            var writer = new BufferedWriter(new FileWriter("data/ch0_pho.out"));
+            for (var v : resp.getData(0).getPho().toByteArray())
+                writer.write(MessageFormat.format("{0} ", (int) v));
+
+            writer.close();
+        }
+
+        {
+            var writer = new BufferedWriter(new FileWriter("data/ch1_pho.out"));
+            for (var v : resp.getData(1).getPho().toByteArray())
+                writer.write(MessageFormat.format("{0} ", (int) v));
+
+            writer.close();
+        }
     }
 }
 
