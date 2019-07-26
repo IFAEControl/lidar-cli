@@ -25,6 +25,9 @@ class Acquisition implements Runnable {
 
     @CommandLine.Option(names = "--shots", description = "Acquire a given number of shots")
     private int acquire_shots = 0;
+    
+    @CommandLine.Option(names = "--disc", description = "Discriminator level")
+    private int disc = 0;
 
     private OperationGrpc.OperationBlockingStub blocking_stub;
 
@@ -36,6 +39,11 @@ class Acquisition implements Runnable {
         blocking_stub = Licli.sm.addMetadata(blocking_stub);
 
         try {
+            if(disc == 0) {
+                System.out.println("Discriminator level must be set");
+                return;
+            }
+
             if(acquisition_start) acquisitionStart();
             else if(acquisition_stop) acquisitionStop();
             else if(acquire_shots != 0) acquireShots();
@@ -43,11 +51,10 @@ class Acquisition implements Runnable {
             e.printStackTrace();
             log.error(e.toString());
         }
-
     }
 
     private void acquireShots() throws IOException {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).setShots(acquire_shots).setPretrig(true).setThreshold(false).build();
+        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(disc).setShots(acquire_shots).setPretrig(false).setThreshold(false).build();
         var resp = blocking_stub.acquireShots(req);
         writeDataToFiles(resp);
     }
@@ -58,7 +65,7 @@ class Acquisition implements Runnable {
     }
 
     private void acquisitionStop() throws IOException {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).setPhoton(true).build();
+        var req = AcqConfig.newBuilder().setMaxBins(16380).build();
         var resp = blocking_stub.acquisitionStop(req);
         writeDataToFiles(resp);
     }
@@ -67,7 +74,7 @@ class Acquisition implements Runnable {
         {
             var writer = new BufferedWriter(new FileWriter("data/analog_combined_data_0.out"));
             for (var v : resp.getData(0).getAnalogCombinedList())
-                writer.write(MessageFormat.format("{0} {1} ", String.valueOf(v.getValue()), v.getClipping()));
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v.getValue() & 0xFFFF)));
 
             writer.close();
         }
@@ -75,7 +82,7 @@ class Acquisition implements Runnable {
         {
             var writer = new BufferedWriter(new FileWriter("data/analog_combined_data_1.out"));
             for (var v : resp.getData(1).getAnalogCombinedList())
-                writer.write(MessageFormat.format("{0} {1} ", String.valueOf(v.getValue()), v.getClipping()));
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v.getValue() & 0xFFFF)));
 
             writer.close();
         }
@@ -115,7 +122,7 @@ class Acquisition implements Runnable {
         {
             var writer = new BufferedWriter(new FileWriter("data/ch0_pho.out"));
             for (var v : resp.getData(0).getPho().toByteArray())
-                writer.write(MessageFormat.format("{0} ", (int) v));
+                writer.write(MessageFormat.format("{0} ", Integer.toString(v & 0xFF)));
 
             writer.close();
         }
@@ -123,7 +130,7 @@ class Acquisition implements Runnable {
         {
             var writer = new BufferedWriter(new FileWriter("data/ch1_pho.out"));
             for (var v : resp.getData(1).getPho().toByteArray())
-                writer.write(MessageFormat.format("{0} ", (int) v));
+                writer.write(MessageFormat.format("{0} ", Integer.toString(v & 0xFF)));
 
             writer.close();
         }
