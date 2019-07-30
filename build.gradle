@@ -21,7 +21,7 @@ buildscript {
 
     dependencies { // ASSUMES GRADLE 2.12 OR HIGHER. Use plugin version 0.7.5 with earlier
         // gradle versions
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
         classpath "com.github.ben-manes:gradle-versions-plugin:0.21.0"
     }
 }
@@ -41,9 +41,9 @@ targetCompatibility = 11
 
 //mainClassName = 'cat.ifae.cta.lidar.control.MotorsClient'
 
-def grpcVersion = '1.21.0' // CURRENT_GRPC_VERSION
-def protobufVersion = '3.8.0'
-def protocVersion = '3.8.0'
+def grpcVersion = '1.22.1' // CURRENT_GRPC_VERSION
+def protobufVersion = '3.9.0'
+def protocVersion = '3.9.0'
 
 dependencies {
     compile "com.google.api.grpc:proto-google-common-protos:1.16.0"
