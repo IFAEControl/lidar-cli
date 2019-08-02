@@ -303,6 +303,9 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "--ramp-down", description = "Execute ramp down DACs")
     private  boolean ramp_down = false;
 
+    @CommandLine.Option(names = "--ramp-single", description = "Modify voltage of a single DAC")
+    private String ramp_single;
+
     private static Config cfg;
 
     private OperationGrpc.OperationBlockingStub blocking_stub;
@@ -344,11 +347,22 @@ public class Operation implements Runnable {
             else if(laser_power_off) laserPowerOff();
             else if(ramp_up) rampUp();
             else if(ramp_down) rampDown();
+            else if(!ramp_single.isEmpty()) rampSingle(ramp_single);
             else printHelp();
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());
         }
+    }
+
+    private void rampSingle(String s) {
+        String[] components = Helpers.split(s, 2);
+
+        int dac = Integer.parseInt(components[0]);
+        int voltage = Integer.parseInt(components[1]);
+
+        var c = DAC.newBuilder().setIdx(dac).setVoltage(voltage).build();
+        blocking_stub.rampUpSingleDAC(c);
     }
 
     private void rampUp() {
