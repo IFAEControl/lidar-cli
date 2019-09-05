@@ -3,6 +3,7 @@ package cat.ifae.cta.lidar.control.cli.commands;
 import cat.ifae.cta.lidar.PastHours;
 import cat.ifae.cta.lidar.TraceGrpc;
 import cat.ifae.cta.lidar.control.cli.Licli;
+import org.json.JSONObject;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "trace", description = "Trace", mixinStandardHelpOptions = true)
@@ -22,7 +23,16 @@ public class Trace implements Runnable {
         try {
             if(last_hours != 0) {
                 PastHours req = PastHours.newBuilder().setHours(last_hours).build();
-                System.out.println(stub.getLastTraces(req).getDataList());
+                var documents = stub.getLastTraces(req);
+                for(var e : documents.getDataList()) {
+                    var traces = new JSONObject(e).getJSONArray("traces");
+                    for(var trace : traces) {
+                        System.out.println(new JSONObject(trace.toString()).get("function"));
+                    }
+                    System.out.println();
+                }
+
+                //System.out.println(stub.getLastTraces(req).getDataList());
             }
         } catch (Exception e) {
             System.out.println(e.toString());
