@@ -31,8 +31,6 @@ public class Trace implements Runnable {
                     }
                     System.out.println();
                 }
-
-                //System.out.println(stub.getLastTraces(req).getDataList());
             }
         } catch (Exception e) {
             System.out.println(e.toString());

@@ -59,7 +59,7 @@ class Acquisition implements Runnable {
     }
 
     private void acquireShots() throws IOException {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(disc).setShots(acquire_shots).setPretrig(false).setThreshold(false).build();
+        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(disc).setShots(acquire_shots).setPretrig(true).setThreshold(true).build();
         var resp = blocking_stub.acquireShots(req);
         writeDataToFiles(resp);
     }
@@ -79,15 +79,16 @@ class Acquisition implements Runnable {
         {
             var writer = new BufferedWriter(new FileWriter("data/analog_combined_data_0.out"));
             for (var v : resp.getData(0).getAnalogCombinedList())
-                writer.write(MessageFormat.format("{0} ", String.valueOf(v.getValue() & 0xFFFF)));
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v.getValue() & 0xFFFFFFFE)));
 
             writer.close();
         }
 
         {
             var writer = new BufferedWriter(new FileWriter("data/analog_combined_data_1.out"));
-            for (var v : resp.getData(1).getAnalogCombinedList())
-                writer.write(MessageFormat.format("{0} ", String.valueOf(v.getValue() & 0xFFFF)));
+            for (var v : resp.getData(1).getAnalogCombinedList()) {
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v.getValue() & 0xFFFFFFFE)));
+            }
 
             writer.close();
         }
@@ -309,10 +310,17 @@ public class Operation implements Runnable {
     private  boolean ramp_down = false;
 
     @CommandLine.Option(names = "--ramp-single", description = "Modify voltage of a single DAC")
-    private String ramp_single;
+    private String ramp_single = "";
+
+    @CommandLine.Option(names = "--startup", description = "Start up normal mode")
+    private boolean startup_normal_mode = false;
+
+    @CommandLine.Option(names = "--shutdown", description = "Shutdown")
+    private boolean shutdown = false;
 
     private static Config cfg;
 
+    private OperationGrpc.OperationStub stub;
     private OperationGrpc.OperationBlockingStub blocking_stub;
     private LLCDriversGrpc.LLCDriversBlockingStub drivers_stub;
     private LLCSensorsGrpc.LLCSensorsBlockingStub sensors_stub;
@@ -324,6 +332,9 @@ public class Operation implements Runnable {
     @Override
     public void run() {
         var ch = Licli.sm.getCh();
+
+        stub = OperationGrpc.newStub(ch);
+        stub = Licli.sm.addMetadata(stub);
 
         blocking_stub = OperationGrpc.newBlockingStub(ch);
         blocking_stub = Licli.sm.addMetadata(blocking_stub);
@@ -340,7 +351,7 @@ public class Operation implements Runnable {
             cfg.load();
 
             if(micro_init) initSequence();
-            else if(micro_shutdown) shutdownSequence();
+            else if(micro_shutdown) microShutdownSequence();
             else if(parking_position) goToParkingPosition();
             else if(get_parking_position) getParkingPosition();
             else if(zenith_parking_position) goToZenithParkingPosition();
@@ -353,11 +364,59 @@ public class Operation implements Runnable {
             else if(ramp_up) rampUp();
             else if(ramp_down) rampDown();
             else if(!ramp_single.isEmpty()) rampSingle(ramp_single);
+            else if(startup_normal_mode) startUpNormalMode();
+            else if(shutdown) shutdownSequence();
             else printHelp();
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());
         }
+    }
+
+    private void startUpNormalMode() throws InterruptedException {
+        var finishedLatch = new CountDownLatch(1);
+
+        var p = getPosition();
+        var point_req = Point2D.newBuilder().setX(p.getX()).setY(p.getY()).build();
+        var req = InitSequenceOptions.newBuilder().setHotwindTmep(getTemperature()).setPosition(point_req).setPmtDacVoltage(getDacVoltage()).build();
+        stub.startUpNormalMode(req, new StreamObserver<>() {
+            public void onNext(TraceOperation response) {
+                System.out.println(response.getLine());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
+    }
+
+    private void shutdownSequence() throws InterruptedException{
+        var finishedLatch = new CountDownLatch(1);
+
+        var req = Null.newBuilder().build();
+        stub.shutdown(req, new StreamObserver<>() {
+            public void onNext(TraceOperation response) {
+                System.out.println(response.getLine());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
     }
 
     private void rampSingle(String s) {
@@ -449,7 +508,7 @@ public class Operation implements Runnable {
         printDriversStatus();
     }
 
-    private void shutdownSequence() {
+    private void microShutdownSequence() {
         var req = Null.newBuilder().build();
         blocking_stub.executeMicroShutdownSequence(req);
     }
