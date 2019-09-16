@@ -47,7 +47,7 @@ class Acquisition implements Runnable {
             if(acquisition_start) acquisitionStart();
             else if(acquisition_stop) acquisitionStop();
             else if(acquire_shots != 0) {
-                if(acquire_shots > 2)
+                if(acquire_shots >= 2)
                     acquireShots();
                 else
                     System.out.println("Minimum shot number is 2");
