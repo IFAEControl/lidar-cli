@@ -112,7 +112,7 @@ class Acquisition implements Runnable {
         }
 
         {
-            var writer = new BufferedWriter(new FileWriter("data/ch0_msw.out"));
+            var writer = new BufferedWriter(new FileWriter("data/ch1_msw.out"));
             for (var v : resp.getData(1).getMsw().toByteArray())
                 writer.write(MessageFormat.format("{0} ", (int) v));
 
