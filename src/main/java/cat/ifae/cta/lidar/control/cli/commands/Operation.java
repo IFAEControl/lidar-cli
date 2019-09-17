@@ -59,23 +59,25 @@ class Acquisition implements Runnable {
     }
 
     private void acquireShots() throws IOException {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(disc).setShots(acquire_shots).setPretrig(true).setThreshold(true).build();
+        var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(disc).setShots(acquire_shots).setPretrig(false).setThreshold(true).build();
         var resp = blocking_stub.acquireShots(req);
         writeDataToFiles(resp);
     }
 
     private void acquisitionStart() {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).setDiscriminator(3).setThreshold(true).setPretrig(false).build();
+        var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(3).setThreshold(true).setPretrig(false).build();
         blocking_stub.acquisitionStart(req);
     }
 
     private void acquisitionStop() throws IOException {
-        var req = AcqConfig.newBuilder().setMaxBins(16380).build();
+        var req = AcqConfig.newBuilder().setMaxBins(16381).build();
         var resp = blocking_stub.acquisitionStop(req);
         writeDataToFiles(resp);
     }
 
     private void writeDataToFiles(LicelData resp) throws IOException {
+        var shots = resp.getShots();
+        System.out.println(shots);
         {
             var writer = new BufferedWriter(new FileWriter("data/analog_combined_data_0.out"));
             for (var v : resp.getData(0).getAnalogCombinedList())
@@ -85,9 +87,27 @@ class Acquisition implements Runnable {
         }
 
         {
+            var writer = new BufferedWriter(new FileWriter("data/analog_combined_converted_data_0.out"));
+            for (var v : resp.getData(0).getAnalogCombinedList()) {
+                writer.write(MessageFormat.format("{0} ", String.valueOf(((double) (v.getValue() & 0xFFFFFFFE) / shots)* ((double)500/65535))));
+            }
+
+            writer.close();
+        }
+
+        {
             var writer = new BufferedWriter(new FileWriter("data/analog_combined_data_1.out"));
             for (var v : resp.getData(1).getAnalogCombinedList()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v.getValue() & 0xFFFFFFFE)));
+            }
+
+            writer.close();
+        }
+
+        {
+            var writer = new BufferedWriter(new FileWriter("data/analog_combined_converted_data_1.out"));
+            for (var v : resp.getData(1).getAnalogCombinedList()) {
+                writer.write(MessageFormat.format("{0} ", String.valueOf(((double) (v.getValue() & 0xFFFFFFFE) / shots)* ((double)500/65535))));
             }
 
             writer.close();
