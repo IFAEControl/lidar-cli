@@ -104,6 +104,10 @@ sourceSets {
             srcDirs 'build/generated/source/proto/main/java'
         }
 
+        proto {
+            srcDir 'src/main/lidar_proto/server_services'
+        }
+
         resources {
             srcDir 'properties'
             include '*.properties'

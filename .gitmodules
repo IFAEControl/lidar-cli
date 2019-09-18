@@ -1,6 +1,6 @@
-[submodule "src/main/proto"]
-	path = src/main/proto
-	url = git@gitlab.pic.es:LidarCTA/lidar-protobufs.git
 [submodule "libs/lidar-libutil"]
 	path = libs/lidar-libutil
 	url = git@gitlab.pic.es:LidarCTA/lidar-libutil.git
+[submodule "src/main/lidar_proto"]
+	path = src/main/lidar_proto
+	url = git@gitlab.pic.es:LidarCTA/lidar-protobufs.git
