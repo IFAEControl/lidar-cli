@@ -77,19 +77,19 @@ class Acquisition implements Runnable {
 
     private void writeDataToFiles(LicelData resp) throws IOException {
         var shots = resp.getShots();
-        System.out.println(shots);
         {
             var writer = new BufferedWriter(new FileWriter("data/analog_combined_data_0.out"));
             for (var v : resp.getData(0).getAnalogCombinedList())
-                writer.write(MessageFormat.format("{0} ", String.valueOf(v.getValue() & 0xFFFFFFFE)));
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v.getValue() & 0x7FFFFFFF)));
 
             writer.close();
         }
 
+
         {
             var writer = new BufferedWriter(new FileWriter("data/analog_combined_converted_data_0.out"));
-            for (var v : resp.getData(0).getAnalogCombinedList()) {
-                writer.write(MessageFormat.format("{0} ", String.valueOf(((double) (v.getValue() & 0xFFFFFFFE) / shots)* ((double)500/65535))));
+            for (var v : resp.getData(0).getConvertedList()) {
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v)));
             }
 
             writer.close();
@@ -98,7 +98,7 @@ class Acquisition implements Runnable {
         {
             var writer = new BufferedWriter(new FileWriter("data/analog_combined_data_1.out"));
             for (var v : resp.getData(1).getAnalogCombinedList()) {
-                writer.write(MessageFormat.format("{0} ", String.valueOf(v.getValue() & 0xFFFFFFFE)));
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v.getValue() & 0x7FFFFFFF)));
             }
 
             writer.close();
@@ -106,41 +106,9 @@ class Acquisition implements Runnable {
 
         {
             var writer = new BufferedWriter(new FileWriter("data/analog_combined_converted_data_1.out"));
-            for (var v : resp.getData(1).getAnalogCombinedList()) {
-                writer.write(MessageFormat.format("{0} ", String.valueOf(((double) (v.getValue() & 0xFFFFFFFE) / shots)* ((double)500/65535))));
+            for (var v : resp.getData(1).getConvertedList()) {
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v)));
             }
-
-            writer.close();
-        }
-
-        {
-            var writer = new BufferedWriter(new FileWriter("data/ch0_lsw.out"));
-            for (var v : resp.getData(0).getLsw().toByteArray())
-                writer.write(MessageFormat.format("{0} ", (int) v));
-
-            writer.close();
-        }
-
-        {
-            var writer = new BufferedWriter(new FileWriter("data/ch0_msw.out"));
-            for (var v : resp.getData(0).getMsw().toByteArray())
-                writer.write(MessageFormat.format("{0} ", (int) v));
-
-            writer.close();
-        }
-
-        {
-            var writer = new BufferedWriter(new FileWriter("data/ch1_lsw.out"));
-            for (var v : resp.getData(1).getLsw().toByteArray())
-                writer.write(MessageFormat.format("{0} ", (int) v));
-
-            writer.close();
-        }
-
-        {
-            var writer = new BufferedWriter(new FileWriter("data/ch1_msw.out"));
-            for (var v : resp.getData(1).getMsw().toByteArray())
-                writer.write(MessageFormat.format("{0} ", (int) v));
 
             writer.close();
         }
