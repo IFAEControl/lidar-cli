@@ -13,6 +13,43 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.concurrent.CountDownLatch;
 
+
+class DataSelection {
+    private int d;
+
+    void enablePHO() {
+        d |= 1 << 0;
+    }
+
+    void enableLSW() {
+        d |= 1 << 1;
+    }
+
+    void enableMSW() {
+        d |= 1 << 2;
+    }
+
+    void enablePHM() {
+        d |= 1 << 3;
+    }
+
+    void enableAnalogCombined() {
+        d |= 1<<4;
+    }
+
+    void enableAnalogData() {
+        d |= 1<<5;
+    }
+
+    void enableConvertedPHO() {
+        d |= 1 << 6;
+    }
+
+    int getBitmap() {
+        return d;
+    }
+}
+
 @CommandLine.Command(name = "acq", mixinStandardHelpOptions = true)
 class Acquisition implements Runnable {
     private final static Logging log = new Logging(Acquisition.class);
@@ -59,13 +96,19 @@ class Acquisition implements Runnable {
     }
 
     private void acquireShots() throws IOException {
-        var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(disc).setShots(acquire_shots).setPretrig(false).setThreshold(true).setDataToRetrieve(1<<5).build();
+        var t = new DataSelection();
+        t.enableAnalogData();
+        var b = t.getBitmap();
+        var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(disc).setShots(acquire_shots).setDataToRetrieve(b).build();
         var resp = blocking_stub.acquireShots(req);
         writeDataToFiles(resp);
     }
 
     private void acquisitionStart() {
-        var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(3).setThreshold(true).setPretrig(false).setDataToRetrieve(1<<5).build();
+        var t = new DataSelection();
+        t.enableAnalogData();
+        var b = t.getBitmap();
+        var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(3).setDataToRetrieve(b).build();
         blocking_stub.acquisitionStart(req);
     }
 
@@ -90,22 +133,6 @@ class Acquisition implements Runnable {
             for (var v : resp.getData(1).getConvertedList()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)));
             }
-
-            writer.close();
-        }
-
-        {
-            var writer = new BufferedWriter(new FileWriter("data/ch0_pho.out"));
-            for (var v : resp.getData(0).getPho().toByteArray())
-                writer.write(MessageFormat.format("{0} ", Integer.toString(v & 0xFF)));
-
-            writer.close();
-        }
-
-        {
-            var writer = new BufferedWriter(new FileWriter("data/ch1_pho.out"));
-            for (var v : resp.getData(1).getPho().toByteArray())
-                writer.write(MessageFormat.format("{0} ", Integer.toString(v & 0xFF)));
 
             writer.close();
         }
