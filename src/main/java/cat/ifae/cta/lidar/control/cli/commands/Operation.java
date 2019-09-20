@@ -59,13 +59,13 @@ class Acquisition implements Runnable {
     }
 
     private void acquireShots() throws IOException {
-        var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(disc).setShots(acquire_shots).setPretrig(false).setThreshold(true).setDataToRetrieve(0b11111111).build();
+        var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(disc).setShots(acquire_shots).setPretrig(false).setThreshold(true).setDataToRetrieve(1<<5).build();
         var resp = blocking_stub.acquireShots(req);
         writeDataToFiles(resp);
     }
 
     private void acquisitionStart() {
-        var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(3).setThreshold(true).setPretrig(false).setDataToRetrieve(0b11111111).build();
+        var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(3).setThreshold(true).setPretrig(false).setDataToRetrieve(1<<5).build();
         blocking_stub.acquisitionStart(req);
     }
 
@@ -77,27 +77,9 @@ class Acquisition implements Runnable {
 
     private void writeDataToFiles(LicelData resp) throws IOException {
         {
-            var writer = new BufferedWriter(new FileWriter("data/analog_combined_data_0.out"));
-            for (var v : resp.getData(0).getAnalogCombinedList())
-                writer.write(MessageFormat.format("{0} ", String.valueOf(v.getValue() & 0x7FFFFFFF)));
-
-            writer.close();
-        }
-
-
-        {
             var writer = new BufferedWriter(new FileWriter("data/analog_combined_converted_data_0.out"));
             for (var v : resp.getData(0).getConvertedList()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)));
-            }
-
-            writer.close();
-        }
-
-        {
-            var writer = new BufferedWriter(new FileWriter("data/analog_combined_data_1.out"));
-            for (var v : resp.getData(1).getAnalogCombinedList()) {
-                writer.write(MessageFormat.format("{0} ", String.valueOf(v.getValue() & 0x7FFFFFFF)));
             }
 
             writer.close();
