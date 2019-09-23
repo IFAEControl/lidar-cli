@@ -121,7 +121,7 @@ class Acquisition implements Runnable {
     private void writeDataToFiles(LicelData resp) throws IOException {
         {
             var writer = new BufferedWriter(new FileWriter("data/analog_combined_converted_data_0.out"));
-            for (var v : resp.getData(0).getConvertedList()) {
+            for (var v : resp.getData(0).getAnalogConvertedList()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)));
             }
 
@@ -130,7 +130,7 @@ class Acquisition implements Runnable {
 
         {
             var writer = new BufferedWriter(new FileWriter("data/analog_combined_converted_data_1.out"));
-            for (var v : resp.getData(1).getConvertedList()) {
+            for (var v : resp.getData(1).getAnalogConvertedList()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)));
             }
 
