@@ -158,6 +158,18 @@ class Telescope implements Runnable {
     @CommandLine.Option(names = "--to-min-azimuth", description = "Move telescope azimuth axis to minimum position")
     private boolean to_min_azimuth = false;
 
+    @CommandLine.Option(names = "--go-parking", description = "Go to parking position")
+    private boolean parking_position = false;
+
+    @CommandLine.Option(names = "--get-parking", description =  "Get parking position")
+    private boolean get_parking_position = false;
+
+    @CommandLine.Option(names = "--go-zenith-parking", description = "Go to zenith parking position")
+    private boolean zenith_parking_position = false;
+
+    @CommandLine.Option(names = "--go-azimuth-parking", description = "Go to azimuth parking position")
+    private boolean azimuth_parking_postiion = false;
+
     private OperationGrpc.OperationStub stub;
     private OperationGrpc.OperationBlockingStub blocking_stub;
 
@@ -177,6 +189,10 @@ class Telescope implements Runnable {
             else if(to_max_zenith) goToMaximumZenith();
             else if(to_max_azimuth) goToMaximumAzimuth();
             else if(to_min_azimuth) goToMinimumAzimuth();
+            else if(parking_position) goToParkingPosition();
+            else if(get_parking_position) getParkingPosition();
+            else if(zenith_parking_position) goToZenithParkingPosition();
+            else if(azimuth_parking_postiion) goToAzimuthParkingPosition();
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());
@@ -259,30 +275,40 @@ class Telescope implements Runnable {
         Null req = Null.newBuilder().build();
         blocking_stub.goToMinimumAzimuthPosition(req);
     }
+
+    private void goToParkingPosition() {
+        Null req = Null.newBuilder().build();
+        blocking_stub.goToParkingPosition(req);
+    }
+
+    private void getParkingPosition() {
+        var req = Null.newBuilder().build();
+        var resp = blocking_stub.getParkingPosition(req);
+        System.out.println("Azimuth=" + resp.getAzimuth());
+        System.out.println("Zenith=" + resp.getZenith());
+    }
+
+    private void goToZenithParkingPosition() {
+        Null req = Null.newBuilder().build();
+        blocking_stub.goToZenithParkingPosition(req);
+    }
+
+    private void goToAzimuthParkingPosition() {
+        Null req = Null.newBuilder().build();
+        blocking_stub.goToAzimuthParkingPosition(req);
+    }
+
 }
 
-@CommandLine.Command(name = "operation", description = "Operation commands",
-        mixinStandardHelpOptions = true, subcommands = {Acquisition.class, Telescope.class})
-public class Operation implements Runnable {
-    private final static Logging log = new Logging(Operation.class);
+@CommandLine.Command(name = "llc", mixinStandardHelpOptions = true)
+class LLC implements Runnable {
+    private final static Logging log = new Logging(LLC.class);
 
     @CommandLine.Option(names = "--micro-init", description = "Micro initialization sequence")
     private boolean micro_init = false;
 
     @CommandLine.Option(names = "--micro-shutdown", description = "Micro shutdown sequence")
     private boolean micro_shutdown = false;
-
-    @CommandLine.Option(names = "--go-parking", description = "Go to parking position")
-    private boolean parking_position = false;
-
-    @CommandLine.Option(names = "--get-parking", description =  "Get parking position")
-    private boolean get_parking_position = false;
-
-    @CommandLine.Option(names = "--go-zenith-parking", description = "Go to zenith parking position")
-    private boolean zenith_parking_position = false;
-
-    @CommandLine.Option(names = "--go-azimuth-parking", description = "Go to azimuth parking position")
-    private boolean azimuth_parking_postiion = false;
 
     @CommandLine.Option(names = "--arm-init", description = "Initialize arm")
     private boolean arm_init = false;
@@ -308,6 +334,177 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "--ramp-single", description = "Modify voltage of a single DAC")
     private String ramp_single = "";
 
+    private static Config cfg;
+
+    private OperationGrpc.OperationBlockingStub blocking_stub;
+    private LLCDriversGrpc.LLCDriversBlockingStub drivers_stub;
+    private LLCSensorsGrpc.LLCSensorsBlockingStub sensors_stub;
+
+
+    public LLC() throws IOException {
+        cfg = new Config("client", "micro_init_sequence");
+    }
+
+    @Override
+    public void run() {
+        var ch = Licli.sm.getCh();
+
+        blocking_stub = OperationGrpc.newBlockingStub(ch);
+        blocking_stub = Licli.sm.addMetadata(blocking_stub);
+
+        drivers_stub = LLCDriversGrpc.newBlockingStub(ch);
+        drivers_stub = Licli.sm.addMetadata(drivers_stub);
+
+        sensors_stub = LLCSensorsGrpc.newBlockingStub(ch);
+        sensors_stub = Licli.sm.addMetadata(sensors_stub);
+
+        try {
+            if(micro_init) initSequence();
+            else if(micro_shutdown) microShutdownSequence();
+            else if(arm_init) initializeArm();
+            else if(arm_align) moveArmToAlignmentPos();
+            else if(laser_init) initalizeLaser();
+            else if(laser_power_on) laserPowerOn();
+            else if(laser_power_off) laserPowerOff();
+            else if(ramp_up) rampUp();
+            else if(ramp_down) rampDown();
+            else if(!ramp_single.isEmpty()) rampSingle(ramp_single);
+            else printHelp();
+        } catch(Exception e) {
+            e.printStackTrace();
+            log.error(e.toString());
+        }
+    }
+
+    // Private methods
+
+    private static float getTemperature() {
+        return cfg.getFloat("temperature_threshold");
+    }
+
+    private static int getDacVoltage() {
+        return cfg.getInteger("pmt_dac_voltage");
+    }
+
+    private static java.awt.geom.Point2D getPosition() {
+        var p_x = cfg.getFloat("allignment_arm_X");
+        var p_y = cfg.getFloat("allignment_arm_Y");
+
+        return new java.awt.geom.Point2D.Float(p_x, p_y);
+    }
+
+    private java.util.List getConvertedData() {
+        Null req = Null.newBuilder().build();
+        Data resp = sensors_stub.getConvertedData(req);
+        return resp.getDataList();
+    }
+
+    private String getDriverName(int index) {
+        Index req = Index.newBuilder().setIndex(index).build();
+        var resp = drivers_stub.getName(req);
+        return resp.getStr();
+    }
+
+    private void printDacsVoltage(){
+        var d = getConvertedData();
+        var fmt_str = MessageFormat.format("DAC#1: {}V\tDAC#2: {}V\tDAC#3: {}V\tDAC#4: {}V",
+                d.get(17), d.get(18), d.get(19), d.get(20));
+
+        System.out.println("Current DACs Voltage:");
+        System.out.println(fmt_str);
+    }
+
+    private void printDriversStatus(){
+        Null req = Null.newBuilder().build();
+        StatusArray resp = drivers_stub.getStatus(req);
+
+        System.out.println("Driver's Status: ");
+
+
+        for (int i = 0; i < resp.getStatusCount(); i++){
+            if(resp.getStatus(i).getStatus()) System.out.print("ON");
+            else System.out.print("OFF");
+            System.out.println("\t" + getDriverName(i));
+        }
+    }
+
+    private void initSequence() {
+        var p = getPosition();
+        var point_req = Point2D.newBuilder().setX(p.getX()).setY(p.getY()).build();
+        var req = InitSequenceOptions.newBuilder().setHotwindTmep(getTemperature()).setPosition(point_req).setPmtDacVoltage(getDacVoltage()).build();
+        blocking_stub.executeMicroInitSequence(req);
+
+        printDacsVoltage();
+        printDriversStatus();
+    }
+
+    private void microShutdownSequence() {
+        var req = Null.newBuilder().build();
+        blocking_stub.executeMicroShutdownSequence(req);
+    }
+
+    private void initializeArm() {
+        var req = Null.newBuilder().build();
+        blocking_stub.initializeArm(req);
+    }
+
+    private void moveArmToAlignmentPos() {
+        var p_x = cfg.getFloat("allignment_arm_X");
+        var p_y = cfg.getFloat("allignment_arm_Y");
+
+        var req = Point2D.newBuilder().setX(p_x).setY(p_y).build();
+        blocking_stub.moveArmToAlignmentPos(req);
+    }
+
+    private void rampSingle(String s) {
+        String[] components = Helpers.split(s, 2);
+
+        int dac = Integer.parseInt(components[0]);
+        int voltage = Integer.parseInt(components[1]);
+
+        var c = DAC.newBuilder().setIdx(dac).setVoltage(voltage).build();
+        blocking_stub.rampUpSingleDAC(c);
+    }
+
+    private void rampUp() {
+        var req = InitSequenceOptions.newBuilder().setPmtDacVoltage(getDacVoltage()).build();
+        blocking_stub.rampUpDACs(req);
+    }
+
+    private void rampDown() {
+        var req = Null.newBuilder().build();
+        blocking_stub.rampDownDACs(req);
+    }
+
+    private void initalizeLaser() {
+        var req = Null.newBuilder().build();
+        blocking_stub.initializeLaser(req);
+    }
+
+    private void laserPowerOn() {
+        var req = Null.newBuilder().build();
+        blocking_stub.powerOnLaser(req);
+    }
+
+    private void laserPowerOff() {
+        var req = Null.newBuilder().build();
+        blocking_stub.powerOffLaser(req);
+    }
+
+    private static void printHelp() {
+        System.out.println("Properties");
+        System.out.println("Temperature: " + getTemperature());
+        System.out.println("DAC Voltage: " + getDacVoltage());
+        System.out.println("Position: " + getPosition());
+    }
+}
+
+
+@CommandLine.Command(name = "operation", description = "Operation commands",
+        mixinStandardHelpOptions = true, subcommands = {Acquisition.class, Telescope.class, LLC.class})
+public class Operation implements Runnable {
+    private final static Logging log = new Logging(Operation.class);
+
     @CommandLine.Option(names = "--startup", description = "Start up normal mode")
     private boolean startup_normal_mode = false;
 
@@ -318,8 +515,6 @@ public class Operation implements Runnable {
 
     private OperationGrpc.OperationStub stub;
     private OperationGrpc.OperationBlockingStub blocking_stub;
-    private LLCDriversGrpc.LLCDriversBlockingStub drivers_stub;
-    private LLCSensorsGrpc.LLCSensorsBlockingStub sensors_stub;
 
     public Operation() throws IOException {
          cfg = new Config("client", "micro_init_sequence");
@@ -335,32 +530,12 @@ public class Operation implements Runnable {
         blocking_stub = OperationGrpc.newBlockingStub(ch);
         blocking_stub = Licli.sm.addMetadata(blocking_stub);
 
-        drivers_stub = LLCDriversGrpc.newBlockingStub(ch);
-        drivers_stub = Licli.sm.addMetadata(drivers_stub);
-
-        sensors_stub = LLCSensorsGrpc.newBlockingStub(ch);
-        sensors_stub = Licli.sm.addMetadata(sensors_stub);
-
         CommandLine.populateCommand(this);
 
         try {
             cfg.load();
 
-            if(micro_init) initSequence();
-            else if(micro_shutdown) microShutdownSequence();
-            else if(parking_position) goToParkingPosition();
-            else if(get_parking_position) getParkingPosition();
-            else if(zenith_parking_position) goToZenithParkingPosition();
-            else if(azimuth_parking_postiion) goToAzimuthParkingPosition();
-            else if(arm_init) initializeArm();
-            else if(arm_align) moveArmToAlignmentPos();
-            else if(laser_init) initalizeLaser();
-            else if(laser_power_on) laserPowerOn();
-            else if(laser_power_off) laserPowerOff();
-            else if(ramp_up) rampUp();
-            else if(ramp_down) rampDown();
-            else if(!ramp_single.isEmpty()) rampSingle(ramp_single);
-            else if(startup_normal_mode) startUpNormalMode();
+            if(startup_normal_mode) startUpNormalMode();
             else if(shutdown) shutdownSequence();
             else printHelp();
         } catch(Exception e) {
@@ -415,98 +590,11 @@ public class Operation implements Runnable {
         finishedLatch.await();
     }
 
-    private void rampSingle(String s) {
-        String[] components = Helpers.split(s, 2);
-
-        int dac = Integer.parseInt(components[0]);
-        int voltage = Integer.parseInt(components[1]);
-
-        var c = DAC.newBuilder().setIdx(dac).setVoltage(voltage).build();
-        blocking_stub.rampUpSingleDAC(c);
-    }
-
-    private void rampUp() {
-        var req = InitSequenceOptions.newBuilder().setPmtDacVoltage(getDacVoltage()).build();
-        blocking_stub.rampUpDACs(req);
-    }
-
-    private void rampDown() {
-        var req = Null.newBuilder().build();
-        blocking_stub.rampDownDACs(req);
-    }
-
-    private void goToParkingPosition() {
-        Null req = Null.newBuilder().build();
-        blocking_stub.goToParkingPosition(req);
-    }
-
-    private void getParkingPosition() {
-        var req = Null.newBuilder().build();
-        var resp = blocking_stub.getParkingPosition(req);
-        System.out.println("Azimuth=" + resp.getAzimuth());
-        System.out.println("Zenith=" + resp.getZenith());
-    }
-
-    private void goToZenithParkingPosition() {
-        Null req = Null.newBuilder().build();
-        blocking_stub.goToZenithParkingPosition(req);
-    }
-
-    private void goToAzimuthParkingPosition() {
-        Null req = Null.newBuilder().build();
-        blocking_stub.goToAzimuthParkingPosition(req);
-    }
-
-    private void initializeArm() {
-        var req = Null.newBuilder().build();
-        blocking_stub.initializeArm(req);
-    }
-
-    private void initalizeLaser() {
-        var req = Null.newBuilder().build();
-        blocking_stub.initializeLaser(req);
-    }
-
-    private void laserPowerOn() {
-        var req = Null.newBuilder().build();
-        blocking_stub.powerOnLaser(req);
-    }
-
-    private void laserPowerOff() {
-        var req = Null.newBuilder().build();
-        blocking_stub.powerOffLaser(req);
-    }
-
-    private void moveArmToAlignmentPos() {
-        var p_x = cfg.getFloat("allignment_arm_X");
-        var p_y = cfg.getFloat("allignment_arm_Y");
-
-        var req = Point2D.newBuilder().setX(p_x).setY(p_y).build();
-        blocking_stub.moveArmToAlignmentPos(req);
-    }
-
-    // Micro
-
     private static void printHelp() {
         System.out.println("Properties");
         System.out.println("Temperature: " + getTemperature());
         System.out.println("DAC Voltage: " + getDacVoltage());
         System.out.println("Position: " + getPosition());
-    }
-
-    private void initSequence() {
-        var p = getPosition();
-        var point_req = Point2D.newBuilder().setX(p.getX()).setY(p.getY()).build();
-        var req = InitSequenceOptions.newBuilder().setHotwindTmep(getTemperature()).setPosition(point_req).setPmtDacVoltage(getDacVoltage()).build();
-        blocking_stub.executeMicroInitSequence(req);
-
-        printDacsVoltage();
-        printDriversStatus();
-    }
-
-    private void microShutdownSequence() {
-        var req = Null.newBuilder().build();
-        blocking_stub.executeMicroShutdownSequence(req);
     }
 
     private static java.awt.geom.Point2D getPosition() {
@@ -522,40 +610,5 @@ public class Operation implements Runnable {
 
     private static int getDacVoltage() {
         return cfg.getInteger("pmt_dac_voltage");
-    }
-
-    private java.util.List getConvertedData() {
-        Null req = Null.newBuilder().build();
-        Data resp = sensors_stub.getConvertedData(req);
-        return resp.getDataList();
-    }
-
-    private void printDacsVoltage(){
-        var d = getConvertedData();
-        var fmt_str = MessageFormat.format("DAC#1: {}V\tDAC#2: {}V\tDAC#3: {}V\tDAC#4: {}V",
-                d.get(17), d.get(18), d.get(19), d.get(20));
-
-        System.out.println("Current DACs Voltage:");
-        System.out.println(fmt_str);
-    }
-
-    private String getDriverName(int index) {
-        Index req = Index.newBuilder().setIndex(index).build();
-        var resp = drivers_stub.getName(req);
-        return resp.getStr();
-    }
-
-    private void printDriversStatus(){
-        Null req = Null.newBuilder().build();
-        StatusArray resp = drivers_stub.getStatus(req);
-
-        System.out.println("Driver's Status: ");
-
-
-        for (int i = 0; i < resp.getStatusCount(); i++){
-            if(resp.getStatus(i).getStatus()) System.out.print("ON");
-            else System.out.print("OFF");
-            System.out.println("\t" + getDriverName(i));
-        }
     }
 }
