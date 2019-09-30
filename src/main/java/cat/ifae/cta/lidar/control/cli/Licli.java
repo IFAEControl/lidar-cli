@@ -6,8 +6,8 @@ import cat.ifae.cta.lidar.control.cli.session.SessionManager;
 import picocli.CommandLine;
 
 
-@CommandLine.Command(mixinStandardHelpOptions = true, subcommands = {LLControl.class, Licel.class, Monitoring.class,
-        Motors.class, Operation.class, Alarms.class, Config.class, Trace.class})
+@CommandLine.Command(mixinStandardHelpOptions = true, subcommands = {LLControl.class, Licel.class, SensorsMonitoring.class,
+        Motors.class, Operation.class, Alarms.class, Config.class, Trace.class, MotorsMonitoring.class})
 public class Licli implements Runnable {
     public static SessionManager sm = new SessionManager();
 

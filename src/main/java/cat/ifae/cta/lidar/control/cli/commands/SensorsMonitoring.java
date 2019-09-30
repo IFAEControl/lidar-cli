@@ -7,9 +7,9 @@ import picocli.CommandLine;
 
 import java.util.concurrent.CountDownLatch;
 
-@CommandLine.Command(name = "monitoring", description = "Monitoring commands", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "monitoring", description = "SensorsMonitoring commands", mixinStandardHelpOptions = true)
 public
-class Monitoring implements Runnable {
+class SensorsMonitoring implements Runnable {
     private MonitoringGrpc.MonitoringStub stub;
     private MonitoringGrpc.MonitoringBlockingStub blockingStub;
 
@@ -39,14 +39,12 @@ class Monitoring implements Runnable {
             else
                 throw new RuntimeException("Select one variable (and only one)");
 
-
             //var requestObserverRef = new AtomicReference<>();
             if(last_value) getLastValue(name);
             else monitoring(name);
         } catch(InterruptedException | RuntimeException e) {
             System.out.println(e.toString());
         }
-
     }
 
     private void getLastValue(String m) {
