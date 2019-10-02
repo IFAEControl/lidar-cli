@@ -45,6 +45,10 @@ class DataSelection {
         d |= 1 << 6;
     }
 
+    void enableFileID() {
+        d |= 1 << 7;
+    }
+
     int getBitmap() {
         return d;
     }
@@ -98,6 +102,7 @@ class Acquisition implements Runnable {
     private void acquireShots() throws IOException {
         var t = new DataSelection();
         t.enableAnalogData();
+        t.enableFileID();
         var b = t.getBitmap();
         var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(disc).setShots(acquire_shots).setDataToRetrieve(b).build();
         var resp = blocking_stub.acquireShots(req);
@@ -107,13 +112,18 @@ class Acquisition implements Runnable {
     private void acquisitionStart() {
         var t = new DataSelection();
         t.enableAnalogData();
+        t.enableFileID();
         var b = t.getBitmap();
         var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(3).setDataToRetrieve(b).build();
         blocking_stub.acquisitionStart(req);
     }
 
     private void acquisitionStop() throws IOException {
-        var req = AcqConfig.newBuilder().setMaxBins(16381).build();
+        var t = new DataSelection();
+        t.enableAnalogData();
+        t.enableFileID();
+        var b = t.getBitmap();
+        var req = AcqConfig.newBuilder().setMaxBins(16381).setDataToRetrieve(b).build();
         var resp = blocking_stub.acquisitionStop(req);
         writeDataToFiles(resp);
     }
