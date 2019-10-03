@@ -58,6 +58,9 @@ class DataSelection {
 class Acquisition implements Runnable {
     private final static Logging log = new Logging(Acquisition.class);
 
+    @CommandLine.Option(names = "--download", description = "Download file with given ID")
+    private int download_file_id = -1;
+
     @CommandLine.Option(names = "--start", description = "Start acquisition manually")
     private boolean acquisition_start = false;
 
@@ -87,6 +90,7 @@ class Acquisition implements Runnable {
 
             if(acquisition_start) acquisitionStart();
             else if(acquisition_stop) acquisitionStop();
+            else if(download_file_id != -1) downloadFile();
             else if(acquire_shots != 0) {
                 if(acquire_shots >= 2)
                     acquireShots();
@@ -97,6 +101,12 @@ class Acquisition implements Runnable {
             e.printStackTrace();
             log.error(e.toString());
         }
+    }
+
+    private void downloadFile() {
+        var req = FileID.newBuilder().setId(download_file_id).build();
+        var resp = blocking_stub.downloadFile(req);
+        System.out.println(new String(resp.getData().toByteArray()));
     }
 
     private void acquireShots() throws IOException {
@@ -125,6 +135,7 @@ class Acquisition implements Runnable {
         var b = t.getBitmap();
         var req = AcqConfig.newBuilder().setMaxBins(16381).setDataToRetrieve(b).build();
         var resp = blocking_stub.acquisitionStop(req);
+        System.out.println("File ID: " + resp.getAnalogLicelFileId());
         writeDataToFiles(resp);
     }
 
