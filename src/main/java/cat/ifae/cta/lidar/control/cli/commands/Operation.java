@@ -167,7 +167,7 @@ class Telescope implements Runnable {
     @CommandLine.Option(names = "--start-test", description = "Start telescope test")
     private boolean telescope_test_start = false;
 
-    @CommandLine.Option(names = "--stop-test", description = "Stop telescope test")
+    @CommandLine.Option(names = "--stop", description = "Stop telescope")
     private boolean teelescope_test_stop = false;
 
     @CommandLine.Option(names = "--to-max-zenith", description = "Move telescope zenith axis to maximum position")
@@ -245,7 +245,7 @@ class Telescope implements Runnable {
 
     private void stopTelescopeTests() {
         Null req = Null.newBuilder().build();
-        blocking_stub.stopTelescopeTests(req);
+        blocking_stub.stopTelescope(req);
     }
 
     private void goToMaximumZenith() throws InterruptedException {
