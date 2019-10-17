@@ -1,7 +1,7 @@
 package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.*;
-import cat.ifae.cta.lidar.config.Config;
+import cat.ifae.cta.lidar.control.cli.Configuration;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import cat.ifae.cta.lidar.logging.Logging;
 import io.grpc.stub.StreamObserver;
@@ -355,16 +355,9 @@ class LLC implements Runnable {
     @CommandLine.Option(names = "--ramp-single", description = "Modify voltage of a single DAC")
     private String ramp_single = "";
 
-    private static Config cfg;
-
     private OperationGrpc.OperationBlockingStub blocking_stub;
     private LLCDriversGrpc.LLCDriversBlockingStub drivers_stub;
     private LLCSensorsGrpc.LLCSensorsBlockingStub sensors_stub;
-
-
-    public LLC() throws IOException {
-        cfg = new Config("client", "micro_init_sequence");
-    }
 
     @Override
     public void run() {
@@ -400,16 +393,16 @@ class LLC implements Runnable {
     // Private methods
 
     private static float getTemperature() {
-        return cfg.getFloat("temperature_threshold");
+        return Configuration.temperature_threshold;
     }
 
     private static int getDacVoltage() {
-        return cfg.getInteger("pmt_dac_voltage");
+        return Configuration.pmt_dac_voltage;
     }
 
     private static java.awt.geom.Point2D getPosition() {
-        var p_x = cfg.getFloat("allignment_arm_X");
-        var p_y = cfg.getFloat("allignment_arm_Y");
+        var p_x = Configuration.arm_alignment_x;
+        var p_y = Configuration.arm_alignment_y;
 
         return new java.awt.geom.Point2D.Float(p_x, p_y);
     }
@@ -470,8 +463,8 @@ class LLC implements Runnable {
     }
 
     private void moveArmToAlignmentPos() {
-        var p_x = cfg.getFloat("allignment_arm_X");
-        var p_y = cfg.getFloat("allignment_arm_Y");
+        var p_x = Configuration.arm_alignment_x;
+        var p_y = Configuration.arm_alignment_y;
 
         var req = Point2D.newBuilder().setX(p_x).setY(p_y).build();
         blocking_stub.moveArmToAlignmentPos(req);
@@ -532,14 +525,8 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "--shutdown", description = "Shutdown")
     private boolean shutdown = false;
 
-    private static Config cfg;
-
     private OperationGrpc.OperationStub stub;
     private OperationGrpc.OperationBlockingStub blocking_stub;
-
-    public Operation() throws IOException {
-         cfg = new Config("client", "micro_init_sequence");
-    }
 
     @Override
     public void run() {
@@ -554,8 +541,6 @@ public class Operation implements Runnable {
         CommandLine.populateCommand(this);
 
         try {
-            cfg.load();
-
             if(startup_normal_mode) startUpNormalMode();
             else if(shutdown) shutdownSequence();
             else printHelp();
@@ -619,17 +604,17 @@ public class Operation implements Runnable {
     }
 
     private static java.awt.geom.Point2D getPosition() {
-        var p_x = cfg.getFloat("allignment_arm_X");
-        var p_y = cfg.getFloat("allignment_arm_Y");
+        var p_x = Configuration.arm_alignment_x;
+        var p_y = Configuration.arm_alignment_y;
 
         return new java.awt.geom.Point2D.Float(p_x, p_y);
     }
 
     private static float getTemperature() {
-        return cfg.getFloat("temperature_threshold");
+        return Configuration.temperature_threshold;
     }
 
     private static int getDacVoltage() {
-        return cfg.getInteger("pmt_dac_voltage");
+        return Configuration.pmt_dac_voltage;
     }
 }

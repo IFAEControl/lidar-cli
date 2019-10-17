@@ -16,6 +16,10 @@ public class Licli implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
+
+        // If configuration file contains errors we want to make it fail fail ASAP
+        new Configuration().checkConfiguration();
+
         try {
             var client = CommandLine.populateCommand(new Licli(), args);
 
