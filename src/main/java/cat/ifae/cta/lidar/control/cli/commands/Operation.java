@@ -191,17 +191,17 @@ class Telescope implements Runnable {
     @CommandLine.Option(names = "--go-azimuth-parking", description = "Go to azimuth parking position")
     private boolean azimuth_parking_postiion = false;
 
-    private OperationGrpc.OperationStub stub;
-    private OperationGrpc.OperationBlockingStub blocking_stub;
+    private TelescopeGrpc.TelescopeStub stub;
+    private TelescopeGrpc.TelescopeBlockingStub blocking_stub;
 
     @Override
     public void run() {
         var ch = Licli.sm.getCh();
 
-        blocking_stub = OperationGrpc.newBlockingStub(ch);
+        blocking_stub = TelescopeGrpc.newBlockingStub(ch);
         blocking_stub = Licli.sm.addMetadata(blocking_stub);
 
-        stub = OperationGrpc.newStub(ch);
+        stub = TelescopeGrpc.newStub(ch);
         stub = Licli.sm.addMetadata(stub);
 
         try {
