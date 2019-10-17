@@ -10,8 +10,8 @@ import java.util.concurrent.CountDownLatch;
 @CommandLine.Command(name = "monitoring", description = "SensorsMonitoring commands", mixinStandardHelpOptions = true)
 public
 class SensorsMonitoring implements Runnable {
-    private MonitoringGrpc.MonitoringStub stub;
-    private MonitoringGrpc.MonitoringBlockingStub blockingStub;
+    private SensorsMonitoringGrpc.SensorsMonitoringStub stub;
+    private SensorsMonitoringGrpc.SensorsMonitoringBlockingStub blockingStub;
 
     @CommandLine.Option(names = "--humidity")
     private boolean humidity = false;
@@ -24,10 +24,10 @@ class SensorsMonitoring implements Runnable {
 
     @Override
     public final void run() {
-        stub = MonitoringGrpc.newStub(Licli.sm.getCh());
+        stub = SensorsMonitoringGrpc.newStub(Licli.sm.getCh());
         stub = Licli.sm.addMetadata(stub);
 
-        blockingStub = MonitoringGrpc.newBlockingStub(Licli.sm.getCh());
+        blockingStub = SensorsMonitoringGrpc.newBlockingStub(Licli.sm.getCh());
         blockingStub = Licli.sm.addMetadata(blockingStub);
 
         CommandLine.populateCommand(this);
