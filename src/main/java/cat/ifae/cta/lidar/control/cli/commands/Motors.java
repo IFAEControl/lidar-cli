@@ -109,17 +109,13 @@ class Doors implements Runnable {
     }
 }
 
-
-@CommandLine.Command(name = "motors", description = "Motors commands",
-        mixinStandardHelpOptions = true, subcommands = {Doors.class, Petals.class})
-public class Motors implements Runnable {
-    private MotorsGrpc.MotorsBlockingStub stub = null;
+@CommandLine.Command(name = "telescope", mixinStandardHelpOptions = true)
+class TelescopeMotors implements Runnable {
+    @CommandLine.Option(names = "--gz", description = "Get zenith")
+    private boolean get_zenith = false;
 
     @CommandLine.Option(names = "--sz", paramLabel = "Steps", description = "Set zenith")
     private int zenith_steps = -1;
-
-    @CommandLine.Option(names = "--gz", description = "Get zenith")
-    private boolean get_zenith = false;
 
     @CommandLine.Option(names = "--ga", description = "Get azimuth")
     private boolean get_azimuth = false;
@@ -130,12 +126,12 @@ public class Motors implements Runnable {
     @CommandLine.Option(names = "--home", description = "Go home")
     private boolean home = false;
 
+    private MotorsGrpc.MotorsBlockingStub stub = null;
+
     @Override
     public final void run() {
         stub = MotorsGrpc.newBlockingStub(Licli.sm.getCh());
         stub = Licli.sm.addMetadata(stub);
-
-        CommandLine.populateCommand(this);
 
         try {
             if(get_zenith) getZenith();
@@ -175,5 +171,15 @@ public class Motors implements Runnable {
     private void goHome() {
         Null req = Null.newBuilder().build();
         stub.goHome(req);
+    }
+}
+
+@CommandLine.Command(name = "motors", description = "Motors commands",
+        mixinStandardHelpOptions = true, subcommands = {Doors.class, Petals.class,
+        TelescopeMotors.class})
+public class Motors implements Runnable {
+    @Override
+    public final void run() {
+        CommandLine.populateCommand(this);
     }
 }
