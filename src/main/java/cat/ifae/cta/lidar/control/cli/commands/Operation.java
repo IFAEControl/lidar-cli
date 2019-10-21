@@ -321,9 +321,9 @@ class Telescope implements Runnable {
 
 }
 
-@CommandLine.Command(name = "llc", mixinStandardHelpOptions = true)
-class LLC implements Runnable {
-    private final static Logging log = new Logging(LLC.class);
+@CommandLine.Command(name = "ll", mixinStandardHelpOptions = true)
+class LowLevel implements Runnable {
+    private final static Logging log = new Logging(LowLevel.class);
 
     @CommandLine.Option(names = "--micro-init", description = "Micro initialization sequence")
     private boolean micro_init = false;
@@ -515,7 +515,7 @@ class LLC implements Runnable {
 
 
 @CommandLine.Command(name = "operation", description = "Operation commands",
-        mixinStandardHelpOptions = true, subcommands = {Acquisition.class, Telescope.class, LLC.class})
+        mixinStandardHelpOptions = true, subcommands = {Acquisition.class, Telescope.class, LowLevel.class})
 public class Operation implements Runnable {
     private final static Logging log = new Logging(Operation.class);
 
