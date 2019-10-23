@@ -1,0 +1,168 @@
+\documentclass[letterpaper, 10 pt]{article}
+\pagenumbering{Roman}
+
+\usepackage[margin=1.25in]{geometry}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{authblk}
+\usepackage{parskip}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[english]{babel}
+\usepackage{framed}
+
+\hypersetup{
+    colorlinks,
+    linktoc=all,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\makeatletter
+
+\definecolor{light-gray}{gray}{0.88}
+\lstset{ 
+			backgroundcolor=\color{light-gray},
+			xleftmargin=.25in,
+} 
+
+% switch to key style at EOL
+\lst@AddToHook{EveryLine}{\ifx\lst@language\language@yaml\YAMLkeystyle\fi}
+\makeatother
+
+\newcommand\ProcessThreeDashes{\llap{\color{cyan}\mdseries-{-}-}}
+
+
+\begin{document}
+\title{LIDAR CLI User Manual}
+\author{David Roman \\  \href{mailto:droman@ifae.es}{droman@ifae.es} }
+\affil{IFAE}
+\maketitle
+\pagestyle{empty}
+\newpage
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+\pagestyle{plain}
+
+\section{Running licli}
+\subsection{First steps}
+To be able to run licli we have to specify the IP address of the server. This is done by defining LIDAR\_ADDR environment variable. For example if the server is running in the same computer we can \emph{export LIDAR\_ADDR="127.0.0.1"}
+\\
+\subsection{Types of commands}
+Operation commands can be complex commands (ie: commands that do more than one thing) or checked commands (we check if the result is the expected one). Other commands will simply do the thing without taking care of anything else. In that sense, operation commands are higher level commands and other commands are the low-level commands.
+\\
+
+\section{Commands}
+Commands marked as \textbf{debug} are commands used for debugging purposes, that is, in the general use case won't be used.
+\subsection{LLC}
+This command contains all the commands related with the low level control board.
+\subsubsection{Arms}
+Command to control and monitor the laser arm. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
+\begin{itemize}
+	\item check-node (\textbf{debug}): Check communication with node N (N must be either "1" or "2")
+	\item emergency-stop (\textbf{debug}): Execute emergency stop
+	\item get-pos: Get current position
+	\item go: Go to current position. Argument must follow the format X:Y (eg: 1000:10000)
+	\item init: Initialize arm
+	\item set-speed (\textbf{debug}): Set speed. Argument must follow the format Axis:speed.
+\end{itemize}
+\subsubsection{DAC}
+Control dac voltages.
+\begin{itemize}
+	\item set-voltage: Set dac voltage. Argument must follow the format dac:voltage (0:100).
+\end{itemize}
+
+\subsubsection{Drivers}
+Get information about the drivers
+\begin{itemize}
+	\item get-status: Get a list of drivers status
+\end{itemize}
+
+\subsubsection{Hotwind}
+Controls the hotwind. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
+\begin{itemize}
+	\item error (\textbf{debug}): Set error ¿?
+	\item lock (\textbf{debug}): Lock
+	\item unlock (\textbf{debug}): Unlock
+\end{itemize}
+
+\subsubsection{Laser}
+Commands to control the laser. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
+\begin{itemize}
+	\item check (\textbf{debug}): Check laser communication
+	\item fire: Fire the laser
+	\item get-temp: Get laser temperature. 
+	\item init: Initialize laser
+	\item pause: Pause the laser
+	\item power: Set power in \%
+	\item stop: Stop the laser
+\end{itemize}
+
+\subsubsection{Relay}
+Commands to switch on/off relays. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
+\begin{itemize}
+	\item get-status: Get status
+	\item hotwind-off: Disable hotwind
+	\item hotwind-on: Enable hotwind
+	\item laser-on: Enable laser
+	\item laser-off: Disable laser
+	\item licel-on: Enable laser
+	\item licel-off: Disable laser
+	\item get-status: Get relay status
+	\item set-status: Set relay status. Argument must follow the format idx:status where status is true or false (eg: 0:false)
+\end{itemize}
+
+\subsubsection{Sensors}
+Commands to get sensor information. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
+\begin{itemize}
+	\item converted: Get sensors with a human-readable form
+	\item raw (\textbf{debug}): Get raw sensor values
+\end{itemize}
+
+\subsection{Motors}
+\subsubsection{Doors}
+\begin{itemize}
+	\item close: With an argument which must be "0" or "1". "1" to start closing the doors, "0" to stop the movement.
+	\item open: With an argument which must be "0" or "1". "1" to start opening the doors, "0" to stop the movement.
+	\item status: Print current status of the doors (OPEN, CLOSE or INTERSTATE if it's something in the middle)
+\end{itemize}
+\subsubsection{Petals}
+\begin{itemize}
+	\item close: With an argument which must be "0" or "1". "1" to start closing the petals, "0" to stop the movement.
+	\item open: With an argument which must be "0" or "1". "1" to start opening the petals, "0" to stop the movement.
+	\item status: Print current status of the petals (CLOSED or UNKNOWN if there is something else)
+\end{itemize}
+\subsubsection{Telescope}
+\begin{itemize}
+	\item ga: Get current azimuth position
+	\item gz: Get current zenith position
+	\item home: Go home. If tries to go to the position registered before opening the doors, if it's not possible it defaults to the hardcoded values, which may not be the correct ones. For this reason it's important to start the server when the doors are closed.
+	\item sa: Go to the given azimuth encoder position (an unsigned integer)
+	\item sz: Go to the given zenith encoder position (an unsigned integer)
+\end{itemize}
+\subsection{Monitoring}
+Monitoring commands
+\subsubsection{Sensors}
+Monitoring of sensors. 
+\begin{itemize}
+	\item humidity: Show readings of humidity values 
+	\item env-temperature: Show readings of environment temperatures
+	\item last-value (can be used in combination): Show the last value reading
+\end{itemize}
+\subsubsection{Motors}
+Monitoring of the motor monitoring board.
+
+\subsection{Operation}
+\subsubsection{Acquisition}
+\subsubsection{Telescope}
+\subsubsection{Low level}
+
+\newpage
+
+%\bibliography{}
+
+\end{document}
