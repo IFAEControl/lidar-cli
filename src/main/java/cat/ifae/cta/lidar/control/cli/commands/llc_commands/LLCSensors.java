@@ -19,9 +19,6 @@ class LLCSensors implements Runnable {
     @CommandLine.Option(names = "--raw", description = "If true get raw data, otherwise get converted data")
     private boolean get_raw = false;
 
-    @CommandLine.Option(names = "--converted", description = "If true get raw data, otherwise get converted data")
-    private boolean get_conv = false;
-
     @Override
     public void run() {
         stub = LLCSensorsGrpc.newBlockingStub(Licli.sm.getCh());
@@ -31,7 +28,7 @@ class LLCSensors implements Runnable {
 
         try {
             if(get_raw) getRawData();
-            else if(get_conv) getConvertedData();
+            else getConvertedData();
         } catch (StatusRuntimeException e) {
             _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
