@@ -340,10 +340,10 @@ class LowLevel implements Runnable {
     @CommandLine.Option(names = "--laser-init", description = "Initialize laser")
     private  boolean laser_init = false;
 
-    @CommandLine.Option(names = "--laser-power-on", description = "Initialize laser")
+    @CommandLine.Option(names = "--laser-power-on", description = "Power on laser")
     private  boolean laser_power_on = false;
 
-    @CommandLine.Option(names = "--laser-power-off", description = "Initialize laser")
+    @CommandLine.Option(names = "--laser-power-off", description = "Power off laser")
     private  boolean laser_power_off = false;
 
     @CommandLine.Option(names = "--ramp-up", description = "Execute ramp up DACs")
