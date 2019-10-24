@@ -54,9 +54,14 @@ To be able to run licli the first step is to specify the IP address of the serve
 \linebreak
 If it's the first time we run licli it would ask us to introduce a password. This password is defined in the configuration file of the lidar server software. 
 In case that it's not the first time and jwt secret has changed we can have some errors like \textbf{"The Token's Signature resulted invalid when verified using the Algorithm"}. If it's the case remove \textit{\~{}/.cache/lidar/0.1/token} and try again.\\
+
 \subsection{Examples}
 
-\section{Command reference}
+Open doors: \textbf{./licli motors doors --open=1}\\
+Get converted sensors values: \textbf{./licli llc sensors}
+
+
+\section{Commands reference}
 Commands marked as \textbf{debug} are commands used for debugging purposes.\\
 \linebreak
 Unless other commands, operation commands are a composition of different commands which are executed sequentially. Sometimes we call it macros.
@@ -119,9 +124,9 @@ Commands to switch on/off relays. Only one action will be executed at a time. If
 \end{itemize}
 
 \subsubsection{Sensors}
-Commands to get sensor information. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
+Commands to get sensor information from low level control board. There are other sensors that this command doesn't read, for example the temperature of the head of the laser.\\
+If no option is specified it will print values in human readable form.
 \begin{itemize}
-	\item converted: Get sensors with a human-readable form
 	\item raw (\textbf{debug}): Get raw sensor values
 \end{itemize}
 
