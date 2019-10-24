@@ -69,7 +69,7 @@ public class Acquisition implements Runnable {
     @CommandLine.Option(names = "--shots", description = "Acquire a given number of shots")
     private int acquire_shots = 0;
 
-    @CommandLine.Option(names = "--disc", description = "Discriminator level")
+    @CommandLine.Option(names = "--disc", required = true, description = "Discriminator level")
     private int disc = 0;
 
     private OperationGrpc.OperationBlockingStub blocking_stub;
