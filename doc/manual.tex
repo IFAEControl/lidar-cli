@@ -207,6 +207,8 @@ Low level operations
 Configuration files can be found on \textit{\~{}/.config/lidar/0.1/client/}. Currently there is only one file, micro\_init\_sequence.properties which can be used to defines arm alignment position, pmt voltages and temperature threshold at which the hotwind should be powered on.
 
 \section{Troubleshooting}
+\subsection{The Token's Signature resulted invalid...}
+This happens when the cached token is not correct. To fix it simply remove \textit{\~{}/.cache/lidar/0.1/token} and try again. This way a new token will be generated.
 
 \newpage
 
