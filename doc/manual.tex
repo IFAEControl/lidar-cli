@@ -50,14 +50,15 @@
 
 \section{Running licli}
 \subsection{First steps}
-To be able to run licli we have to specify the IP address of the server. This is done by defining LIDAR\_ADDR environment variable. For example if the server is running in the same computer we can \emph{export LIDAR\_ADDR="127.0.0.1"}
-\\
-\subsection{Types of commands}
-Operation commands can be complex commands (ie: commands that do more than one thing) or checked commands (we check if the result is the expected one). Other commands will simply do the thing without taking care of anything else. In that sense, operation commands are higher level commands and other commands are the low-level commands.
-\\
-
-\section{Commands}
-Commands marked as \textbf{debug} are commands used for debugging purposes, that is, in the general use case won't be used.
+To be able to run licli the first step is to specify the IP address of the server. This is done by defining LIDAR\_ADDR environment variable. For example if the server is running in the local host we can \emph{export LIDAR\_ADDR="127.0.0.1"}\\
+\linebreak
+If it's the first time we run licli it would ask us to introduce a password. This password is defined in the configuration file of the lidar server software. 
+In case that it's not the first time and wt secret has changed we can have some errors like \textbf{"The Token's Signature resulted invalid when verified using the Algorithm"}. If it's the case remove \textit{\~{}/.cache/lidar/0.1/token} and try again.\\
+\subsection{Examples}
+\section{Command reference}
+Commands marked as \textbf{debug} are commands used for debugging purposes.\\
+\linebreak
+Unless other commands, operation commands are a composition of different commands which are executed sequentially. Sometimes we call it macros.
 \subsection{LLC}
 This command contains all the commands related with the low level control board.
 \subsubsection{Arms}
@@ -154,12 +155,58 @@ Monitoring of sensors.
 	\item last-value (can be used in combination): Show the last value reading
 \end{itemize}
 \subsubsection{Motors}
-Monitoring of the motor monitoring board.
+Monitoring of the motor monitoring board. Currently it only prints the encoders position.
+
+\subsection{Alarms}
+Waits for alarm messages. Alarms are triggered whenever a sensor exceeds the safe limit. Message are sent in the form of strings informing of the problem.
+
+\subsection{Config}
+Returns current configuration of the server.
+
+\subsection{Trace}
+Command for debugging purposes
 
 \subsection{Operation}
 \subsubsection{Acquisition}
+\begin{itemize}
+	\item disc: Discriminator level. Always required.
+	\item download: Download licel file. Argument is the ID (unsigned integer) of the licel file we want to download.
+	\item shots: Acquire a given number of shots. Argument is an unsigned integer greater than 1. 
+	\item start: Start acquisition manually
+	\item stop: Stop acquisition
+\end{itemize}
 \subsubsection{Telescope}
+Telescope motors operations. When going to parking position it will first try to go to the last know good value (ie: the position we know that doors can be closed), if it's not possible it will go to the hardcoded values.
+\begin{itemize}
+	\item get-azimuth: Get azimuth position
+	\item go-azimuth-parking: Go to azimuth parking position
+	\item go-parking: Go to parking position
+	\item go-zenith-parking: Go zenith parking position
+	\item start-test: Execute telescope tests (move azmiuth and zenith to their maximum, minimum and parking position).
+	\item stop: Stop any telescope movement
+	\item to-max-azimuth: Go to maximum azimuth
+	\item to-max-zenith: Go to maximum zenith
+	\item to-min-azimuth: Go to minimum azimuth		
+\end{itemize}
 \subsubsection{Low level}
+Low level operations
+\begin{itemize}
+	\item arm-align: Move arm to alignment position (first it must be initialized)
+	\item arm-init: Initialize arm
+	\item laser-init: Initialize laser (first it must be powered-on)
+	\item laser-power-off: Power off laser
+	\item laser-power-on Power on laser
+	\item micro-init: Micro initialization sequence. Prepare laser, arm and rump up all DACs
+	\item micro-shutdown: Micro shutdown sequence. Power off laser hotwind and ramp down DACs
+	\item ramp-down: Ramp down all DACs
+	\item ramp-single: Modify voltage of a single DAC. Argument must follow the format idx:voltage.
+	\item ramp-up: Ramp up all DACs
+\end{itemize}
+
+\section{Configuration}
+Configuration files can be found on \textit{\~{}/.config/lidar/0.1/client/}. Currently there is only one file, micro\_init\_sequence.properties which can be used to defines arm alignment position, pmt voltages and temperature threshold at which the hotwind should be powered on.
+
+\section{Troubleshooting}
 
 \newpage
 
