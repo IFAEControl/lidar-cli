@@ -6,6 +6,7 @@ import cat.ifae.cta.lidar.LicelData;
 import cat.ifae.cta.lidar.OperationGrpc;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 
 import java.io.BufferedWriter;
@@ -82,20 +83,22 @@ public class Acquisition implements Runnable {
         blocking_stub = Licli.sm.addMetadata(blocking_stub);
 
         try {
-            if(disc == 0) {
+            if (disc == 0) {
                 System.out.println("Discriminator level must be set");
                 return;
             }
 
-            if(acquisition_start) acquisitionStart();
-            else if(acquisition_stop) acquisitionStop();
-            else if(download_file_id != -1) downloadFile();
-            else if(acquire_shots != 0) {
-                if(acquire_shots >= 2)
+            if (acquisition_start) acquisitionStart();
+            else if (acquisition_stop) acquisitionStop();
+            else if (download_file_id != -1) downloadFile();
+            else if (acquire_shots != 0) {
+                if (acquire_shots >= 2)
                     acquireShots();
                 else
                     System.out.println("Minimum shot number is 2");
             }
+        } catch (StatusRuntimeException e) {
+            log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());

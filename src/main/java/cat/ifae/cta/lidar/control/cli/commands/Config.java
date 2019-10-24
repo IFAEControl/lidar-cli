@@ -3,10 +3,14 @@ package cat.ifae.cta.lidar.control.cli.commands;
 import cat.ifae.cta.lidar.ConfigGrpc;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.control.cli.Licli;
+import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "config", mixinStandardHelpOptions = true, description = "See or change server configuration")
 public class Config implements Runnable {
+    private final static Logging _log = new Logging(Config.class);
+
     private ConfigGrpc.ConfigBlockingStub stub;
 
     @CommandLine.Option(names = "--get")
@@ -21,7 +25,8 @@ public class Config implements Runnable {
 
         try {
             if(is_get) printConfig();
-
+        } catch (StatusRuntimeException e) {
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch (Exception e) {
             System.out.println(e.toString());
         }

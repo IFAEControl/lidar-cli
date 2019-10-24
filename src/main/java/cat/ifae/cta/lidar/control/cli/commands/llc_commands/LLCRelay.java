@@ -2,11 +2,15 @@ package cat.ifae.cta.lidar.control.cli.commands.llc_commands;
 
 import cat.ifae.cta.lidar.*;
 import cat.ifae.cta.lidar.control.cli.Licli;
+import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "relay", mixinStandardHelpOptions = true)
 public
 class LLCRelay implements  Runnable {
+    private final static Logging _log = new Logging(LLCRelay.class);
+
     private LLCRelayGrpc.LLCRelayBlockingStub stub;
     private static final int LASER_RELAY = 0;
     private static final int HOTWIND_RELAY = 1;
@@ -55,6 +59,8 @@ class LLCRelay implements  Runnable {
             else if(licel_on) powerOnLicel();
             else if(licel_off) powerOffLicel();
             else if(!status.isEmpty()) setStatus(status);
+        } catch (StatusRuntimeException e) {
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch (RuntimeException e) {
             System.out.println(e.toString());
         }

@@ -5,11 +5,15 @@ import cat.ifae.cta.lidar.Index;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.StatusArray;
 import cat.ifae.cta.lidar.control.cli.Licli;
+import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "drivers", mixinStandardHelpOptions = true)
 public
 class LLCDrivers implements Runnable {
+    private final static Logging _log = new Logging(LLCDrivers.class);
+
     private LLCDriversGrpc.LLCDriversBlockingStub stub;
 
     @CommandLine.Option(names = "--get-status", description = "Get status")
@@ -24,6 +28,8 @@ class LLCDrivers implements Runnable {
 
         try {
             if (get_status) getStatus();
+        } catch (StatusRuntimeException e) {
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch (Exception e) {
             System.out.println(e.toString());
         }

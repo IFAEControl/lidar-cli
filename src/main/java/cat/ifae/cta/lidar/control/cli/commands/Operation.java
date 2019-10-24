@@ -7,6 +7,7 @@ import cat.ifae.cta.lidar.control.cli.commands.operation_commands.Acquisition;
 import cat.ifae.cta.lidar.control.cli.commands.operation_commands.LowLevel;
 import cat.ifae.cta.lidar.control.cli.commands.operation_commands.Telescope;
 import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import picocli.CommandLine;
 
@@ -42,6 +43,8 @@ public class Operation implements Runnable {
             if(startup_normal_mode) startUpNormalMode();
             else if(shutdown) shutdownSequence();
             else printHelp();
+        } catch (StatusRuntimeException e) {
+            log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());

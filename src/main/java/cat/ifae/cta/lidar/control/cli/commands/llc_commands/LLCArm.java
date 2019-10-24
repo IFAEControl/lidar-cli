@@ -6,10 +6,14 @@ import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.Point2D;
 import cat.ifae.cta.lidar.Helpers;
 import cat.ifae.cta.lidar.control.cli.Licli;
+import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "arms", mixinStandardHelpOptions = true)
 public class LLCArm implements Runnable {
+    private final static Logging _log = new Logging(LLCArm.class);
+
     private LLCArmGrpc.LLCArmBlockingStub stub;
 
     @CommandLine.Option(names = "--init", description = "Initalize arms")
@@ -44,6 +48,8 @@ public class LLCArm implements Runnable {
             else if (is_stop) stop();
             else if (node != -1) checkCommunicationsNode(node);
             else if (!node_speed.isEmpty()) setNodeSpeed(node_speed);
+        } catch (StatusRuntimeException e) {
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch (Exception e) {
             System.out.println(e.toString());
         }

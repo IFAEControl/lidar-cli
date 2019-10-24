@@ -4,6 +4,7 @@ import cat.ifae.cta.lidar.*;
 import cat.ifae.cta.lidar.control.cli.Configuration;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 
 import java.text.MessageFormat;
@@ -71,6 +72,8 @@ public class LowLevel implements Runnable {
             else if(ramp_down) rampDown();
             else if(!ramp_single.isEmpty()) rampSingle(ramp_single);
             else printHelp();
+        } catch (StatusRuntimeException e) {
+            log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());

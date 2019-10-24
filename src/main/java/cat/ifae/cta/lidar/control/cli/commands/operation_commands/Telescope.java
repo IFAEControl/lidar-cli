@@ -5,6 +5,7 @@ import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.TelescopeGrpc;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import picocli.CommandLine;
 
@@ -64,6 +65,8 @@ class Telescope implements Runnable {
             else if(get_parking_position) getParkingPosition();
             else if(zenith_parking_position) goToZenithParkingPosition();
             else if(azimuth_parking_postiion) goToAzimuthParkingPosition();
+        } catch (StatusRuntimeException e) {
+            log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());

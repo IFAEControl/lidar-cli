@@ -4,11 +4,15 @@ import cat.ifae.cta.lidar.DacConfig;
 import cat.ifae.cta.lidar.LLCDacGrpc;
 import cat.ifae.cta.lidar.Helpers;
 import cat.ifae.cta.lidar.control.cli.Licli;
+import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "dac", mixinStandardHelpOptions = true)
 public
 class LLCDac implements Runnable {
+    private final static Logging _log = new Logging(LLCDac.class);
+
     private LLCDacGrpc.LLCDacBlockingStub stub;
 
     @CommandLine.Option(names = "--set-voltage", description = "Set voltage. format=dac:voltage")
@@ -23,6 +27,8 @@ class LLCDac implements Runnable {
 
         try {
             if (!dac_setting.isEmpty()) setVoltage(dac_setting);
+        } catch (StatusRuntimeException e) {
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch (Exception e) {
             System.out.println(e.toString());
         }

@@ -4,11 +4,15 @@ import cat.ifae.cta.lidar.LLCLaserGrpc;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.Power;
 import cat.ifae.cta.lidar.control.cli.Licli;
+import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "laser", mixinStandardHelpOptions = true)
 public
 class LLCLaser implements Runnable {
+    private final static Logging _log = new Logging(LLCLaser.class);
+
     private LLCLaserGrpc.LLCLaserBlockingStub stub;
 
     @CommandLine.Option(names = "--init", description = "Initalize laser")
@@ -47,6 +51,8 @@ class LLCLaser implements Runnable {
             else if(check) checkCommunications();
             else if(power > -1) setPower(power);
             else if(laser_temp) getTemp();
+        } catch (StatusRuntimeException e) {
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(RuntimeException e) {
             System.out.println(e.toString());
         }

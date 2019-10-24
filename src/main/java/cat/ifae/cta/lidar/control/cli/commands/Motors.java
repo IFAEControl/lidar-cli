@@ -2,10 +2,14 @@ package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.*;
 import cat.ifae.cta.lidar.control.cli.Licli;
+import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "petals", mixinStandardHelpOptions = true)
 class Petals implements Runnable {
+    private final static Logging _log = new Logging(Petals.class);
+
     @CommandLine.Option(names = "--status", description = "Get status of petals")
     private boolean is_status = false;
 
@@ -28,6 +32,8 @@ class Petals implements Runnable {
             else if(is_open == 1) open(true);
             else if(is_open == 0) open(false);
             else if(is_status) getStatus();
+        } catch (StatusRuntimeException e) {
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
             System.out.println(e.toString());
         }
@@ -59,6 +65,9 @@ class Petals implements Runnable {
 
 @CommandLine.Command(name = "doors", mixinStandardHelpOptions = true)
 class Doors implements Runnable {
+    private final static Logging _log = new Logging(Doors.class);
+
+
     @CommandLine.Option(names = "--close", description = "Start (1) or stop (0) closing doors")
     private int is_close = -1;
 
@@ -81,6 +90,8 @@ class Doors implements Runnable {
             else if(is_open == 1) open(true);
             else if(is_open == 0) open(false);
             else if(is_status) getStatus();
+        } catch (StatusRuntimeException e) {
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
             System.out.println(e.toString());
         }
@@ -111,6 +122,8 @@ class Doors implements Runnable {
 
 @CommandLine.Command(name = "telescope", mixinStandardHelpOptions = true)
 class TelescopeMotors implements Runnable {
+    private final static Logging _log = new Logging(TelescopeMotors.class);
+
     @CommandLine.Option(names = "--gz", description = "Get zenith")
     private boolean get_zenith = false;
 
@@ -139,6 +152,8 @@ class TelescopeMotors implements Runnable {
             else if(get_azimuth) getAzimuth();
             else if(azimuth_steps > 0) setAzimuth(azimuth_steps);
             else if(home) goHome();
+        } catch (StatusRuntimeException e) {
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
             System.out.println(e.toString());
         }

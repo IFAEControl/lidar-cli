@@ -5,11 +5,15 @@ import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.Raw;
 import cat.ifae.cta.lidar.LLCSensorsGrpc;
 import cat.ifae.cta.lidar.control.cli.Licli;
+import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "sensors", mixinStandardHelpOptions = true)
 public
 class LLCSensors implements Runnable {
+    private final static Logging _log = new Logging(LLCSensors.class);
+
     private LLCSensorsGrpc.LLCSensorsBlockingStub stub;
 
     @CommandLine.Option(names = "--raw", description = "If true get raw data, otherwise get converted data")
@@ -28,6 +32,8 @@ class LLCSensors implements Runnable {
         try {
             if(get_raw) getRawData();
             else if(get_conv) getConvertedData();
+        } catch (StatusRuntimeException e) {
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
             e.printStackTrace();
             System.out.println(e.toString());

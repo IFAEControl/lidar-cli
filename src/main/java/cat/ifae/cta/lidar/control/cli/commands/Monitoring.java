@@ -5,6 +5,8 @@ import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.SensorsMonitoringGrpc;
 import cat.ifae.cta.lidar.Str;
 import cat.ifae.cta.lidar.control.cli.Licli;
+import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import picocli.CommandLine;
 
@@ -13,6 +15,8 @@ import java.util.concurrent.CountDownLatch;
 @CommandLine.Command(name = "sensors", description = "Sensors monitoring commands",
         mixinStandardHelpOptions = true)
 class SensorsMonitoring implements Runnable {
+   private final static Logging _log = new Logging(SensorsMonitoring.class);
+
    private SensorsMonitoringGrpc.SensorsMonitoringStub stub;
    private SensorsMonitoringGrpc.SensorsMonitoringBlockingStub blockingStub;
 
@@ -45,6 +49,8 @@ class SensorsMonitoring implements Runnable {
          //var requestObserverRef = new AtomicReference<>();
          if(last_value) getLastValue(name);
          else monitoring(name);
+      } catch (StatusRuntimeException e) {
+         _log.error(e.getStatus().getCause().getLocalizedMessage());
       } catch(InterruptedException | RuntimeException e) {
          System.out.println(e.toString());
       }
@@ -81,6 +87,8 @@ class SensorsMonitoring implements Runnable {
 @CommandLine.Command(name = "motors", description = "Motors monitoring commands",
         mixinStandardHelpOptions = true)
 class MotorsMonitoring implements Runnable {
+   private final static Logging _log = new Logging(MotorsMonitoring.class);
+
    private MotorsMonitoringGrpc.MotorsMonitoringBlockingStub blockingStub;
 
    @Override
@@ -93,6 +101,8 @@ class MotorsMonitoring implements Runnable {
       try {
          var req = Null.newBuilder().build();
          System.out.println(blockingStub.readEncoders(req));
+      } catch (StatusRuntimeException e) {
+         _log.error(e.getStatus().getCause().getLocalizedMessage());
       } catch(RuntimeException e) {
          System.out.println(e.toString());
       }

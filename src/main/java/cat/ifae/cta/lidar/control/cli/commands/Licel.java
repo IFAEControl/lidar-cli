@@ -3,6 +3,8 @@ package cat.ifae.cta.lidar.control.cli.commands;
 import cat.ifae.cta.lidar.*;
 import cat.ifae.cta.lidar.Helpers;
 import cat.ifae.cta.lidar.control.cli.Licli;
+import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 
 import java.text.MessageFormat;
@@ -10,6 +12,8 @@ import java.text.MessageFormat;
 @CommandLine.Command(name = "licel", description = "Licel commands", mixinStandardHelpOptions = true)
 public
 class Licel implements Runnable {
+    private final static Logging _log = new Logging(Licel.class);
+
     private LicelGrpc.LicelBlockingStub stub;
 
     // XXX: Insecure
@@ -148,6 +152,8 @@ class Licel implements Runnable {
             else if(_pmt_info != null) pmtSetGain(_pmt_info);
             else if(_trigger_mode != null) setTriggerMode(_trigger_mode);
             else if(_trigger_timing != null) setTriggerTiming(_trigger_timing);
+        } catch (StatusRuntimeException e) {
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch (Exception e) {
             //System.out.println(e.toString());
             e.printStackTrace(System.out);

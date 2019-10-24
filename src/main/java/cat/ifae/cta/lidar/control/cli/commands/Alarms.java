@@ -4,6 +4,8 @@ import cat.ifae.cta.lidar.AlarmMessage;
 import cat.ifae.cta.lidar.AlarmsGrpc;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.control.cli.Licli;
+import cat.ifae.cta.lidar.logging.Logging;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import picocli.CommandLine;
 
@@ -11,6 +13,8 @@ import java.util.concurrent.CountDownLatch;
 
 @CommandLine.Command(name = "alarms", description = "Alarms commands", mixinStandardHelpOptions = true)
 public class Alarms implements Runnable {
+    private final static Logging _log = new Logging(Alarms.class);
+
     private AlarmsGrpc.AlarmsStub stub;
 
     @Override
@@ -40,6 +44,8 @@ public class Alarms implements Runnable {
             });
 
             finishedLatch.await();
+        } catch (StatusRuntimeException e) {
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch (Exception e) {
             System.out.println(e.toString());
         }
