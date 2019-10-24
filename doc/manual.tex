@@ -55,6 +55,7 @@ To be able to run licli the first step is to specify the IP address of the serve
 If it's the first time we run licli it would ask us to introduce a password. This password is defined in the configuration file of the lidar server software. 
 In case that it's not the first time and wt secret has changed we can have some errors like \textbf{"The Token's Signature resulted invalid when verified using the Algorithm"}. If it's the case remove \textit{\~{}/.cache/lidar/0.1/token} and try again.\\
 \subsection{Examples}
+
 \section{Command reference}
 Commands marked as \textbf{debug} are commands used for debugging purposes.\\
 \linebreak
@@ -207,6 +208,7 @@ Low level operations
 Configuration files can be found on \textit{\~{}/.config/lidar/0.1/client/}. Currently there is only one file, micro\_init\_sequence.properties which can be used to defines arm alignment position, pmt voltages and temperature threshold at which the hotwind should be powered on.
 
 \section{Troubleshooting}
+In case of unknown problems, increase verbosity level to gather more information. To do this define \emph{LIDAR\_VERBOSITY} with an integer in the range of [1, 4].
 \subsection{The Token's Signature resulted invalid...}
 This happens when the cached token is not correct. To fix it simply remove \textit{\~{}/.cache/lidar/0.1/token} and try again. This way a new token will be generated.
 

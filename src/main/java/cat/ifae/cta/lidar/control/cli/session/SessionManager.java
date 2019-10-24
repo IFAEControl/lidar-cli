@@ -1,6 +1,7 @@
 package cat.ifae.cta.lidar.control.cli.session;
 
 import cat.ifae.cta.lidar.AuthGrpc;
+import cat.ifae.cta.lidar.Helpers;
 import cat.ifae.cta.lidar.Password;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
@@ -23,7 +24,7 @@ public class SessionManager {
     private Scanner scanner = new Scanner(System. in);
 
     public SessionManager() {
-        var ip = getEnv("LIDAR_ADDR");
+        var ip = Helpers.getEnv("LIDAR_ADDR");
         grpc = new gRPCManager(ip, 50051);
 
         initializeToken();
@@ -81,14 +82,6 @@ public class SessionManager {
         stub = addMetadata(stub);
         var resp = stub.getToken(req);
         return resp.getStr();
-    }
-
-    private String getEnv(String s) {
-        var ip = System.getenv(s);
-        if(ip == null || ip.isBlank())
-            throw new RuntimeException(s + " env variable is not set");
-
-        return ip;
     }
 
     public void shutdown() throws InterruptedException {
