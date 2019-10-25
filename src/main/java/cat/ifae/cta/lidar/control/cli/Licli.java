@@ -44,7 +44,7 @@ public class Licli implements Runnable {
             var client = CommandLine.populateCommand(new Licli(), args);
 
             CommandLine.run(client, System.err, args);
-        } catch (CommandLine.MissingParameterException e) {
+        } catch (CommandLine.MissingParameterException | CommandLine.UnmatchedArgumentException e) {
             System.err.println(e.getMessage());
         } finally {
             sm.shutdown();
