@@ -57,9 +57,9 @@ In case that it's not the first time and jwt secret has changed we can have some
 
 \subsection{Examples}
 
-Open doors: \textbf{./licli motors doors --open=1}\\
-Get converted sensors values: \textbf{./licli llc sensors}
-
+Open doors: \textbf{./licli motors doors \texttt{-{}-}open=1}\\
+Get converted sensors values: \textbf{./licli llc sensors}\\
+Make 4 shots with disc level 2: \textbf{./licli operation acq \texttt{-{}-}shots=4 \texttt{-{}-}disc=2}. Output data will be in \textit{\~{}/.local/share/lidar/0.1}.
 
 \section{Commands reference}
 Commands marked as \textbf{debug} are commands used for debugging purposes.\\
@@ -174,12 +174,14 @@ Command for debugging purposes
 
 \subsection{Operation}
 \subsubsection{Acquisition}
+When taking an acquisition by default the data is stored in the licel format in the server HDD. The server by default gives us a file ID of the file of the acquisition. After that if we want we can use that ID to download the file. Files are not download automatically.
 \begin{itemize}
 	\item disc: Discriminator level. Always required.
 	\item download: Download licel file. Argument is the ID (unsigned integer) of the licel file we want to download.
 	\item shots: Acquire a given number of shots. Argument is an unsigned integer greater than 1. 
 	\item start: Start acquisition manually
 	\item stop: Stop acquisition
+	\item analog-data: Save a file with all analog values using space character as separator.
 \end{itemize}
 \subsubsection{Telescope}
 Telescope motors operations. When going to parking position it will first try to go to the last know good value (ie: the position we know that doors can be closed), if it's not possible it will go to the hardcoded values.
@@ -218,7 +220,10 @@ In case of unknown problems, increase verbosity level to gather more information
 This happens when the cached token is not correct. To fix it simply remove \textit{\~{}/.cache/lidar/0.1/token} and try again. This way a new token will be generated.\\
 \subsection{This method is not safe/read-only}
 This means that the keylock is on which means that only those commands that don't produce side effects are allowed (ie: read-only commands) for example to read the status, etc. To fix it someone have to go physically and switch off the keylock.
-
+\subsection{Where is X,Y,Z file/directory}
+This program follow the XDG Base Directory specification. The full specification may be found on \url{https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html}\\
+\linebreak
+In short: config files are in \textit{ \~{}/.config/lidar}. Data is in \textit{\~{}/.local/share/lidar}. Cache content is in \textit{\~{}/.cache/lidar}.
 
 \newpage
 
