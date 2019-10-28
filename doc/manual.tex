@@ -64,7 +64,7 @@ Make 4 shots with disc level 2: \textbf{./licli operation acq \texttt{-{}-}shots
 \section{Commands reference}
 Commands marked as \textbf{debug} are commands used for debugging purposes.\\
 \linebreak
-Unless other commands, operation commands are a composition of different commands which are executed sequentially. Sometimes we call it macros.
+Unless other commands, operation commands (\ref{operationcmds}) are complex commands. Those complex commands can be macros (ie: a couple of commands executed sequentially) or control functions which makes use of the other functions.
 \subsection{LLC}
 This command contains all the commands related with the low level control board.
 \subsubsection{Arms}
@@ -172,7 +172,7 @@ Returns current configuration of the server.
 \subsection{Trace}
 Command for debugging purposes
 
-\subsection{Operation}
+\subsection{Operation} \label{operationcmds}
 \subsubsection{Acquisition}
 When taking an acquisition by default the data is stored in the licel format in the server HDD. The server by default gives us a file ID of the file of the acquisition. After that if we want we can use that ID to download the file. Files are not download automatically.
 \begin{itemize}
