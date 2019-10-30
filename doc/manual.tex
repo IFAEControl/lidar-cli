@@ -102,7 +102,7 @@ Commands to control the laser. Only one action will be executed at a time. If mo
 \begin{itemize}
 	\item check (\textbf{debug}): Check laser communication
 	\item fire: Fire the laser
-	\item get-temp: Get laser temperature. 
+	\item get-temp: Get laser temperature. If the laser is not powered it returns the last value, it doesn't return an error.
 	\item init: Initialize laser
 	\item pause: Pause the laser
 	\item power: Set power in \%
