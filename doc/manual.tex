@@ -61,6 +61,9 @@ Open doors: \textbf{./licli motors doors \texttt{-{}-}open=1}\\
 Get converted sensors values: \textbf{./licli llc sensors}\\
 Make 4 shots with disc level 2: \textbf{./licli operation acq \texttt{-{}-}shots=4 \texttt{-{}-}disc=2}. Output data will be in \textit{\~{}/.local/share/lidar/0.1}.
 
+\subsection{Connect to internal network}
+There are two switches. One of them is used for all the devices that are accessible from outside the container, the other contains all devices connected to the internal network. To access this network connect a laptop with an ethernet cable with these settings: mask 255.255.255.0, ip 192.168.127.230 or below. Inside this local network the server is at 192.168.127.253.
+
 \section{Commands reference}
 Commands marked as \textbf{debug} are commands used for debugging purposes.\\
 \linebreak
@@ -204,7 +207,7 @@ Low level operations
 	\item laser-init: Initialize laser (first it must be powered-on)
 	\item laser-power-off: Power off laser
 	\item laser-power-on Power on laser
-	\item micro-init: Micro initialization sequence. Prepare laser, arm and rump up all DACs
+	\item micro-init: Micro initialization sequence. Prepare laser, arm and rump up all DACs. Note that if needed this command will start the hotwind but it will not monitor the temperature, the user must check the laser temperature and power off the hotwind if needed.
 	\item micro-shutdown: Micro shutdown sequence. Power off laser hotwind and ramp down DACs
 	\item ramp-down: Ramp down all DACs
 	\item ramp-single: Modify voltage of a single DAC. Argument must follow the format idx:voltage.
@@ -219,7 +222,8 @@ In case of unknown problems, increase verbosity level to gather more information
 \subsection{The Token's Signature resulted invalid...}
 This happens when the cached token is not correct. To fix it simply remove \textit{\~{}/.cache/lidar/0.1/token} and try again. This way a new token will be generated.\\
 \subsection{This method is not safe/read-only}
-This means that the keylock is on which means that only those commands that don't produce side effects are allowed (ie: read-only commands) for example to read the status, etc. To fix it someone have to go physically and switch off the keylock.
+This means that the keylock is on which means that only those commands that don't produce side effects are allowed (ie: read-only commands) for example to read the status, etc. To fix it someone have to go physically and switch off the keylock.\\
+Note that enabling the keylock doesn't kill current running commands
 \subsection{Where is X,Y,Z file/directory}
 This program follow the XDG Base Directory specification. The full specification may be found on \url{https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html}\\
 \linebreak
