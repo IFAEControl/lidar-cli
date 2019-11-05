@@ -176,6 +176,10 @@ Returns current configuration of the server.
 Command for debugging purposes
 
 \subsection{Operation} \label{operationcmds}
+\begin{itemize}
+	\item startup: Prepare the laser to shoot. Open the doors, power on all subsystems and move telescope to a good position (ie:above tilt).
+	\item shutdown: Power off all subsystems and close the doors.
+\end{itemize}
 \subsubsection{Acquisition}
 When taking an acquisition by default the data is stored in the licel format in the server HDD. The server by default gives us a file ID of the file of the acquisition. After that if we want we can use that ID to download the file. Files are not download automatically.
 \begin{itemize}
