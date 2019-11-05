@@ -219,7 +219,8 @@ public class Acquisition implements Runnable {
 
     private void acquisitionStart(DataSelection ds) {
         var b = ds.getBitmap();
-        var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(3).setDataToRetrieve(b).build();
+        var req =
+                AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(disc).setDataToRetrieve(b).build();
         blocking_stub.acquisitionStart(req);
     }
 

@@ -3,7 +3,6 @@ package cat.ifae.cta.lidar.control.cli;
 import cat.ifae.cta.lidar.Helpers;
 import cat.ifae.cta.lidar.control.cli.commands.*;
 import cat.ifae.cta.lidar.control.cli.session.SessionManager;
-import io.grpc.StatusRuntimeException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.config.Configurator;
