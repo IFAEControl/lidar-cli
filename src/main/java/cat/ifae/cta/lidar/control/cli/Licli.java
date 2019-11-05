@@ -9,7 +9,9 @@ import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
 
 
-@CommandLine.Command(mixinStandardHelpOptions = true, subcommands = {LLControl.class, Licel.class,
+@CommandLine.Command(version = "0.0.1", mixinStandardHelpOptions = true, subcommands =
+        {LLControl.class,
+        Licel.class,
         Motors.class, Monitoring.class, Operation.class, Alarms.class, Config.class, Trace.class})
 public class Licli implements Runnable {
     public static SessionManager sm = new SessionManager();
