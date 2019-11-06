@@ -97,49 +97,11 @@ public class LowLevel implements Runnable {
         return new java.awt.geom.Point2D.Float(p_x, p_y);
     }
 
-    private java.util.List getConvertedData() {
-        Null req = Null.newBuilder().build();
-        Data resp = sensors_stub.getConvertedData(req);
-        return resp.getDataList();
-    }
-
-    private String getDriverName(int index) {
-        Index req = Index.newBuilder().setIndex(index).build();
-        var resp = drivers_stub.getName(req);
-        return resp.getStr();
-    }
-
-    private void printDacsVoltage(){
-        var d = getConvertedData();
-        var fmt_str = MessageFormat.format("DAC#1: {}V\tDAC#2: {}V\tDAC#3: {}V\tDAC#4: {}V",
-                d.get(17), d.get(18), d.get(19), d.get(20));
-
-        System.out.println("Current DACs Voltage:");
-        System.out.println(fmt_str);
-    }
-
-    private void printDriversStatus(){
-        Null req = Null.newBuilder().build();
-        StatusArray resp = drivers_stub.getStatus(req);
-
-        System.out.println("Driver's Status: ");
-
-
-        for (int i = 0; i < resp.getStatusCount(); i++){
-            if(resp.getStatus(i).getStatus()) System.out.print("ON");
-            else System.out.print("OFF");
-            System.out.println("\t" + getDriverName(i));
-        }
-    }
-
     private void initSequence() {
         var p = getPosition();
         var point_req = Point2D.newBuilder().setX(p.getX()).setY(p.getY()).build();
         var req = InitSequenceOptions.newBuilder().setHotwindTmep(getTemperature()).setPosition(point_req).setPmtDacVoltage(getDacVoltage()).build();
         blocking_stub.executeMicroInitSequence(req);
-
-        printDacsVoltage();
-        printDriversStatus();
     }
 
     private void microShutdownSequence() {
