@@ -18,6 +18,9 @@ import java.util.concurrent.CountDownLatch;
 public class Operation implements Runnable {
     private final static Logging log = new Logging(Operation.class);
 
+    @CommandLine.Option(names = "--warmup", description = "Heat the laser")
+    private boolean warmup = false;
+
     @CommandLine.Option(names = "--startup", description = "Start up normal mode")
     private boolean startup_normal_mode = false;
 
@@ -40,7 +43,8 @@ public class Operation implements Runnable {
         CommandLine.populateCommand(this);
 
         try {
-            if(startup_normal_mode) startUpNormalMode();
+            if(warmup) warmUp();
+            else if(startup_normal_mode) startUpNormalMode();
             else if(shutdown) shutdownSequence();
             else printHelp();
         } catch (StatusRuntimeException e) {
@@ -49,6 +53,28 @@ public class Operation implements Runnable {
             e.printStackTrace();
             log.error(e.toString());
         }
+    }
+
+    private void warmUp() throws InterruptedException {
+        var finishedLatch = new CountDownLatch(1);
+
+        var req = InitSequenceOptions.newBuilder().setHotwindTmep(getTemperature()).build();
+        stub.warmUp(req, new StreamObserver<>() {
+            public void onNext(TraceOperation response) {
+                System.out.println(response.getLine());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
     }
 
     private void startUpNormalMode() throws InterruptedException {
