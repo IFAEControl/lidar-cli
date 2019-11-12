@@ -73,7 +73,7 @@ public class LowLevel implements Runnable {
             else if(!ramp_single.isEmpty()) rampSingle(ramp_single);
             else printHelp();
         } catch (StatusRuntimeException e) {
-            log.error(e.getStatus().getCause().getLocalizedMessage());
+            log.error(e.getLocalizedMessage());
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());
