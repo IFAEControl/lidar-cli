@@ -5,11 +5,10 @@ import cat.ifae.cta.lidar.FileContent;
 import cat.ifae.cta.lidar.FileID;
 import cat.ifae.cta.lidar.LicelData;
 import cat.ifae.cta.lidar.OperationGrpc;
+import cat.ifae.cta.lidar.control.cli.AppDirsCli;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import cat.ifae.cta.lidar.logging.Logging;
 import io.grpc.StatusRuntimeException;
-import net.harawata.appdirs.AppDirs;
-import net.harawata.appdirs.AppDirsFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
@@ -94,7 +93,7 @@ class DataSelection {
 }
 
 class LicelDataWriter {
-    private final static AppDirs appDirs = AppDirsFactory.getInstance();
+    private final static AppDirsCli appDirs = new AppDirsCli();
 
     private final String _data_dir;
 
@@ -109,7 +108,7 @@ class LicelDataWriter {
     // private methods
 
     private String get_dir() {
-        var data_dir = appDirs.getUserDataDir("lidar", "0.1", "ifae");
+        var data_dir = appDirs.getUserDataDir();
         data_dir += "/" + new SimpleDateFormat("yyyyMMdd.HHmmss").format(new Date());
 
         var dir = new File(data_dir);
