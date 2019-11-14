@@ -1,14 +1,14 @@
 package cat.ifae.cta.lidar.control.cli.commands.operation_commands;
 
 import cat.ifae.cta.lidar.AcqConfig;
+import cat.ifae.cta.lidar.FileContent;
 import cat.ifae.cta.lidar.FileID;
 import cat.ifae.cta.lidar.LicelData;
 import cat.ifae.cta.lidar.OperationGrpc;
+import cat.ifae.cta.lidar.control.cli.AppDirsCli;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import cat.ifae.cta.lidar.logging.Logging;
 import io.grpc.StatusRuntimeException;
-import net.harawata.appdirs.AppDirs;
-import net.harawata.appdirs.AppDirsFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
@@ -92,15 +92,38 @@ class DataSelection {
     }
 }
 
-class LicelRespWriter {
-    private final static AppDirs appDirs = AppDirsFactory.getInstance();
+class LicelDataWriter {
+    private final static AppDirsCli appDirs = new AppDirsCli();
 
-    private final DataSelection __desired_data;
     private final String _data_dir;
+
+    LicelDataWriter() {
+        _data_dir = get_dir();
+    }
+
+    BufferedWriter get_writer(String f_name) throws IOException {
+        return new BufferedWriter(new FileWriter(_data_dir + "/" + f_name));
+    }
+
+    // private methods
+
+    private String get_dir() {
+        var data_dir = appDirs.getUserDataDir();
+        data_dir += "/" + new SimpleDateFormat("yyyyMMdd.HHmmss").format(new Date());
+
+        var dir = new File(data_dir);
+        if(! dir.exists())
+            dir.mkdirs();
+
+        return data_dir;
+    }
+}
+
+class LicelRespWriter extends LicelDataWriter {
+    private final DataSelection __desired_data;
 
     LicelRespWriter(DataSelection d) {
         __desired_data = d;
-        _data_dir = get_dir();
     }
 
     void write(LicelData resp) throws IOException {
@@ -128,20 +151,19 @@ class LicelRespWriter {
             writer.close();
         }
     }
+}
 
-    private String get_dir() {
-        var data_dir = appDirs.getUserDataDir("lidar", "0.1", "ifae");
-        data_dir += "/" + new SimpleDateFormat("yyyyMMdd.HHmmss").format(new Date());
+class LicelFormatFileWriter extends LicelDataWriter {
+    private final FileContent _file_content;
 
-        var dir = new File(data_dir);
-        if(! dir.exists())
-            dir.mkdirs();
-
-        return data_dir;
+    LicelFormatFileWriter(FileContent file_content) {
+        _file_content = file_content;
     }
 
-    private BufferedWriter get_writer(String f_name) throws IOException {
-        return new BufferedWriter(new FileWriter(_data_dir + "/" + f_name));
+    void write() throws IOException {
+        var writer = get_writer("licel_file.out");
+        writer.write(new String(_file_content.getData().toByteArray()));
+        writer.close();
     }
 }
 
@@ -203,10 +225,10 @@ public class Acquisition implements Runnable {
         }
     }
 
-    private void downloadFile() {
+    private void downloadFile() throws IOException {
         var req = FileID.newBuilder().setId(download_file_id).build();
         var resp = blocking_stub.downloadFile(req);
-        System.out.println(new String(resp.getData().toByteArray()));
+        new LicelFormatFileWriter(resp).write();
     }
 
     private void acquireShots(DataSelection ds) throws IOException {
