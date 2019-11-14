@@ -7,7 +7,6 @@ public class Configuration {
 
    public static final Float arm_alignment_x = cfg.getFloat("allignment_arm_X");
    public static final Float arm_alignment_y = cfg.getFloat("allignment_arm_Y");
-   public static final Float temperature_threshold = cfg.getFloat("temperature_threshold");
    public static final Integer pmt_dac_voltage = cfg.getInteger("pmt_dac_voltage");
 
    void checkConfiguration() {

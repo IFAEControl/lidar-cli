@@ -82,10 +82,6 @@ public class LowLevel implements Runnable {
 
     // Private methods
 
-    private static float getTemperature() {
-        return Configuration.temperature_threshold;
-    }
-
     private static int getDacVoltage() {
         return Configuration.pmt_dac_voltage;
     }
@@ -100,7 +96,7 @@ public class LowLevel implements Runnable {
     private void initSequence() {
         var p = getPosition();
         var point_req = Point2D.newBuilder().setX(p.getX()).setY(p.getY()).build();
-        var req = InitSequenceOptions.newBuilder().setHotwindTmep(getTemperature()).setPosition(point_req).setPmtDacVoltage(getDacVoltage()).build();
+        var req = InitSequenceOptions.newBuilder().setPosition(point_req).setPmtDacVoltage(getDacVoltage()).build();
         blocking_stub.executeMicroInitSequence(req);
     }
 
@@ -159,7 +155,6 @@ public class LowLevel implements Runnable {
 
     private static void printHelp() {
         System.out.println("Properties");
-        System.out.println("Temperature: " + getTemperature());
         System.out.println("DAC Voltage: " + getDacVoltage());
         System.out.println("Position: " + getPosition());
     }

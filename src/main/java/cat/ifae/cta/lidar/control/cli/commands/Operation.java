@@ -58,7 +58,7 @@ public class Operation implements Runnable {
     private void warmUp() throws InterruptedException {
         var finishedLatch = new CountDownLatch(1);
 
-        var req = InitSequenceOptions.newBuilder().setHotwindTmep(getTemperature()).build();
+        var req = Null.newBuilder().build();
         stub.warmUp(req, new StreamObserver<>() {
             public void onNext(TraceOperation response) {
                 System.out.println(response.getLine());
@@ -82,7 +82,8 @@ public class Operation implements Runnable {
 
         var p = getPosition();
         var point_req = Point2D.newBuilder().setX(p.getX()).setY(p.getY()).build();
-        var req = InitSequenceOptions.newBuilder().setHotwindTmep(getTemperature()).setPosition(point_req).setPmtDacVoltage(getDacVoltage()).build();
+        var req =
+                InitSequenceOptions.newBuilder().setPosition(point_req).setPmtDacVoltage(getDacVoltage()).build();
         stub.startUpNormalMode(req, new StreamObserver<>() {
             public void onNext(TraceOperation response) {
                 System.out.println(response.getLine());
@@ -125,7 +126,6 @@ public class Operation implements Runnable {
 
     private static void printHelp() {
         System.out.println("Properties");
-        System.out.println("Temperature: " + getTemperature());
         System.out.println("DAC Voltage: " + getDacVoltage());
         System.out.println("Position: " + getPosition());
     }
@@ -135,10 +135,6 @@ public class Operation implements Runnable {
         var p_y = Configuration.arm_alignment_y;
 
         return new java.awt.geom.Point2D.Float(p_x, p_y);
-    }
-
-    private static float getTemperature() {
-        return Configuration.temperature_threshold;
     }
 
     private static int getDacVoltage() {
