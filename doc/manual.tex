@@ -37,7 +37,7 @@
 
 
 \begin{document}
-\title{LIDAR CLI User Manual - 0.0.1}
+\title{LIDAR CLI User Manual - 0.0.2}
 \author{David Roman \\  \href{mailto:droman@ifae.es}{droman@ifae.es} }
 \affil{IFAE}
 \maketitle
@@ -67,7 +67,7 @@ To start up the system in the standard way execute the "startup" command of \ref
 If for some reason this fails we can do the same manually with a couple of commands:
 \begin{itemize}
 	\item \textbf{./licli motors doors \texttt{-{}-}open=1}
-	\item \textbf{./licli operation ll  \texttt{-{}-}micro-init} (remember to check laser temperature and stop the hotwind when it reaches the proper temperature)
+	\item \textbf{./licli operation ll  \texttt{-{}-}micro-init}
 	\item \textbf{./licli motors telescope \texttt{-{}-}sz=600}
 	\item \textbf{./licli motors petals \texttt{-{}-}open=1}
 	\item \textbf{./licli llc laser \texttt{-{}-}init}
@@ -92,95 +92,95 @@ This command contains all the commands related with the low level control board.
 \subsubsection{Arms}
 Command to control and monitor the laser arm. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
 \begin{itemize}
-	\item check-node (\textbf{debug}): Check communication with node N (N must be either "1" or "2")
-	\item emergency-stop (\textbf{debug}): Execute emergency stop
-	\item get-pos: Get current position
-	\item go: Go to current position. Argument must follow the format X:Y (eg: 1000:10000)
-	\item init: Initialize arm
-	\item set-speed (\textbf{debug}): Set speed. Argument must follow the format Axis:speed.
+	\item[-{}-] \textbf{check-node} (debug): Check communication with node N (N must be either "1" or "2")
+	\item[-{}-] \textbf{emergency-stop} (debug): Execute emergency stop
+	\item[-{}-] \textbf{get-pos}: Get current position
+	\item[-{}-] \textbf{go}: Go to current position. Argument must follow the format X:Y (eg: 1000:10000)
+	\item[-{}-] \textbf{init}: Initialize arm
+	\item[-{}-] \textbf{set-speed} (debug): Set speed. Argument must follow the format Axis:speed.
 \end{itemize}
 \subsubsection{DAC}
 Control dac voltages.
 \begin{itemize}
-	\item set-voltage: Set dac voltage. Argument must follow the format dac:voltage (0:100).
+	\item[-{}-] \textbf{set-voltage}: Set dac voltage. Argument must follow the format dac:voltage (0:100).
 \end{itemize}
 
 \subsubsection{Drivers}
 Get information about the drivers
 \begin{itemize}
-	\item get-status: Get a list of drivers status
+	\item[-{}-] \textbf{get-status}: Get a list of drivers status
 \end{itemize}
 
 \subsubsection{Hotwind}
 Controls the hotwind. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
 \begin{itemize}
-	\item error (\textbf{debug}): Set error ¿?
-	\item lock (\textbf{debug}): Lock
-	\item unlock (\textbf{debug}): Unlock
+	\item[-{}-] \textbf{error} (debug): Set error ¿?
+	\item[-{}-] \textbf{lock} (debug): Lock
+	\item[-{}-] \textbf{unlock} (debug): Unlock
 \end{itemize}
 
 \subsubsection{Laser}
 Commands to control the laser. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
 \begin{itemize}
-	\item check (\textbf{debug}): Check laser communication
-	\item fire: Fire the laser
-	\item get-temp: Get laser temperature. If the laser is not powered it returns the last value, it doesn't return an error.
-	\item init: Initialize laser
-	\item pause: Pause the laser
-	\item power: Set power in \%
-	\item stop: Stop the laser
+	\item[-{}-] \textbf{check } (debug): Check laser communication
+	\item[-{}-] \textbf{fire}: Fire the laser
+	\item[-{}-] \textbf{get-temp}: Get laser temperature. If the laser is not powered it returns the last value, it doesn't return an error.
+	\item[-{}-] \textbf{init}: Initialize laser
+	\item[-{}-] \textbf{pause}: Pause the laser
+	\item[-{}-] \textbf{power}: Set power in \%
+	\item[-{}-] \textbf{stop}: Stop the laser
 \end{itemize}
 
 \subsubsection{Relay}
 Commands to switch on/off relays. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
 \begin{itemize}
-	\item get-status: Get status
-	\item hotwind-off: Disable hotwind
-	\item hotwind-on: Enable hotwind
-	\item laser-on: Enable laser
-	\item laser-off: Disable laser
-	\item licel-on: Enable laser
-	\item licel-off: Disable laser
-	\item get-status: Get relay status
-	\item set-status: Set relay status. Argument must follow the format idx:status where status is true or false (eg: 0:false)
+	\item[-{}-] \textbf{get-status}: Get status
+	\item[-{}-] \textbf{hotwind-off}: Disable hotwind
+	\item[-{}-] \textbf{hotwind-on}: Enable hotwind. When the temperature reaches the target it will be stopped.
+	\item[-{}-] \textbf{laser-on}: Enable laser
+	\item[-{}-] \textbf{laser-off}: Disable laser
+	\item[-{}-] \textbf{licel-on}: Enable laser
+	\item[-{}-] \textbf{licel-off}: Disable laser
+	\item[-{}-] \textbf{get-status}: Get relay status
+	\item[-{}-] \textbf{set-status}: Set relay status. Argument must follow the format idx:status where status is true or false (eg: 0:false)
 \end{itemize}
 
 \subsubsection{Sensors}
 Commands to get sensor information from low level control board. There are other sensors that this command doesn't read, for example the temperature of the head of the laser.\\
 If no option is specified it will print values in human readable form.
 \begin{itemize}
-	\item raw (\textbf{debug}): Get raw sensor values
+	\item[-{}-] \textbf{raw} (debug): Get raw sensor values
 \end{itemize}
 
 \subsection{Motors}
 \subsubsection{Doors}
 \begin{itemize}
-	\item close: With an argument which must be "0" or "1". "1" to start closing the doors, "0" to stop the movement.
-	\item open: With an argument which must be "0" or "1". "1" to start opening the doors, "0" to stop the movement.
-	\item status: Print current status of the doors (OPEN, CLOSE or INTERSTATE if it's something in the middle)
+	\item[-{}-] \textbf{close}: With an argument which must be "0" or "1". "1" to start closing the doors, "0" to stop the movement.
+	\item[-{}-] \textbf{open}: With an argument which must be "0" or "1". "1" to start opening the doors, "0" to stop the movement.
+	\item[-{}-] \textbf{status}: Print current status of the doors (OPEN, CLOSE or INTERSTATE if it's something in the middle)
 \end{itemize}
 \subsubsection{Petals}
 \begin{itemize}
-	\item close: With an argument which must be "0" or "1". "1" to start closing the petals, "0" to stop the movement.
-	\item open: With an argument which must be "0" or "1". "1" to start opening the petals, "0" to stop the movement.
-	\item status: Print current status of the petals (CLOSED or UNKNOWN if there is something else)
+	\item[-{}-] \textbf{close}: With an argument which must be "0" or "1". "1" to start closing the petals, "0" to stop the movement.
+	\item[-{}-] \textbf{open}: With an argument which must be "0" or "1". "1" to start opening the petals, "0" to stop the movement.
+	\item[-{}-] \textbf{status}: Print current status of the petals (CLOSED or UNKNOWN if there is something else)
 \end{itemize}
 \subsubsection{Telescope}
 \begin{itemize}
-	\item ga: Get current azimuth position
-	\item gz: Get current zenith position
-	\item home: Go home. If tries to go to the position registered before opening the doors, if it's not possible it defaults to the hardcoded values, which may not be the correct ones. For this reason it's important to start the server when the doors are closed.
-	\item sa: Go to the given azimuth encoder position (an unsigned integer)
-	\item sz: Go to the given zenith encoder position (an unsigned integer)
+	\item[-{}-] \textbf{ga}: Get current azimuth position
+	\item[-{}-] \textbf{gz}: Get current zenith position
+	\item[-{}-] \textbf{home}: Go home. If tries to go to the position registered before opening the doors, if it's not possible it defaults to the hardcoded values, which may not be the correct ones. For this reason it's important to start the server when the doors are closed.
+	\item[-{}-] \textbf{sa}: Go to the given azimuth encoder position (an unsigned integer)
+	\item[-{}-] \textbf{sz}: Go to the given zenith encoder position (an unsigned integer)
 \end{itemize}
 \subsection{Monitoring}
 Monitoring commands
 \subsubsection{Sensors}
 Monitoring of sensors. 
 \begin{itemize}
-	\item humidity: Show readings of humidity values 
-	\item env-temperature: Show readings of environment temperatures
-	\item last-value (can be used in combination): Show the last value reading
+	\item[-{}-] \textbf{humidity}: Show readings of humidity values 
+	\item[-{}-] \textbf{env-temperature}: Show readings of environment temperatures
+	\item[-{}-] \textbf{last-value} (can be used in combination): Show the last value reading
 \end{itemize}
 \subsubsection{Motors}
 Monitoring of the motor monitoring board. Currently it only prints the encoders position.
@@ -196,49 +196,49 @@ Command for debugging purposes
 
 \subsection{Operation} \label{operationcmds}
 \begin{itemize}
-	\item startup: Prepare the laser to shoot. Open the doors, power on all subsystems and move telescope to a good position (ie:above tilt).
-	\item shutdown: Power off all subsystems and close the doors.
+	\item[-{}-] \textbf{startup}: Prepare the laser to shoot. Open the doors, power on all subsystems and move telescope to a good position (ie:above tilt).
+	\item[-{}-] \textbf{shutdown}: Power off all subsystems and close the doors.
 \end{itemize}
 \subsubsection{Acquisition}
 When taking an acquisition by default the data is stored in the licel format in the server HDD. The server by default gives us a file ID of the file of the acquisition. After that if we want we can use that ID to download the file. Files are not download automatically.
 \begin{itemize}
-	\item disc: Discriminator level. Always required.
-	\item download: Download licel file. Argument is the ID (unsigned integer) of the licel file we want to download.
-	\item shots: Acquire a given number of shots. Argument is an unsigned integer greater than 1. 
-	\item start: Start acquisition manually
-	\item stop: Stop acquisition
-	\item analog-data: Save a file with all analog values using space character as separator.
+	\item[-{}-] \textbf{disc}: Discriminator level. Always required.
+	\item[-{}-] \textbf{download}: Download licel file. Argument is the ID (unsigned integer) of the licel file we want to download.
+	\item[-{}-] \textbf{shots}: Acquire a given number of shots. Argument is an unsigned integer greater than 1. 
+	\item[-{}-] \textbf{start}: Start acquisition manually
+	\item[-{}-] \textbf{stop}: Stop acquisition
+	\item[-{}-] \textbf{analog-data}: Save a file with all analog values using space character as separator.
 \end{itemize}
 \subsubsection{Telescope}
 Telescope motors operations. When going to parking position it will first try to go to the last know good value (ie: the position we know that doors can be closed), if it's not possible it will go to the hardcoded values.
 \begin{itemize}
-	\item get-azimuth: Get azimuth position
-	\item go-azimuth-parking: Go to azimuth parking position
-	\item go-parking: Go to parking position
-	\item go-zenith-parking: Go zenith parking position
-	\item start-test: Execute telescope tests (move azmiuth and zenith to their maximum, minimum and parking position).
-	\item stop: Stop any telescope movement
-	\item to-max-azimuth: Go to maximum azimuth
-	\item to-max-zenith: Go to maximum zenith
-	\item to-min-azimuth: Go to minimum azimuth		
+	\item[-{}-] \textbf{get-azimuth}: Get azimuth position
+	\item[-{}-] \textbf{go-azimuth-parking}: Go to azimuth parking position
+	\item[-{}-] \textbf{go-parking}: Go to parking position
+	\item[-{}-] \textbf{go-zenith-parking}: Go zenith parking position
+	\item[-{}-] \textbf{start-test}: Execute telescope tests (move azmiuth and zenith to their maximum, minimum and parking position).
+	\item[-{}-] \textbf{stop}: Stop any telescope movement
+	\item[-{}-] \textbf{to-max-azimuth}: Go to maximum azimuth
+	\item[-{}-] \textbf{to-max-zenith}: Go to maximum zenith
+	\item[-{}-] \textbf{to-min-azimuth}: Go to minimum azimuth		
 \end{itemize}
 \subsubsection{Low level}
 Low level operations
 \begin{itemize}
-	\item arm-align: Move arm to alignment position (first it must be initialized)
-	\item arm-init: Initialize arm
-	\item laser-init: Initialize laser (first it must be powered-on)
-	\item laser-power-off: Power off laser
-	\item laser-power-on Power on laser
-	\item micro-init: Micro initialization sequence. Prepare laser, arm and rump up all DACs. Note that if needed this command will start the hotwind but it will not monitor the temperature, the user must check the laser temperature and power off the hotwind if needed.
-	\item micro-shutdown: Micro shutdown sequence. Power off laser hotwind and ramp down DACs
-	\item ramp-down: Ramp down all DACs
-	\item ramp-single: Modify voltage of a single DAC. Argument must follow the format idx:voltage.
-	\item ramp-up: Ramp up all DACs
+	\item[-{}-] \textbf{arm-align}: Move arm to alignment position (first it must be initialized)
+	\item[-{}-] \textbf{arm-init}: Initialize arm
+	\item[-{}-] \textbf{laser-init}: Initialize laser (first it must be powered-on)
+	\item[-{}-] \textbf{laser-power-off}: Power off laser
+	\item[-{}-] \textbf{laser-power-on} Power on laser
+	\item[-{}-] \textbf{micro-init}: Micro initialization sequence. Prepare laser, arm and rump up all DACs.
+	\item[-{}-] \textbf{micro-shutdown}: Micro shutdown sequence. Power off laser hotwind and ramp down DACs
+	\item[-{}-] \textbf{ramp-down}: Ramp down all DACs
+	\item[-{}-] \textbf{ramp-single}: Modify voltage of a single DAC. Argument must follow the format idx:voltage.
+	\item[-{}-] \textbf{ramp-up}: Ramp up all DACs
 \end{itemize}
 
 \section{Configuration}
-Configuration files can be found on \textit{\~{}/.config/lidar/0.1/client/}. Currently there is only one file, micro\_init\_sequence.properties which can be used to defines arm alignment position, pmt voltages and temperature threshold at which the hotwind should be powered on.
+Configuration files can be found on \textit{\~{}/.config/lidar/0.1/client/}. Currently there is only one file, micro\_init\_sequence.properties which can be used to defines arm alignment position, pmt voltages.
 
 \section{Troubleshooting}
 In case of unknown problems, increase verbosity level to gather more information. To do this define \emph{LIDAR\_VERBOSITY} with an integer in the range of [1, 4].

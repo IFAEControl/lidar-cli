@@ -4,6 +4,6 @@ import cat.ifae.cta.lidar.AppDirs;
 
 public class AppDirsCli extends AppDirs {
    public AppDirsCli() {
-      super("0.0.1");
+      super("0.0.2");
    }
 }
