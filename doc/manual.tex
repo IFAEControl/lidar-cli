@@ -57,7 +57,7 @@ In case that it's not the first time and jwt secret has changed we can have some
 
 \subsection{Examples}
 
-Open doors: \textbf{./licli motors doors \texttt{-{}-}open=1}\\
+Open doors: \textbf{./licli motors doors \texttt{-{}-}open}\\
 Get converted sensors values: \textbf{./licli llc sensors}\\
 Make 4 shots with disc level 2: \textbf{./licli operation acq \texttt{-{}-}shots=4 \texttt{-{}-}disc=2}. Output data will be in \textit{\~{}/.local/share/lidar/0.1}.
 
@@ -66,10 +66,10 @@ To start up the system in the standard way execute the "startup" command of \ref
 
 If for some reason this fails we can do the same manually with a couple of commands:
 \begin{itemize}
-	\item \textbf{./licli motors doors \texttt{-{}-}open=1}
+	\item \textbf{./licli motors doors \texttt{-{}-}open}
 	\item \textbf{./licli operation ll  \texttt{-{}-}micro-init}
 	\item \textbf{./licli motors telescope \texttt{-{}-}sz=600}
-	\item \textbf{./licli motors petals \texttt{-{}-}open=1}
+	\item \textbf{./licli motors petals \texttt{-{}-}open}
 	\item \textbf{./licli llc laser \texttt{-{}-}init}
 	\item  \textbf{./licli llc laser \texttt{-{}-}power=5}
 \end{itemize}
