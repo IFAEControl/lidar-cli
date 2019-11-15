@@ -5,19 +5,23 @@ import cat.ifae.cta.lidar.control.cli.Licli;
 import cat.ifae.cta.lidar.logging.Logging;
 import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
+import picocli.CommandLine.Option;
 
 @CommandLine.Command(name = "petals", mixinStandardHelpOptions = true)
 class Petals implements Runnable {
     private final static Logging _log = new Logging(Petals.class);
 
-    @CommandLine.Option(names = "--status", description = "Get status of petals")
+    @Option(names = "--status", description = "Get status of petals")
     private boolean is_status = false;
 
-    @CommandLine.Option(names = "--close", description = "Start (1) or stop (0) closing petals")
-    private int is_close = -1;
+    @Option(names = "--close", description = "Close petals")
+    private boolean is_close = false;
 
-    @CommandLine.Option(names = "--open", description = "Start (1) or stop (0) opening petals")
-    private int is_open = -1;
+    @Option(names = "--open", description = "Open petals")
+    private boolean is_open = false;
+
+    @Option(names = "--stop", description = "Stop petals")
+    private boolean is_stop = false;
 
     private MotorsGrpc.MotorsBlockingStub stub = null;
 
@@ -27,10 +31,9 @@ class Petals implements Runnable {
         stub = Licli.sm.addMetadata(stub);
 
         try {
-            if(is_close == 1) close(true);
-            else if(is_close == 0) close(false);
-            else if(is_open == 1) open(true);
-            else if(is_open == 0) open(false);
+            if(is_close ) close();
+            else if(is_open) open();
+            else if(is_stop) stop();
             else if(is_status) getStatus();
         } catch (StatusRuntimeException e) {
             _log.error(e.getStatus().getCause().getLocalizedMessage());
@@ -45,22 +48,20 @@ class Petals implements Runnable {
         System.out.println(resp);
     }
 
-    private void close(boolean close_petals) {
+    private void close() {
         Null req = Null.newBuilder().build();
-        if(close_petals)
-            stub.startClosingPetals(req);
-        else
-            stub.stopClosingPetals(req);
+        stub.startClosingPetals(req);
     }
 
-    private void open(boolean open_petals) {
+    private void open() {
         Null req = Null.newBuilder().build();
-        if(open_petals)
-            stub.startOpeningPetals(req);
-        else
-            stub.stopOpeningPetals(req);
+        stub.startOpeningPetals(req);
     }
 
+    private void stop() {
+        var req = Null.newBuilder().build();
+        stub.stopPetals(req);
+    }
 }
 
 @CommandLine.Command(name = "doors", mixinStandardHelpOptions = true)
@@ -68,13 +69,16 @@ class Doors implements Runnable {
     private final static Logging _log = new Logging(Doors.class);
 
 
-    @CommandLine.Option(names = "--close", description = "Start (1) or stop (0) closing doors")
-    private int is_close = -1;
+    @Option(names = "--close", description = "Close doors")
+    private boolean is_close = false;
 
-    @CommandLine.Option(names = "--open", description = "Start (1) or stop (0) opening doors")
-    private int is_open = -1;
+    @Option(names = "--open", description = "Open doors")
+    private boolean is_open = false;
 
-    @CommandLine.Option(names = "--status", description = "Get status of doors")
+    @Option(names = "--stop", description = "Stop doors")
+    private boolean is_stop = false;
+
+    @Option(names = "--status", description = "Get status of doors")
     private boolean is_status = false;
 
     private MotorsGrpc.MotorsBlockingStub stub = null;
@@ -85,10 +89,9 @@ class Doors implements Runnable {
         stub = Licli.sm.addMetadata(stub);
 
         try {
-            if(is_close == 1) close(true);
-            else if(is_close == 0) close(false);
-            else if(is_open == 1) open(true);
-            else if(is_open == 0) open(false);
+            if(is_close) close();
+            else if(is_open) open();
+            else if(is_stop) stop();
             else if(is_status) getStatus();
         } catch (StatusRuntimeException e) {
             _log.error(e.getStatus().getCause().getLocalizedMessage());
@@ -97,20 +100,19 @@ class Doors implements Runnable {
         }
     }
 
-    private void close(boolean close) {
+    private void close() {
         Null req = Null.newBuilder().build();
-        if(close)
-            stub.startCloseDoors(req);
-        else
-            stub.stopCloseDoors(req);
+        stub.startCloseDoors(req);
     }
 
-    private void open(boolean open) {
+    private void open() {
         Null req = Null.newBuilder().build();
-        if(open)
-            stub.startOpenDoors(req);
-        else
-            stub.stopOpenDoors(req);
+        stub.startOpenDoors(req);
+    }
+
+    private void stop() {
+        var req = Null.newBuilder().build();
+        stub.stopDoors(req);
     }
 
     private void getStatus() {
