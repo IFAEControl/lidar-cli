@@ -56,7 +56,7 @@ class LLCLaser implements Runnable {
             else if(laser_temp) getTemp();
             else if(laser_temp_read) readTemp();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch(RuntimeException e) {
             System.out.println(e.toString());
         }

@@ -66,7 +66,7 @@ class Telescope implements Runnable {
             else if(zenith_parking_position) goToZenithParkingPosition();
             else if(azimuth_parking_postiion) goToAzimuthParkingPosition();
         } catch (StatusRuntimeException e) {
-            log.error(e.getStatus().getCause().getLocalizedMessage());
+            log.error(e.getLocalizedMessage());
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());

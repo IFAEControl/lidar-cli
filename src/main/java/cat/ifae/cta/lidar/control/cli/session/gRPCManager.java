@@ -1,7 +1,6 @@
 package cat.ifae.cta.lidar.control.cli.session;
 
-import cat.ifae.cta.lidar.AuthGrpc;
-import cat.ifae.cta.lidar.Password;
+import cat.ifae.cta.lidar.control.cli.Configuration;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Metadata;
@@ -44,6 +43,9 @@ class gRPCManager {
 
         var type = Metadata.Key.of("type", Metadata.ASCII_STRING_MARSHALLER);
         header.put(type, "cli");
+
+        var version = Metadata.Key.of("version", Metadata.ASCII_STRING_MARSHALLER);
+        header.put(version, Configuration.VERSION);
 
         return MetadataUtils.attachHeaders(stub, header);
     }

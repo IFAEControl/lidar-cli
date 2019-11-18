@@ -102,7 +102,7 @@ class MotorsMonitoring implements Runnable {
          var req = Null.newBuilder().build();
          System.out.println(blockingStub.readEncoders(req));
       } catch (StatusRuntimeException e) {
-         _log.error(e.getStatus().getCause().getLocalizedMessage());
+         _log.error(e.getLocalizedMessage());
       } catch(RuntimeException e) {
          System.out.println(e.toString());
       }

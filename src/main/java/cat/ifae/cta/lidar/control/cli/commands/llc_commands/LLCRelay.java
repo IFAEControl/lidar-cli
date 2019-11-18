@@ -60,7 +60,7 @@ class LLCRelay implements  Runnable {
             else if(licel_off) powerOffLicel();
             else if(!status.isEmpty()) setStatus(status);
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch (RuntimeException e) {
             System.out.println(e.toString());
         }

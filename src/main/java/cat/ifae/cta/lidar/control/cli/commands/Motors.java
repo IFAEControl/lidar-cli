@@ -155,7 +155,7 @@ class TelescopeMotors implements Runnable {
             else if(azimuth_steps > 0) setAzimuth(azimuth_steps);
             else if(home) goHome();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch(Exception e) {
             System.out.println(e.toString());
         }

@@ -28,7 +28,7 @@ class LLCDac implements Runnable {
         try {
             if (!dac_setting.isEmpty()) setVoltage(dac_setting);
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch (Exception e) {
             System.out.println(e.toString());
         }

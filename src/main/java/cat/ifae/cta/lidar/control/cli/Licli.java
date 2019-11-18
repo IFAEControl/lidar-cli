@@ -9,7 +9,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
 
 
-@CommandLine.Command(version = "1.0.0", mixinStandardHelpOptions = true, subcommands =
+@CommandLine.Command(version = Configuration.VERSION, mixinStandardHelpOptions = true, subcommands =
         {LLControl.class,
         Licel.class,
         Motors.class, Monitoring.class, Operation.class, Alarms.class, Config.class, Trace.class})

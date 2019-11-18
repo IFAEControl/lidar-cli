@@ -48,7 +48,7 @@ public class Operation implements Runnable {
             else if(shutdown) shutdownSequence();
             else printHelp();
         } catch (StatusRuntimeException e) {
-            log.error(e.getStatus().getCause().getLocalizedMessage());
+            log.error(e.getLocalizedMessage());
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());

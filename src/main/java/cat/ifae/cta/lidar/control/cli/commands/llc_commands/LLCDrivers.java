@@ -29,7 +29,7 @@ class LLCDrivers implements Runnable {
         try {
             if (get_status) getStatus();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch (Exception e) {
             System.out.println(e.toString());
         }

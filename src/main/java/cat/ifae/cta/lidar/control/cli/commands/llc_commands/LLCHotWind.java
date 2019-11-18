@@ -35,7 +35,7 @@ class LLCHotWind implements Runnable {
             if(is_lock) lock();
             else if(is_unlock) unlock();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch(Exception e) {
             System.out.println(e.toString());
         }

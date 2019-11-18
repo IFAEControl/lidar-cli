@@ -30,7 +30,7 @@ class LLCSensors implements Runnable {
             if(get_raw) getRawData();
             else getConvertedData();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch(Exception e) {
             e.printStackTrace();
             System.out.println(e.toString());

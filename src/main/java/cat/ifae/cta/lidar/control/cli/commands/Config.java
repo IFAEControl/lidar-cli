@@ -26,7 +26,7 @@ public class Config implements Runnable {
         try {
             if(is_get) printConfig();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch (Exception e) {
             System.out.println(e.toString());
         }

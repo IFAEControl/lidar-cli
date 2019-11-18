@@ -218,7 +218,7 @@ public class Acquisition implements Runnable {
                     System.err.println("Minimum shot number is 2");
             }
         } catch (StatusRuntimeException e) {
-            log.error(e.getStatus().getCause().getLocalizedMessage());
+            log.error(e.getLocalizedMessage());
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.toString());

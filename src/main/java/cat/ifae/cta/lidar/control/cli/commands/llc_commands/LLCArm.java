@@ -49,7 +49,7 @@ public class LLCArm implements Runnable {
             else if (node != -1) checkCommunicationsNode(node);
             else if (!node_speed.isEmpty()) setNodeSpeed(node_speed);
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch (Exception e) {
             System.out.println(e.toString());
         }

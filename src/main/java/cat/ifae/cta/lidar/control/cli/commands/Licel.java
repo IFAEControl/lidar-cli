@@ -153,7 +153,7 @@ class Licel implements Runnable {
             else if(_trigger_mode != null) setTriggerMode(_trigger_mode);
             else if(_trigger_timing != null) setTriggerTiming(_trigger_timing);
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch (Exception e) {
             //System.out.println(e.toString());
             e.printStackTrace(System.out);

@@ -45,7 +45,7 @@ public class Alarms implements Runnable {
 
             finishedLatch.await();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch (Exception e) {
             System.out.println(e.toString());
         }
