@@ -27,17 +27,11 @@ class LLCLaser implements Runnable {
     @CommandLine.Option(names = "--pause", description = "Pause laser")
     private boolean is_pause = false;
 
-    @CommandLine.Option(names = "--check", description = "Check laser communications")
-    private boolean check = false;
-
     @CommandLine.Option(names = "--power", description = "Set laser power")
     private int power = -1;
 
     @CommandLine.Option(names = "--get-temp", description = "Get laser temperature")
     private boolean laser_temp = false;
-
-    @CommandLine.Option(names = "--read-temp", description = "Read laser temperature")
-    private boolean laser_temp_read = false;
 
     @Override
     public final void run() {
@@ -51,10 +45,8 @@ class LLCLaser implements Runnable {
             else if(is_fire) fire();
             else if(is_stop) stop();
             else if(is_pause) pause();
-            else if(check) checkCommunications();
             else if(power > -1) setPower(power);
             else if(laser_temp) getTemp();
-            else if(laser_temp_read) readTemp();
         } catch (StatusRuntimeException e) {
             _log.error(e.getLocalizedMessage());
         } catch(RuntimeException e) {
@@ -82,11 +74,6 @@ class LLCLaser implements Runnable {
         stub.pause(req);
     }
 
-    private void checkCommunications() {
-        Null req = Null.newBuilder().build();
-        stub.checkCommunications(req);
-    }
-
     private void setPower(int power) {
         Power req = Power.newBuilder().setPower(power).build();
         stub.setPower(req);
@@ -95,12 +82,6 @@ class LLCLaser implements Runnable {
     private void getTemp() {
         var req = Null.newBuilder().build();
         var resp = stub.getTemperature(req);
-        System.out.println(resp.getTemperature());
-    }
-
-    private void readTemp() {
-        var req = Null.newBuilder().build();
-        var resp = stub.getTemperatureForce(req);
         System.out.println(resp.getTemperature());
     }
 }

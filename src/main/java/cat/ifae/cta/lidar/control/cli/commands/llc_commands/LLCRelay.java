@@ -12,9 +12,6 @@ class LLCRelay implements  Runnable {
     private final static Logging _log = new Logging(LLCRelay.class);
 
     private LLCRelayGrpc.LLCRelayBlockingStub stub;
-    private static final int LASER_RELAY = 0;
-    private static final int HOTWIND_RELAY = 1;
-    private static final int LICEL_RELAY = 2;
 
     @CommandLine.Option(names = "--get-status", description = "Get status")
     private boolean get_status = false;
@@ -40,9 +37,6 @@ class LLCRelay implements  Runnable {
     @CommandLine.Option(names = "--licel-off", description = "Power off licel")
     private boolean licel_off = false;
 
-    @CommandLine.Option(names = "--set-status", description = "Set status to relay, status must be either 'true' or 'false'. format=relay_idx:status")
-    private String status;
-
     @Override
     public final void run() {
         stub = LLCRelayGrpc.newBlockingStub(Licli.sm.getCh());
@@ -58,7 +52,6 @@ class LLCRelay implements  Runnable {
             else if(hotwind_off) powerOffHotwind();
             else if(licel_on) powerOnLicel();
             else if(licel_off) powerOffLicel();
-            else if(!status.isEmpty()) setStatus(status);
         } catch (StatusRuntimeException e) {
             _log.error(e.getLocalizedMessage());
         } catch (RuntimeException e) {
@@ -79,53 +72,33 @@ class LLCRelay implements  Runnable {
         }
     }
 
-    private void setStatus(String s) {
-        String[] components = Helpers.split(s, 2);
-
-        try {
-            Integer.parseInt(components[1]);
-            System.err.println("Status must be either 'true' or 'false'");
-            return;
-        } catch(NumberFormatException e) {
-            // ignore
-        }
-
-        int idx = Integer.parseInt(components[0]);
-        boolean  status = Boolean.parseBoolean(components[1]);
-
-        System.out.println(components[1]);
-
-        var req = Status.newBuilder().setIdx(idx).setStatus(status).build();
-        stub.setStatus(req);
-    }
-
     private void powerOnLaser() {
-        Status req = Status.newBuilder().setIdx(LASER_RELAY).setStatus(true).build();
-        stub.setStatus(req);
+        var req = Relay.newBuilder().setRealy(Relay.RelayEnum.LASER).build();
+        stub.setRelayOn(req);
     }
 
     private void powerOffLaser() {
-        Status req = Status.newBuilder().setIdx(LASER_RELAY).setStatus(false).build();
-        stub.setStatus(req);
+        var req = Relay.newBuilder().setRealy(Relay.RelayEnum.LASER).build();
+        stub.setRelayOff(req);
     }
 
     private void powerOnHotwind() {
-        Status req = Status.newBuilder().setIdx(HOTWIND_RELAY).setStatus(true).build();
-        stub.setStatus(req);
+        var req = Relay.newBuilder().setRealy(Relay.RelayEnum.HOTWIND).build();
+        stub.setRelayOn(req);
     }
 
     private void powerOffHotwind() {
-        Status req = Status.newBuilder().setIdx(HOTWIND_RELAY).setStatus(false).build();
-        stub.setStatus(req);
+        var req = Relay.newBuilder().setRealy(Relay.RelayEnum.HOTWIND).build();
+        stub.setRelayOff(req);
     }
 
     private void powerOnLicel() {
-        Status req = Status.newBuilder().setIdx(LICEL_RELAY).setStatus(true).build();
-        stub.setStatus(req);
+        var req = Relay.newBuilder().setRealy(Relay.RelayEnum.LICEL).build();
+        stub.setRelayOn(req);
     }
 
     private void powerOffLicel() {
-        Status req = Status.newBuilder().setIdx(LICEL_RELAY).setStatus(false).build();
-        stub.setStatus(req);
+        var req = Relay.newBuilder().setRealy(Relay.RelayEnum.LICEL).build();
+        stub.setRelayOff(req);
     }
 }
