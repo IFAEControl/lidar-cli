@@ -14,6 +14,7 @@ import picocli.CommandLine.Option;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -161,8 +162,8 @@ class LicelFormatFileWriter extends LicelDataWriter {
     }
 
     void write() throws IOException {
-        var writer = get_writer("licel_file.out");
-        writer.write(new String(_file_content.getData().toByteArray()));
+        var writer = new FileOutputStream("licel_file.out");
+        writer.write(_file_content.getData().toByteArray());
         writer.close();
     }
 }
