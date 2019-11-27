@@ -110,7 +110,7 @@ Control dac voltages.
 \subsubsection{Drivers}
 Get information about the drivers
 \begin{itemize}
-	\item[-{}-] \textbf{get-status}: Get a list of drivers status
+	\item[-{}-] \textbf{status}: Get a list of drivers status
 \end{itemize}
 
 \subsubsection{Hotwind}
@@ -129,21 +129,20 @@ Commands to control the laser. Only one action will be executed at a time. If mo
 	\item[-{}-] \textbf{init}: Initialize laser
 	\item[-{}-] \textbf{pause}: Pause the laser
 	\item[-{}-] \textbf{power}: Set power in \%
+	\item[-{}-] \textbf{power-us}: Set power in microseconds.
 	\item[-{}-] \textbf{stop}: Stop the laser
 \end{itemize}
 
-\subsubsection{Relay}
+\subsubsection{Relays}
 Commands to switch on/off relays. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
 \begin{itemize}
-	\item[-{}-] \textbf{get-status}: Get status
+	\item[-{}-] \textbf{status}: Get relays status
 	\item[-{}-] \textbf{hotwind-off}: Disable hotwind
 	\item[-{}-] \textbf{hotwind-on}: Enable hotwind. When the temperature reaches the target it will be stopped.
 	\item[-{}-] \textbf{laser-on}: Enable laser
 	\item[-{}-] \textbf{laser-off}: Disable laser
 	\item[-{}-] \textbf{licel-on}: Enable laser
 	\item[-{}-] \textbf{licel-off}: Disable laser
-	\item[-{}-] \textbf{get-status}: Get relay status
-	\item[-{}-] \textbf{set-status}: Set relay status. Argument must follow the format idx:status where status is true or false (eg: 0:false)
 \end{itemize}
 
 \subsubsection{Sensors}

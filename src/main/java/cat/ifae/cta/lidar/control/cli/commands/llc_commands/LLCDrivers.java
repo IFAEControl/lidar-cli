@@ -16,7 +16,7 @@ class LLCDrivers implements Runnable {
 
     private LLCDriversGrpc.LLCDriversBlockingStub stub;
 
-    @CommandLine.Option(names = "--get-status", description = "Get status")
+    @CommandLine.Option(names = "--status", description = "Get status")
     private boolean get_status;
 
     @Override

@@ -6,14 +6,14 @@ import cat.ifae.cta.lidar.logging.Logging;
 import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 
-@CommandLine.Command(name = "relay", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "relays", mixinStandardHelpOptions = true)
 public
-class LLCRelay implements  Runnable {
-    private final static Logging _log = new Logging(LLCRelay.class);
+class LLCRelays implements Runnable {
+    private final static Logging _log = new Logging(LLCRelays.class);
 
     private LLCRelayGrpc.LLCRelayBlockingStub stub;
 
-    @CommandLine.Option(names = "--get-status", description = "Get status")
+    @CommandLine.Option(names = "--status", description = "Get status")
     private boolean get_status = false;
 
     @CommandLine.Option(names = "--device", description = "Device to set")
@@ -62,7 +62,7 @@ class LLCRelay implements  Runnable {
     private void getStatus() {
         Null req = Null.newBuilder().build();
         StatusArray resp = stub.getStatus(req);
-        System.out.println("LLCRelay's Status: ");
+        System.out.println("LLCRelays's Status: ");
         for (int i=0; i < resp.getStatusCount(); i++){
             if(resp.getStatus(i).getStatus()) System.out.print("ON");
             else System.out.print("OFF");
