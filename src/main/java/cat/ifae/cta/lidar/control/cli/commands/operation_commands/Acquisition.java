@@ -102,15 +102,16 @@ class LicelDataWriter {
         _data_dir = get_dir();
     }
 
-    BufferedWriter get_writer(String f_name) throws IOException {
-        return new BufferedWriter(new FileWriter(_data_dir + "/" + f_name));
+    FileOutputStream get_writer(String f_name) throws IOException {
+        var date = new SimpleDateFormat("yyyyMMdd.HHmmss").format(new Date());
+        return new FileOutputStream(_data_dir + "/" + date + "_" + f_name);
     }
 
     // private methods
 
     private String get_dir() {
         var data_dir = appDirs.getUserDataDir();
-        data_dir += "/" + new SimpleDateFormat("yyyyMMdd.HHmmss").format(new Date());
+        data_dir += "/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
 
         var dir = new File(data_dir);
         if(! dir.exists())
@@ -137,7 +138,7 @@ class LicelRespWriter extends LicelDataWriter {
         {
             var writer = get_writer("analog_combined_converted_0.out");
             for (var v : resp.getData(0).getAnalogConvertedList()) {
-                writer.write(MessageFormat.format("{0} ", String.valueOf(v)));
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
 
             writer.close();
@@ -146,7 +147,7 @@ class LicelRespWriter extends LicelDataWriter {
         {
             var writer = get_writer("analog_combined_converted_1.out");
             for (var v : resp.getData(1).getAnalogConvertedList()) {
-                writer.write(MessageFormat.format("{0} ", String.valueOf(v)));
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
 
             writer.close();
@@ -162,7 +163,7 @@ class LicelFormatFileWriter extends LicelDataWriter {
     }
 
     void write() throws IOException {
-        var writer = new FileOutputStream("licel_file.out");
+        var writer = get_writer("licel_file.out");
         writer.write(_file_content.getData().toByteArray());
         writer.close();
     }
