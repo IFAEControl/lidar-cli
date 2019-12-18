@@ -2,6 +2,7 @@ package cat.ifae.cta.lidar.control.cli.commands;
 
 import cat.ifae.cta.lidar.ConfigGrpc;
 import cat.ifae.cta.lidar.Null;
+import cat.ifae.cta.lidar.Options;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import cat.ifae.cta.lidar.logging.Logging;
 import io.grpc.StatusRuntimeException;
@@ -36,5 +37,13 @@ public class Config implements Runnable {
         var req = Null.newBuilder().build();
         var resp = stub.getConfig(req);
         System.out.println(resp);
+
+        // Example of how to change config. All values must be set.
+        /*var t = resp.getTargetTemperature()-1;
+        var builder = Options.newBuilder(resp);
+        builder.setTargetTemperature(t);
+        stub.setConfig(builder.build());*/
+
+        //System.out.println(builder.getTargetTemperature());
     }
 }
