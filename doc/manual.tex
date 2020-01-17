@@ -37,7 +37,7 @@
 
 
 \begin{document}
-\title{LIDAR CLI User Manual - 1.0.0}
+\title{LIDAR CLI User Manual - 1.0.1}
 \author{David Roman \\  \href{mailto:droman@ifae.es}{droman@ifae.es} }
 \affil{IFAE}
 \maketitle
@@ -203,7 +203,7 @@ Command for debugging purposes
 	\item[-{}-] \textbf{warmup}: Start warm up. Enable hotwind and wait until it gets to the target temperature.
 \end{itemize}
 \subsubsection{Acquisition}
-When taking an acquisition by default the data is stored in the licel format in the server HDD. The server by default gives us a file ID of the file of the acquisition. After that if we want we can use that ID to download the file. Files are not download automatically.
+The acquired data is first stored in the server in licel file format. The server will return a file ID so we can download that file at anytime. Files are also downloaded automatically so we don't need to download it manually.
 \begin{itemize}
 	\item[-{}-] \textbf{disc}: Discriminator level. Always required.
 	\item[-{}-] \textbf{download}: Download licel file. Argument is the ID (unsigned integer) of the licel file we want to download.

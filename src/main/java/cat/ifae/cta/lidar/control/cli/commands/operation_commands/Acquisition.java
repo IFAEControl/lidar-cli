@@ -12,10 +12,8 @@ import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -122,15 +120,21 @@ class LicelDataWriter {
 }
 
 class LicelRespWriter extends LicelDataWriter {
-    private final DataSelection __desired_data;
+    private final DataSelection _desired_data;
+    private final OperationGrpc.OperationBlockingStub _blocking_stub;
 
-    LicelRespWriter(DataSelection d) {
-        __desired_data = d;
+    LicelRespWriter(DataSelection d, OperationGrpc.OperationBlockingStub b) {
+        _desired_data = d;
+        _blocking_stub = b;
     }
 
     void write(LicelData resp) throws IOException {
-        if(__desired_data.isAnalogCombined()) {
+        if(_desired_data.isAnalogCombined()) {
             writeAnalogCombined(resp);
+        } else if(_desired_data.isFileID()) {
+            var req_file = FileID.newBuilder().setId(resp.getAnalogLicelFileId()).build();
+            var resp_file = _blocking_stub.downloadFile(req_file);
+            new LicelFormatFileWriter(resp_file).write();
         }
     }
 
@@ -238,7 +242,7 @@ public class Acquisition implements Runnable {
         var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(disc).setShots(acquire_shots).setDataToRetrieve(b).build();
         var resp = blocking_stub.acquireShots(req);
         System.out.println("File ID: " + resp.getAnalogLicelFileId());
-        new LicelRespWriter(ds).write(resp);
+        new LicelRespWriter(ds, blocking_stub).write(resp);
     }
 
     private void acquisitionStart(DataSelection ds) {
@@ -253,6 +257,6 @@ public class Acquisition implements Runnable {
         var req = AcqConfig.newBuilder().setMaxBins(16381).setDataToRetrieve(b).build();
         var resp = blocking_stub.acquisitionStop(req);
         System.out.println("File ID: " + resp.getAnalogLicelFileId());
-        new LicelRespWriter(ds).write(resp);
+        new LicelRespWriter(ds, blocking_stub).write(resp);
     }
 }
