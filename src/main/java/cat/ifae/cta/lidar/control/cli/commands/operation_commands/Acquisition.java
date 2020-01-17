@@ -62,6 +62,7 @@ class DataSelection {
         return ((d >> 4) & 0b1) == 1;
     }
 
+    // Combined and converted
     void enableAnalogData() {
         d |= 1<<5;
     }
@@ -129,8 +130,12 @@ class LicelRespWriter extends LicelDataWriter {
     }
 
     void write(LicelData resp) throws IOException {
-        if(_desired_data.isAnalogCombined()) {
+        if(_desired_data.isLSW() || _desired_data.isMSW()) {
+            writeRawData(resp);
+        } else if(_desired_data.isAnalogCombined()) {
             writeAnalogCombined(resp);
+        } else if(_desired_data.isAnalogData()) {
+            writeAnalogConverted(resp);
         } else if(_desired_data.isFileID()) {
             var req_file = FileID.newBuilder().setId(resp.getAnalogLicelFileId()).build();
             var resp_file = _blocking_stub.downloadFile(req_file);
@@ -138,7 +143,65 @@ class LicelRespWriter extends LicelDataWriter {
         }
     }
 
+    private void writeRawData(LicelData resp) throws IOException {
+        {
+            var writer = get_writer("raw_lsw_0.out");
+            for (var v : resp.getData(0).getLsw()) {
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
+            }
+
+            writer.close();
+        }
+
+        {
+            var writer = get_writer("raw_lsw_1.out");
+            for (var v : resp.getData(1).getLsw()) {
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
+            }
+
+            writer.close();
+        }
+
+        {
+            var writer = get_writer("raw_msw_0.out");
+            for (var v : resp.getData(0).getMsw()) {
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
+            }
+
+            writer.close();
+        }
+
+        {
+            var writer = get_writer("raw_msw_1.out");
+            for (var v : resp.getData(1).getMsw()) {
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
+            }
+
+            writer.close();
+        }
+    }
+
     private void writeAnalogCombined(LicelData resp) throws IOException {
+        {
+            var writer = get_writer("analog_combined_0.out");
+            for (var v : resp.getData(0).getAnalogCombinedList()) {
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
+            }
+
+            writer.close();
+        }
+
+        {
+            var writer = get_writer("analog_combined_1.out");
+            for (var v : resp.getData(1).getAnalogCombinedList()) {
+                writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
+            }
+
+            writer.close();
+        }
+    }
+
+    private void writeAnalogConverted(LicelData resp) throws IOException {
         {
             var writer = get_writer("analog_combined_converted_0.out");
             for (var v : resp.getData(0).getAnalogConvertedList()) {
@@ -195,6 +258,12 @@ public class Acquisition implements Runnable {
     @Option(names = "--analog-data", description = "Get converted and normalized analog data")
     private boolean _analog_data = false;
 
+    @Option(names = "--analog-combined", description = "Get combined data without normalization")
+    private boolean _analog_combined_data = false;
+
+    @Option(names = "--enable-lsw-msw", description = "Get raw data parts")
+    private boolean _lsw_msw_data = false;
+
     private OperationGrpc.OperationBlockingStub blocking_stub;
 
     @Override
@@ -207,9 +276,14 @@ public class Acquisition implements Runnable {
         try {
             var ds = new DataSelection();
             ds.enableFileID();
+            if(_analog_combined_data) ds.enableAnalogCombined();
             if(_analog_data) ds.enableAnalogData();
+            if(_lsw_msw_data) {
+                ds.enableLSW();
+                ds.enableMSW();
+            }
 
-            if (disc == 0) {
+            if (download_file_id == -1 && disc == 0) {
                 System.out.println("Discriminator level must be set");
                 return;
             }
