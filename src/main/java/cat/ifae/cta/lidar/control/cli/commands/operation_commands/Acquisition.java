@@ -5,19 +5,15 @@ import cat.ifae.cta.lidar.FileContent;
 import cat.ifae.cta.lidar.FileID;
 import cat.ifae.cta.lidar.LicelData;
 import cat.ifae.cta.lidar.OperationGrpc;
-import cat.ifae.cta.lidar.control.cli.AppDirsCli;
+import cat.ifae.cta.lidar.control.cli.PathUtilsCli;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import cat.ifae.cta.lidar.logging.Logging;
 import io.grpc.StatusRuntimeException;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 class DataSelection {
     private int d;
@@ -92,35 +88,9 @@ class DataSelection {
     }
 }
 
-class LicelDataWriter {
-    private final static AppDirsCli appDirs = new AppDirsCli();
+class LicelRespWriter {
+    private final static PathUtilsCli _utils = new PathUtilsCli();
 
-    private final String _data_dir;
-
-    LicelDataWriter() {
-        _data_dir = get_dir();
-    }
-
-    FileOutputStream get_writer(String f_name) throws IOException {
-        var date = new SimpleDateFormat("yyyyMMdd.HHmmss").format(new Date());
-        return new FileOutputStream(_data_dir + "/" + date + "_" + f_name);
-    }
-
-    // private methods
-
-    private String get_dir() {
-        var data_dir = appDirs.getUserDataDir();
-        data_dir += "/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
-
-        var dir = new File(data_dir);
-        if(! dir.exists())
-            dir.mkdirs();
-
-        return data_dir;
-    }
-}
-
-class LicelRespWriter extends LicelDataWriter {
     private final DataSelection _desired_data;
     private final OperationGrpc.OperationBlockingStub _blocking_stub;
 
@@ -145,7 +115,7 @@ class LicelRespWriter extends LicelDataWriter {
 
     private void writeRawData(LicelData resp) throws IOException {
         {
-            var writer = get_writer("raw_lsw_0.out");
+            var writer = _utils.getFileWriter("raw_lsw_0.out");
             for (var v : resp.getData(0).getLsw()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
@@ -154,7 +124,7 @@ class LicelRespWriter extends LicelDataWriter {
         }
 
         {
-            var writer = get_writer("raw_lsw_1.out");
+            var writer = _utils.getFileWriter("raw_lsw_1.out");
             for (var v : resp.getData(1).getLsw()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
@@ -163,7 +133,7 @@ class LicelRespWriter extends LicelDataWriter {
         }
 
         {
-            var writer = get_writer("raw_msw_0.out");
+            var writer = _utils.getFileWriter("raw_msw_0.out");
             for (var v : resp.getData(0).getMsw()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
@@ -172,7 +142,7 @@ class LicelRespWriter extends LicelDataWriter {
         }
 
         {
-            var writer = get_writer("raw_msw_1.out");
+            var writer = _utils.getFileWriter("raw_msw_1.out");
             for (var v : resp.getData(1).getMsw()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
@@ -183,7 +153,7 @@ class LicelRespWriter extends LicelDataWriter {
 
     private void writeAnalogCombined(LicelData resp) throws IOException {
         {
-            var writer = get_writer("analog_combined_0.out");
+            var writer = _utils.getFileWriter("analog_combined_0.out");
             for (var v : resp.getData(0).getAnalogCombinedList()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
@@ -192,7 +162,7 @@ class LicelRespWriter extends LicelDataWriter {
         }
 
         {
-            var writer = get_writer("analog_combined_1.out");
+            var writer = _utils.getFileWriter("analog_combined_1.out");
             for (var v : resp.getData(1).getAnalogCombinedList()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
@@ -203,7 +173,7 @@ class LicelRespWriter extends LicelDataWriter {
 
     private void writeAnalogConverted(LicelData resp) throws IOException {
         {
-            var writer = get_writer("analog_combined_converted_0.out");
+            var writer = _utils.getFileWriter("analog_combined_converted_0.out");
             for (var v : resp.getData(0).getAnalogConvertedList()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
@@ -212,7 +182,7 @@ class LicelRespWriter extends LicelDataWriter {
         }
 
         {
-            var writer = get_writer("analog_combined_converted_1.out");
+            var writer = _utils.getFileWriter("analog_combined_converted_1.out");
             for (var v : resp.getData(1).getAnalogConvertedList()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
@@ -222,7 +192,9 @@ class LicelRespWriter extends LicelDataWriter {
     }
 }
 
-class LicelFormatFileWriter extends LicelDataWriter {
+class LicelFormatFileWriter {
+    private final static PathUtilsCli _utils = new PathUtilsCli();
+
     private final FileContent _file_content;
 
     LicelFormatFileWriter(FileContent file_content) {
@@ -230,7 +202,7 @@ class LicelFormatFileWriter extends LicelDataWriter {
     }
 
     void write() throws IOException {
-        var writer = get_writer("licel_file.out");
+        var writer = _utils.getFileWriter("licel_file.out");
         writer.write(_file_content.getData().toByteArray());
         writer.close();
     }
