@@ -100,13 +100,13 @@ class LicelRespWriter {
     }
 
     void write(LicelData resp) throws IOException {
-        if(_desired_data.isLSW() || _desired_data.isMSW()) {
+        if(_desired_data.isLSW() || _desired_data.isMSW())
             writeRawData(resp);
-        } else if(_desired_data.isAnalogCombined()) {
+        if(_desired_data.isAnalogCombined())
             writeAnalogCombined(resp);
-        } else if(_desired_data.isAnalogData()) {
+        if(_desired_data.isAnalogData())
             writeAnalogConverted(resp);
-        } else if(_desired_data.isFileID()) {
+        if(_desired_data.isFileID()) {
             var req_file = FileID.newBuilder().setId(resp.getAnalogLicelFileId()).build();
             var resp_file = _blocking_stub.downloadFile(req_file);
             new LicelFormatFileWriter(resp_file).write();
@@ -115,7 +115,7 @@ class LicelRespWriter {
 
     private void writeRawData(LicelData resp) throws IOException {
         {
-            var writer = _utils.getFileWriter("raw_lsw_0.out");
+            var writer = _utils.getFileWriter("raw_lsw_0");
             for (var v : resp.getData(0).getLsw()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
@@ -124,7 +124,7 @@ class LicelRespWriter {
         }
 
         {
-            var writer = _utils.getFileWriter("raw_lsw_1.out");
+            var writer = _utils.getFileWriter("raw_lsw_1");
             for (var v : resp.getData(1).getLsw()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
@@ -133,7 +133,7 @@ class LicelRespWriter {
         }
 
         {
-            var writer = _utils.getFileWriter("raw_msw_0.out");
+            var writer = _utils.getFileWriter("raw_msw_0");
             for (var v : resp.getData(0).getMsw()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
@@ -142,7 +142,7 @@ class LicelRespWriter {
         }
 
         {
-            var writer = _utils.getFileWriter("raw_msw_1.out");
+            var writer = _utils.getFileWriter("raw_msw_1");
             for (var v : resp.getData(1).getMsw()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
@@ -153,7 +153,7 @@ class LicelRespWriter {
 
     private void writeAnalogCombined(LicelData resp) throws IOException {
         {
-            var writer = _utils.getFileWriter("analog_combined_0.out");
+            var writer = _utils.getFileWriter("analog_combined_0");
             for (var v : resp.getData(0).getAnalogCombinedList()) {
                 writer.write(MessageFormat.format("{0} ", String.valueOf(v)).getBytes());
             }
