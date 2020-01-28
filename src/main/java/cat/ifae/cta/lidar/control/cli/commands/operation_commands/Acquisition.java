@@ -196,8 +196,8 @@ public class Acquisition implements Runnable {
    @Option(names = "--analog-combined", description = "Get combined data without normalization")
    private boolean _analog_combined_data = false;
 
-   @Option(names = "--enable-lsw-msw", description = "Get raw data parts")
-   private boolean _lsw_msw_data = false;
+   @Option(names = "--enable-raws", description = "Get raw data parts")
+   private boolean _raw_data = false;
 
    private OperationGrpc.OperationBlockingStub blocking_stub;
 
@@ -215,7 +215,7 @@ public class Acquisition implements Runnable {
             ds.enableAnalogCombined();
          if(_analog_data)
             ds.enableAnalogData();
-         if(_lsw_msw_data) {
+         if(_raw_data) {
             ds.enableLSW();
             ds.enableMSW();
          }
