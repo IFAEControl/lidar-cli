@@ -165,7 +165,7 @@ class LicelFormatFileWriter {
    }
 
    void write() throws IOException {
-      var writer = _utils.getFileWriter("licel_file.out");
+      var writer = _utils.getFileWriter("licel_file");
       writer.write(_file_content.getData().toByteArray());
       writer.close();
    }
