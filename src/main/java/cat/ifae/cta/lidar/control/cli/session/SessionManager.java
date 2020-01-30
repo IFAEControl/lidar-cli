@@ -1,9 +1,9 @@
 package cat.ifae.cta.lidar.control.cli.session;
 
+import cat.ifae.cta.lidar.AppDirs;
 import cat.ifae.cta.lidar.AuthGrpc;
 import cat.ifae.cta.lidar.Helpers;
 import cat.ifae.cta.lidar.Password;
-import cat.ifae.cta.lidar.control.cli.AppDirsCli;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractStub;
@@ -19,7 +19,7 @@ import java.util.Scanner;
 public class SessionManager {
     private static gRPCManager grpc;
 
-    private final static AppDirsCli appDirs = new AppDirsCli();
+    private final static AppDirs appDirs = new AppDirs();
     private Scanner scanner = new Scanner(System. in);
 
     public SessionManager() {
