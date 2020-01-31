@@ -13,6 +13,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 
 class DataSelection {
@@ -120,6 +121,8 @@ class LicelRespWriter {
          for(var v : resp.getData(i).getLsw()) {
             writer.write(v);
          }
+         writer.close();
+         writer.updateLatest();
       }
 
       for(int i = 0; i < _num_tr; i++) {
@@ -129,6 +132,7 @@ class LicelRespWriter {
          }
 
          writer.close();
+         writer.updateLatest();
       }
    }
 
@@ -140,6 +144,7 @@ class LicelRespWriter {
          }
 
          writer.close();
+         writer.updateLatest();
       }
    }
 
@@ -151,6 +156,7 @@ class LicelRespWriter {
          }
 
          writer.close();
+         writer.updateLatest();
       }
    }
 }
@@ -168,6 +174,7 @@ class LicelFormatFileWriter {
       var writer = _utils.getFileWriter("licel_file");
       writer.write(_file_content.getData().toByteArray());
       writer.close();
+      writer.updateLatest();
    }
 }
 

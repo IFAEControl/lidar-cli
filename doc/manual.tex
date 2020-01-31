@@ -211,6 +211,8 @@ The acquired data is first stored in the server in licel file format. The server
 	\item[-{}-] \textbf{start}: Start acquisition manually
 	\item[-{}-] \textbf{stop}: Stop acquisition
 	\item[-{}-] \textbf{analog-data}: Save a file with all analog values using space character as separator.
+	\item[-{}-] \textbf{analog-combined}: Save a file with normalized analog values.
+	\item[-{}-] \textbf{enable-raws}: Save lsw and msw arrays in raw format.
 \end{itemize}
 \subsubsection{Telescope}
 Telescope motors operations. When going to parking position it will first try to go to the last know good value (ie: the position we know that doors can be closed), if it's not possible it will go to the hardcoded values.
