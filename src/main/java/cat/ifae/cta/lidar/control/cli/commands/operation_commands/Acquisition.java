@@ -203,7 +203,7 @@ public class Acquisition implements Runnable {
    @Option(names = "--analog-combined", description = "Get combined data without normalization")
    private boolean _analog_combined_data = false;
 
-   @Option(names = "--enable-raws", description = "Get raw data parts")
+   @Option(names = "--raws", description = "Get raw data parts")
    private boolean _raw_data = false;
 
    private OperationGrpc.OperationBlockingStub blocking_stub;
