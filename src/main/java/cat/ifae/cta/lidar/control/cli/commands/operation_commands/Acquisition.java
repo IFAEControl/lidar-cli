@@ -181,6 +181,7 @@ class LicelFormatFileWriter {
 @CommandLine.Command(name = "acq", mixinStandardHelpOptions = true)
 public class Acquisition implements Runnable {
    private final static Logging log = new Logging(Acquisition.class);
+   private final int _max_bins = 16382;
 
    @Option(names = "--download", description = "Download file with given ID")
    private int download_file_id = -1;
@@ -260,7 +261,7 @@ public class Acquisition implements Runnable {
 
    private void acquireShots(DataSelection ds) throws IOException {
       var b = ds.getBitmap();
-      var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(disc)
+      var req = AcqConfig.newBuilder().setMaxBins(_max_bins).setDiscriminator(disc)
               .setShots(acquire_shots).setDataToRetrieve(b).build();
       var resp = blocking_stub.acquireShots(req);
       System.out.println("File ID: " + resp.getAnalogLicelFileId());
@@ -269,14 +270,14 @@ public class Acquisition implements Runnable {
 
    private void acquisitionStart(DataSelection ds) {
       var b = ds.getBitmap();
-      var req = AcqConfig.newBuilder().setMaxBins(16381).setDiscriminator(disc).setDataToRetrieve(b)
+      var req = AcqConfig.newBuilder().setMaxBins(_max_bins).setDiscriminator(disc).setDataToRetrieve(b)
               .build();
       blocking_stub.acquisitionStart(req);
    }
 
    private void acquisitionStop(DataSelection ds) throws IOException {
       var b = ds.getBitmap();
-      var req = AcqConfig.newBuilder().setMaxBins(16381).setDataToRetrieve(b).build();
+      var req = AcqConfig.newBuilder().setMaxBins(_max_bins).setDataToRetrieve(b).build();
       var resp = blocking_stub.acquisitionStop(req);
       System.out.println("File ID: " + resp.getAnalogLicelFileId());
       new LicelRespWriter(ds, blocking_stub).write(resp);
