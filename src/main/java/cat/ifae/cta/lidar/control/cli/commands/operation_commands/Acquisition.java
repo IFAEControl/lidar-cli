@@ -186,6 +186,9 @@ public class Acquisition implements Runnable {
    @Option(names = "--download", description = "Download file with given ID")
    private int download_file_id = -1;
 
+   @Option(names = "--wavelength", description = "Laser wavelength in nm")
+   private int wavelength = -1;
+
    @Option(names = "--start", description = "Start acquisition manually")
    private boolean acquisition_start = false;
 
@@ -228,9 +231,19 @@ public class Acquisition implements Runnable {
             ds.enableMSW();
          }
 
-         if(download_file_id == -1 && disc == 0) {
-            System.out.println("Discriminator level must be set");
-            return;
+         if(download_file_id == -1) {
+            if(disc == 0) {
+               System.out.println("Discriminator level must be set");
+               return;
+            }
+
+            if(wavelength == -1) {
+               System.out.println("Wavelength must be set");
+               return;
+            } else if(String.valueOf(wavelength).length() > 5) {
+               System.err.println("Wavelength can not have more than 5 characters");
+               return;
+            }
          }
 
          if(acquisition_start)
@@ -262,7 +275,7 @@ public class Acquisition implements Runnable {
    private void acquireShots(DataSelection ds) throws IOException {
       var b = ds.getBitmap();
       var req = AcqConfig.newBuilder().setMaxBins(_max_bins).setDiscriminator(disc)
-              .setShots(acquire_shots).setDataToRetrieve(b).build();
+              .setShots(acquire_shots).setDataToRetrieve(b).setWavelength(wavelength).build();
       var resp = blocking_stub.acquireShots(req);
       System.out.println("File ID: " + resp.getAnalogLicelFileId());
       new LicelRespWriter(ds, blocking_stub).write(resp);
@@ -277,7 +290,7 @@ public class Acquisition implements Runnable {
 
    private void acquisitionStop(DataSelection ds) throws IOException {
       var b = ds.getBitmap();
-      var req = AcqConfig.newBuilder().setMaxBins(_max_bins).setDataToRetrieve(b).build();
+      var req = AcqConfig.newBuilder().setMaxBins(_max_bins).setDataToRetrieve(b).setWavelength(wavelength).build();
       var resp = blocking_stub.acquisitionStop(req);
       System.out.println("File ID: " + resp.getAnalogLicelFileId());
       new LicelRespWriter(ds, blocking_stub).write(resp);
