@@ -1,6 +1,7 @@
 package cat.ifae.cta.lidar.control.cli.commands.operation_commands;
 
 import cat.ifae.cta.lidar.EncoderPosition;
+import cat.ifae.cta.lidar.Inclination;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.TelescopeGrpc;
 import cat.ifae.cta.lidar.control.cli.Licli;
@@ -42,6 +43,9 @@ class Telescope implements Runnable {
     @CommandLine.Option(names = "--go-azimuth-parking", description = "Go to azimuth parking position")
     private boolean azimuth_parking_postiion = false;
 
+    @CommandLine.Option(names = "--go-zenith", description = "Go to zenith inclination in degrees")
+    private int zenith_inclination = -1;
+
     private TelescopeGrpc.TelescopeStub stub;
     private TelescopeGrpc.TelescopeBlockingStub blocking_stub;
 
@@ -65,6 +69,7 @@ class Telescope implements Runnable {
             else if(get_parking_position) getParkingPosition();
             else if(zenith_parking_position) goToZenithParkingPosition();
             else if(azimuth_parking_postiion) goToAzimuthParkingPosition();
+            else if(zenith_inclination > 0) goToZenith();
         } catch (StatusRuntimeException e) {
             log.error(e.getLocalizedMessage());
         } catch(Exception e) {
@@ -170,6 +175,11 @@ class Telescope implements Runnable {
     private void goToAzimuthParkingPosition() {
         Null req = Null.newBuilder().build();
         blocking_stub.goToAzimuthParkingPosition(req);
+    }
+
+    private void goToZenith() {
+        var req = Inclination.newBuilder().setDegrees(zenith_inclination).build();
+        blocking_stub.goToZenithInclination(req);
     }
 
 }
