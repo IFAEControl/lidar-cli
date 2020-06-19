@@ -253,8 +253,11 @@ public class Acquisition implements Runnable {
          else if(download_file_id != -1)
             downloadFile();
          else if(acquire_shots != 0) {
-            if(acquire_shots >= 2)
+
+            if(acquire_shots >= 2 && acquire_shots <= 4096)
                acquireShots(ds);
+            else if(acquire_shots > 4096)
+               System.err.println("Maximum shot number is limited 4096 due to hardware limitations of one TR unit");
             else
                System.err.println("Minimum shot number is 2");
          }
