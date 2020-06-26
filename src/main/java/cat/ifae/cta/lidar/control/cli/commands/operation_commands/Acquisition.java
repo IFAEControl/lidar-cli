@@ -181,7 +181,7 @@ class LicelFormatFileWriter {
 @CommandLine.Command(name = "acq", mixinStandardHelpOptions = true)
 public class Acquisition implements Runnable {
    private final static Logging log = new Logging(Acquisition.class);
-   private final int _max_bins = 16382;
+   private final int _max_bins = 16380;
 
    @Option(names = "--download", description = "Download file with given ID")
    private int download_file_id = -1;
