@@ -91,6 +91,12 @@ class MotorsMonitoring implements Runnable {
 
    private MotorsMonitoringGrpc.MotorsMonitoringBlockingStub blockingStub;
 
+   @CommandLine.Option(names = "--raws")
+   private boolean read_raws = false;
+
+   @CommandLine.Option(names = "--encoders")
+   private boolean read_encoders = false;
+
    @Override
    public final void run() {
       blockingStub = MotorsMonitoringGrpc.newBlockingStub(Licli.sm.getCh());
@@ -99,13 +105,25 @@ class MotorsMonitoring implements Runnable {
       CommandLine.populateCommand(this);
 
       try {
-         var req = Null.newBuilder().build();
-         System.out.println(blockingStub.readEncoders(req));
+         if(read_raws)
+            readRaws();
+         if(read_encoders)
+            readEncoders();
       } catch (StatusRuntimeException e) {
          _log.error(e.getLocalizedMessage());
       } catch(RuntimeException e) {
          System.out.println(e.toString());
       }
+   }
+
+   void readRaws() {
+      var req = Null.newBuilder().build();
+      System.out.println(blockingStub.readRaws(req));
+   }
+
+   void readEncoders() {
+      var req = Null.newBuilder().build();
+      System.out.println(blockingStub.readEncoders(req));
    }
 }
 
