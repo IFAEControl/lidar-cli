@@ -13,10 +13,23 @@ import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.text.MessageFormat;
 
 class DataSelection {
+   // bit 0: pho
+   // bit 1: lsw
+   // bit 2: msw
+   // bit 3: phm
+   // bit 4: analog combined
+   // bit 5: converted analog data
+   // bit 6: converted pho data
+   // bit 7: returns a file ID
+   // bit 8: p2l
+   // bit 9: p2m
+   // bit 10: squared photon
+   // bit 11: a2l
+   // bit 12: a2m
+   // bit 13: a2h
    private int d;
 
    void enablePHO() {
@@ -84,6 +97,54 @@ class DataSelection {
       return ((d >> 7) & 0b1) == 1;
    }
 
+   void enableP2L() {
+      d |= 1 << 8;
+   }
+
+   boolean isP2L() {
+      return ((d >> 9) & 0b1) == 1;
+   }
+
+   void enableP2M() {
+      d |= 1 << 9;
+   }
+
+   boolean isP2M() {
+      return ((d >> 9) & 0b1) == 1;
+   }
+
+   void enableSquaredPho() {
+      d |= 1 << 10;
+   }
+
+   boolean isSquaredPho() {
+      return ((d >> 10) & 0b1) == 1;
+   }
+
+   void enableA2L() {
+      d |= 1 << 11;
+   }
+
+   boolean isA2L() {
+      return ((d >> 11) & 0b1) == 1;
+   }
+
+   void enableA2M() {
+      d |= 1 << 12;
+   }
+
+   boolean isA2M() {
+      return ((d >> 12) & 0b1) == 1;
+   }
+
+   void enableA2H() {
+      d |= 1 << 13;
+   }
+
+   boolean isA2H() {
+      return ((d >> 13) & 0b1) == 1;
+   }
+
    int getBitmap() {
       return d;
    }
@@ -104,6 +165,8 @@ class LicelRespWriter {
    void write(LicelData resp) throws IOException {
       if(_desired_data.isLSW() || _desired_data.isMSW())
          writeRawData(resp);
+      if(_desired_data.isA2L() || _desired_data.isA2M() || _desired_data.isA2H())
+         writeRawSquaredData(resp);
       if(_desired_data.isAnalogCombined())
          writeAnalogCombined(resp);
       if(_desired_data.isAnalogData())
@@ -128,6 +191,37 @@ class LicelRespWriter {
       for(int i = 0; i < _num_tr; i++) {
          var writer = _utils.getFileWriter("raw_msw_" + i);
          for(var v : resp.getData(i).getMsw()) {
+            writer.write(v);
+         }
+
+         writer.close();
+         writer.updateLatest();
+      }
+   }
+
+   private void writeRawSquaredData(LicelData resp) throws IOException {
+      for(int i = 0; i < _num_tr; i++) {
+         var writer = _utils.getFileWriter("raw_a2l_" + i);
+         for(var v : resp.getData(i).getA2L()) {
+            writer.write(v);
+         }
+         writer.close();
+         writer.updateLatest();
+      }
+
+      for(int i = 0; i < _num_tr; i++) {
+         var writer = _utils.getFileWriter("raw_a2m_" + i);
+         for(var v : resp.getData(i).getA2M()) {
+            writer.write(v);
+         }
+
+         writer.close();
+         writer.updateLatest();
+      }
+
+      for(int i = 0; i < _num_tr; i++) {
+         var writer = _utils.getFileWriter("raw_a2h_" + i);
+         for(var v : resp.getData(i).getA2H()) {
             writer.write(v);
          }
 
@@ -207,8 +301,11 @@ public class Acquisition implements Runnable {
    @Option(names = "--analog-combined", description = "Get combined data without normalization")
    private boolean _analog_combined_data = false;
 
-   @Option(names = "--raws", description = "Get raw data parts")
-   private boolean _raw_data = false;
+   @Option(names = "--raw-analog", description = "Get raw data parts")
+   private boolean _raw_analog_data = false;
+
+   @Option(names = "--raw-squared", description = "Get raw data parts")
+   private boolean _raw_squared_data = false;
 
    private OperationGrpc.OperationBlockingStub blocking_stub;
 
@@ -222,13 +319,22 @@ public class Acquisition implements Runnable {
       try {
          var ds = new DataSelection();
          ds.enableFileID();
+
          if(_analog_combined_data)
             ds.enableAnalogCombined();
+
          if(_analog_data)
             ds.enableAnalogData();
-         if(_raw_data) {
+
+         if(_raw_analog_data) {
             ds.enableLSW();
             ds.enableMSW();
+         }
+
+         if(_raw_squared_data) {
+            ds.enableA2L();
+            ds.enableA2M();
+            ds.enableA2H();
          }
 
          if(download_file_id == -1) {
