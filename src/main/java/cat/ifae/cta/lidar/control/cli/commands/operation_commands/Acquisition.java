@@ -1,10 +1,6 @@
 package cat.ifae.cta.lidar.control.cli.commands.operation_commands;
 
-import cat.ifae.cta.lidar.AcqConfig;
-import cat.ifae.cta.lidar.FileContent;
-import cat.ifae.cta.lidar.FileID;
-import cat.ifae.cta.lidar.LicelData;
-import cat.ifae.cta.lidar.OperationGrpc;
+import cat.ifae.cta.lidar.*;
 import cat.ifae.cta.lidar.control.cli.Configuration;
 import cat.ifae.cta.lidar.control.cli.PathUtilsCli;
 import cat.ifae.cta.lidar.control.cli.Licli;
@@ -290,8 +286,8 @@ public class Acquisition implements Runnable {
    @Option(names = "--shots", description = "Acquire a given number of shots")
    private int acquire_shots = 0;
 
-   @Option(names = "--disc", required = true, description = "Discriminator level")
-   private int disc = 0;
+   @Option(names = "--disc", description = "Discriminator level for all TR (format=disc1:disc2:...)")
+   private String _disc;
 
    @Option(names = "--analog-data", description = "Get converted and normalized analog data")
    private boolean _analog_data = false;
@@ -309,6 +305,9 @@ public class Acquisition implements Runnable {
 
    @Override
    public void run() {
+      // Number of TR units installed
+      var tr_num = 4;
+
       var ch = Licli.sm.getCh();
 
       blocking_stub = OperationGrpc.newBlockingStub(ch);
@@ -336,7 +335,7 @@ public class Acquisition implements Runnable {
          }
 
          if(download_file_id == -1) {
-            if(disc == 0) {
+            if(_disc.equals("")) {
                System.out.println("Discriminator level must be set");
                return;
             }
@@ -347,10 +346,14 @@ public class Acquisition implements Runnable {
          var wl3 = Configuration.Acquisition.wl_ch_3;
          var wl4 = Configuration.Acquisition.wl_ch_4;
 
+         var disc_parts = Helpers.split(_disc, tr_num);
+
          var builder =
-                 AcqConfig.newBuilder().setMaxBins(_max_bins).setDiscriminator(disc).
-                         setWavelengthCh1(wl1).setWavelengthCh2(wl2).setWavelengthCh3(wl3).
-                         setWavelengthCh4(wl4);
+                 AcqConfig.newBuilder().setMaxBins(_max_bins).setWavelengthCh1(wl1).setWavelengthCh2(wl2).
+                         setWavelengthCh3(wl3).setWavelengthCh4(wl4);
+
+         for(var d : disc_parts)
+            builder.addDiscriminator(Integer.parseInt(d));
 
          if(acquisition_start)
             acquisitionStart(builder, ds);
