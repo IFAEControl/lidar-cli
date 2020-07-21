@@ -21,8 +21,9 @@ public class Configuration {
    public static final Integer pmt_dac_voltage = cfg.getInteger("pmt_dac_voltage");
 
    void checkConfiguration() {
-      if(Acquisition.wl_ch_1 > 5 || Acquisition.wl_ch_2 > 5 || Acquisition.wl_ch_3 > 5 ||
-         Acquisition.wl_ch_4 > 5)
+      var max_val = 99999;
+      if(Acquisition.wl_ch_1 > max_val || Acquisition.wl_ch_2 > max_val || Acquisition.wl_ch_3 > max_val ||
+         Acquisition.wl_ch_4 > max_val)
          throw new RuntimeException("Wavelength can not have more than 5 characters");
    }
 }
