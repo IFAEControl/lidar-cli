@@ -1,5 +1,6 @@
 package cat.ifae.cta.lidar.control.cli.commands;
 
+import cat.ifae.cta.lidar.MotorDoorInfo;
 import cat.ifae.cta.lidar.MotorsMonitoringGrpc;
 import cat.ifae.cta.lidar.Null;
 import cat.ifae.cta.lidar.SensorsMonitoringGrpc;
@@ -133,7 +134,27 @@ class MotorsMonitoring implements Runnable {
 
    void readMotors() {
       var req = Null.newBuilder().build();
-      System.out.println(blockingStub.readMotorsInfo(req));
+      var resp = blockingStub.readMotorsInfo(req);
+      printDoorInfo(resp.getDoor1(), 1);
+      printDoorInfo(resp.getDoor2(), 2);
+      System.out.println(resp.getMisc());
+   }
+
+   //              .setDirection(v.getDirection()).build();
+
+   private void printDoorInfo(MotorDoorInfo d, int num) {
+      System.out.println("door"+num+" {");
+      System.out.println("  jog0: " + d.getJog0());
+      System.out.println("  jog1: " + d.getJog1());
+      System.out.println("  fc0: " + d.getFc0());
+      System.out.println("  fc1: " + d.getFc1());
+      System.out.println("  fc2: " + d.getFc2());
+      System.out.println("  fc3: " + d.getFc3());
+      System.out.println("  step: " + d.getStep());
+      System.out.println("  open: " + d.getOpen());
+      System.out.println("  close: " + d.getClose());
+      System.out.println("  direction: " + d.getDirection());
+      System.out.println("}");
    }
 }
 
