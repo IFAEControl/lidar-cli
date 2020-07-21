@@ -94,6 +94,9 @@ class MotorsMonitoring implements Runnable {
    @CommandLine.Option(names = "--raws")
    private boolean read_raws = false;
 
+   @CommandLine.Option(names = "--motors")
+   private boolean _read_motors;
+
    @CommandLine.Option(names = "--encoders")
    private boolean read_encoders = false;
 
@@ -109,6 +112,8 @@ class MotorsMonitoring implements Runnable {
             readRaws();
          if(read_encoders)
             readEncoders();
+         if(_read_motors)
+            readMotors();
       } catch (StatusRuntimeException e) {
          _log.error(e.getLocalizedMessage());
       } catch(RuntimeException e) {
@@ -124,6 +129,11 @@ class MotorsMonitoring implements Runnable {
    void readEncoders() {
       var req = Null.newBuilder().build();
       System.out.println(blockingStub.readEncoders(req));
+   }
+
+   void readMotors() {
+      var req = Null.newBuilder().build();
+      System.out.println(blockingStub.readMotorsInfo(req));
    }
 }
 
