@@ -149,7 +149,7 @@ class DataSelection {
 
 class LicelRespWriter {
    private final static PathUtilsCli _utils = new PathUtilsCli();
-   private final static int _num_tr = 2;
+   private final static int _num_tr = 4;
 
    private final DataSelection _desired_data;
    private final OperationGrpc.OperationBlockingStub _blocking_stub;
