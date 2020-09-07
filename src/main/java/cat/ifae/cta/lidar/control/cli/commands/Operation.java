@@ -82,8 +82,19 @@ public class Operation implements Runnable {
 
         var p = getPosition();
         var point_req = Point2D.newBuilder().setX(p.getX()).setY(p.getY()).build();
+
+        var vlts_0 = Configuration.pmt_dac_vlts_0;
+        var vlts_1 = Configuration.pmt_dac_vlts_1;
+        var vlts_2 = Configuration.pmt_dac_vlts_2;
+        var vlts_3 = Configuration.pmt_dac_vlts_3;
+        var vlts_4 = Configuration.pmt_dac_vlts_4;
+        var vlts_5 = Configuration.pmt_dac_vlts_5;
+
         var req =
-                InitSequenceOptions.newBuilder().setPosition(point_req).setPmtDacVoltage(getDacVoltage()).build();
+                InitSequenceOptions.newBuilder().setPosition(point_req)
+                        .putPmtDacVoltages(0, vlts_0).putPmtDacVoltages(1, vlts_1)
+                        .putPmtDacVoltages(2, vlts_2).putPmtDacVoltages(3, vlts_3)
+                        .putPmtDacVoltages(4, vlts_4).putPmtDacVoltages(5, vlts_5).build();
         stub.startUpNormalMode(req, new StreamObserver<>() {
             public void onNext(TraceOperation response) {
                 System.out.println(response.getLine());
@@ -126,7 +137,12 @@ public class Operation implements Runnable {
 
     private static void printHelp() {
         System.out.println("Properties");
-        System.out.println("DAC Voltage: " + getDacVoltage());
+        System.out.println("DAC Voltage#0: " + Configuration.pmt_dac_vlts_0);
+        System.out.println("DAC Voltage#1: " + Configuration.pmt_dac_vlts_1);
+        System.out.println("DAC Voltage#2: " + Configuration.pmt_dac_vlts_2);
+        System.out.println("DAC Voltage#3 " + Configuration.pmt_dac_vlts_3);
+        System.out.println("DAC Voltage#4: " + Configuration.pmt_dac_vlts_4);
+        System.out.println("DAC Voltage#5: " + Configuration.pmt_dac_vlts_5);
         System.out.println("Position: " + getPosition());
     }
 
@@ -135,9 +151,5 @@ public class Operation implements Runnable {
         var p_y = Configuration.arm_alignment_y;
 
         return new java.awt.geom.Point2D.Float(p_x, p_y);
-    }
-
-    private static int getDacVoltage() {
-        return Configuration.pmt_dac_voltage;
     }
 }

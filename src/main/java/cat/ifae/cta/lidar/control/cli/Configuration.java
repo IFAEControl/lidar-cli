@@ -20,6 +20,14 @@ public class Configuration {
    public static final Float arm_alignment_y = cfg.getFloat("allignment_arm_Y");
    public static final Integer pmt_dac_voltage = cfg.getInteger("pmt_dac_voltage");
 
+   public static final Integer pmt_dac_vlts_0 = cfg.getInteger("pmt_dac_vlts_0");
+   public static final Integer pmt_dac_vlts_1 = cfg.getInteger("pmt_dac_vlts_1");
+   public static final Integer pmt_dac_vlts_2 = cfg.getInteger("pmt_dac_vlts_2");
+   public static final Integer pmt_dac_vlts_3 = cfg.getInteger("pmt_dac_vlts_3");
+   public static final Integer pmt_dac_vlts_4 = cfg.getInteger("pmt_dac_vlts_4");
+   public static final Integer pmt_dac_vlts_5 = cfg.getInteger("pmt_dac_vlts_5");
+
+
    void checkConfiguration() {
       var max_val = 99999;
       if(Acquisition.wl_ch_1 > max_val || Acquisition.wl_ch_2 > max_val || Acquisition.wl_ch_3 > max_val ||

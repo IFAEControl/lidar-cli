@@ -96,7 +96,17 @@ public class LowLevel implements Runnable {
     private void initSequence() {
         var p = getPosition();
         var point_req = Point2D.newBuilder().setX(p.getX()).setY(p.getY()).build();
-        var req = InitSequenceOptions.newBuilder().setPosition(point_req).setPmtDacVoltage(getDacVoltage()).build();
+
+        var vlts_0 = Configuration.pmt_dac_vlts_0;
+        var vlts_1 = Configuration.pmt_dac_vlts_1;
+        var vlts_2 = Configuration.pmt_dac_vlts_2;
+        var vlts_3 = Configuration.pmt_dac_vlts_3;
+        var vlts_4 = Configuration.pmt_dac_vlts_4;
+        var vlts_5 = Configuration.pmt_dac_vlts_5;
+        
+        var req = InitSequenceOptions.newBuilder().setPosition(point_req).putPmtDacVoltages(0, vlts_0).putPmtDacVoltages(1, vlts_1)
+                .putPmtDacVoltages(2, vlts_2).putPmtDacVoltages(3, vlts_3)
+                .putPmtDacVoltages(4, vlts_4).putPmtDacVoltages(5, vlts_5).build();
         blocking_stub.executeMicroInitSequence(req);
     }
 
@@ -129,7 +139,17 @@ public class LowLevel implements Runnable {
     }
 
     private void rampUp() {
-        var req = InitSequenceOptions.newBuilder().setPmtDacVoltage(getDacVoltage()).build();
+        var vlts_0 = Configuration.pmt_dac_vlts_0;
+        var vlts_1 = Configuration.pmt_dac_vlts_1;
+        var vlts_2 = Configuration.pmt_dac_vlts_2;
+        var vlts_3 = Configuration.pmt_dac_vlts_3;
+        var vlts_4 = Configuration.pmt_dac_vlts_4;
+        var vlts_5 = Configuration.pmt_dac_vlts_5;
+
+        var req = InitSequenceOptions.newBuilder().putPmtDacVoltages(0, vlts_0)
+                .putPmtDacVoltages(1, vlts_1).putPmtDacVoltages(2, vlts_2)
+                .putPmtDacVoltages(3, vlts_3).putPmtDacVoltages(4, vlts_4)
+                .putPmtDacVoltages(5, vlts_5).build();
         blocking_stub.rampUpDACs(req);
     }
 
