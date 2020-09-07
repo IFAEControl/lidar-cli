@@ -1,10 +1,7 @@
 package cat.ifae.cta.lidar.control.cli.commands.operation_commands;
 
-import cat.ifae.cta.lidar.AcqConfig;
-import cat.ifae.cta.lidar.FileContent;
-import cat.ifae.cta.lidar.FileID;
-import cat.ifae.cta.lidar.LicelData;
-import cat.ifae.cta.lidar.OperationGrpc;
+import cat.ifae.cta.lidar.*;
+import cat.ifae.cta.lidar.control.cli.Configuration;
 import cat.ifae.cta.lidar.control.cli.PathUtilsCli;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import cat.ifae.cta.lidar.logging.Logging;
@@ -152,7 +149,7 @@ class DataSelection {
 
 class LicelRespWriter {
    private final static PathUtilsCli _utils = new PathUtilsCli();
-   private final static int _num_tr = 2;
+   private final static int _num_tr = 4;
 
    private final DataSelection _desired_data;
    private final OperationGrpc.OperationBlockingStub _blocking_stub;
@@ -280,9 +277,6 @@ public class Acquisition implements Runnable {
    @Option(names = "--download", description = "Download file with given ID")
    private int download_file_id = -1;
 
-   @Option(names = "--wavelength", description = "Laser wavelength in nm")
-   private int wavelength = -1;
-
    @Option(names = "--start", description = "Start acquisition manually")
    private boolean acquisition_start = false;
 
@@ -292,8 +286,8 @@ public class Acquisition implements Runnable {
    @Option(names = "--shots", description = "Acquire a given number of shots")
    private int acquire_shots = 0;
 
-   @Option(names = "--disc", required = true, description = "Discriminator level")
-   private int disc = 0;
+   @Option(names = "--disc", description = "Discriminator level for all TR (format=disc1:disc2:...)")
+   private String _disc;
 
    @Option(names = "--analog-data", description = "Get converted and normalized analog data")
    private boolean _analog_data = false;
@@ -311,6 +305,9 @@ public class Acquisition implements Runnable {
 
    @Override
    public void run() {
+      // Number of TR units installed
+      var tr_num = 4;
+
       var ch = Licli.sm.getCh();
 
       blocking_stub = OperationGrpc.newBlockingStub(ch);
@@ -338,34 +335,39 @@ public class Acquisition implements Runnable {
          }
 
          if(download_file_id == -1) {
-            if(disc == 0) {
+            if(_disc.equals("")) {
                System.out.println("Discriminator level must be set");
-               return;
-            }
-
-            if(wavelength == -1) {
-               System.out.println("Wavelength must be set");
-               return;
-            } else if(String.valueOf(wavelength).length() > 5) {
-               System.err.println("Wavelength can not have more than 5 characters");
                return;
             }
          }
 
-         if(acquisition_start)
-            acquisitionStart(ds);
-         else if(acquisition_stop)
-            acquisitionStop(ds);
-         else if(download_file_id != -1)
-            downloadFile();
-         else if(acquire_shots != 0) {
+         var wl1 = Configuration.Acquisition.wl_ch_1;
+         var wl2 = Configuration.Acquisition.wl_ch_2;
+         var wl3 = Configuration.Acquisition.wl_ch_3;
+         var wl4 = Configuration.Acquisition.wl_ch_4;
 
+         var disc_parts = Helpers.split(_disc, tr_num);
+
+         var builder =
+                 AcqConfig.newBuilder().setMaxBins(_max_bins).setWavelengthCh1(wl1).setWavelengthCh2(wl2).
+                         setWavelengthCh3(wl3).setWavelengthCh4(wl4);
+
+         for(var d : disc_parts)
+            builder.addDiscriminator(Integer.parseInt(d));
+
+         if(acquisition_start)
+            acquisitionStart(builder, ds);
+         else if(acquisition_stop)
+            acquisitionStop(builder, ds);
+         else if(acquire_shots != 0) {
             if(acquire_shots >= 2 && acquire_shots <= 4096)
-               acquireShots(ds);
+               acquireShots(builder, ds);
             else if(acquire_shots > 4096)
                System.err.println("Maximum shot number is limited 4096 due to hardware limitations of one TR unit");
             else
                System.err.println("Minimum shot number is 2");
+         } else if(download_file_id != -1) {
+            downloadFile();
          }
       } catch(StatusRuntimeException e) {
          log.error(e.getLocalizedMessage());
@@ -381,25 +383,24 @@ public class Acquisition implements Runnable {
       new LicelFormatFileWriter(resp).write();
    }
 
-   private void acquireShots(DataSelection ds) throws IOException {
+   private void acquireShots(AcqConfig.Builder builder, DataSelection ds) throws IOException {
       var b = ds.getBitmap();
-      var req = AcqConfig.newBuilder().setMaxBins(_max_bins).setDiscriminator(disc)
-              .setShots(acquire_shots).setDataToRetrieve(b).setWavelength(wavelength).build();
+      var req = builder.setShots(acquire_shots).setDataToRetrieve(b).build();
       var resp = blocking_stub.acquireShots(req);
       System.out.println("File ID: " + resp.getAnalogLicelFileId());
       new LicelRespWriter(ds, blocking_stub).write(resp);
    }
 
-   private void acquisitionStart(DataSelection ds) {
+   private void acquisitionStart(AcqConfig.Builder builder, DataSelection ds) {
       var b = ds.getBitmap();
-      var req = AcqConfig.newBuilder().setMaxBins(_max_bins).setDiscriminator(disc).setDataToRetrieve(b)
+      var req = builder.setDataToRetrieve(b)
               .build();
       blocking_stub.acquisitionStart(req);
    }
 
-   private void acquisitionStop(DataSelection ds) throws IOException {
+   private void acquisitionStop(AcqConfig.Builder builder, DataSelection ds) throws IOException {
       var b = ds.getBitmap();
-      var req = AcqConfig.newBuilder().setMaxBins(_max_bins).setDataToRetrieve(b).setWavelength(wavelength).build();
+      var req = builder.setDataToRetrieve(b).build();
       var resp = blocking_stub.acquisitionStop(req);
       System.out.println("File ID: " + resp.getAnalogLicelFileId());
       new LicelRespWriter(ds, blocking_stub).write(resp);
