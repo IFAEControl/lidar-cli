@@ -19,10 +19,9 @@ buildscript {
         jcenter()
     }
 
-    dependencies { // ASSUMES GRADLE 2.12 OR HIGHER. Use plugin version 0.7.5 with earlier
-        // gradle versions
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.21.0"
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.13'
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.30.0"
     }
 }
 
@@ -41,33 +40,33 @@ targetCompatibility = 11
 
 //mainClassName = 'cat.ifae.cta.lidar.control.MotorsClient'
 
-def grpcVersion = '1.24.1' // CURRENT_GRPC_VERSION
-def protobufVersion = '3.9.1'
-def protocVersion = '3.9.1'
+def grpcVersion = '1.31.1' // CURRENT_GRPC_VERSION
+def protobufVersion = '3.13.0'
+def protocVersion = '3.13.0'
 
 dependencies {
-    compile project(':libutil')
+    implementation project(':libutil')
 
     compileOnly "javax.annotation:javax.annotation-api:1.3.2"
 
-    compile "com.google.api.grpc:proto-google-common-protos:1.16.0"
-    compile "io.grpc:grpc-alts:${grpcVersion}"
-    compile "io.grpc:grpc-protobuf:${grpcVersion}"
-    compile "io.grpc:grpc-stub:${grpcVersion}"
-    compile "com.google.protobuf:protobuf-java-util:${protobufVersion}"
-    compile 'info.picocli:picocli:4.0.4'
-    compile group: 'org.json', name: 'json', version: '20190722'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
-    compile group: 'com.google.guava', name: 'guava', version: '28.1-jre'
-    compile group: 'net.harawata', name: 'appdirs', version: '1.0.3'
-    compile group: 'org.slf4j', name:'slf4j-log4j12', version: '1.7.2'
+    implementation "com.google.api.grpc:proto-google-common-protos:1.18.1"
+    implementation "io.grpc:grpc-alts:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+    implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
+    implementation 'info.picocli:picocli:4.0.4'
+    implementation group: 'org.json', name: 'json', version: '20190722'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.3'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3'
+    implementation group: 'com.google.guava', name: 'guava', version: '28.1-jre'
+    implementation group: 'net.harawata', name: 'appdirs', version: '1.2.0'
+    implementation group: 'org.slf4j', name:'slf4j-log4j12', version: '1.7.2'
 
-    testCompile "io.grpc:grpc-testing:${grpcVersion}"
-    testCompile 'junit:junit:4.12'
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.28.2'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '4.12.3'
+    testImplementation "io.grpc:grpc-testing:${grpcVersion}"
+    testImplementation 'junit:junit:4.13'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.28.2'
+    testImplementation group: 'junit', name: 'junit', version: '4.13'
+    testImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '4.12.3'
 }
 
 test {
@@ -128,6 +127,7 @@ task controlClient(type: CreateStartScripts) {
 }
 
 applicationDistribution.into('bin') {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     from(controlClient)
     fileMode = 0755
 }
