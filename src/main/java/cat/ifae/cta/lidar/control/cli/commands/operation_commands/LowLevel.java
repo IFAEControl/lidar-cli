@@ -5,9 +5,11 @@ import cat.ifae.cta.lidar.control.cli.Configuration;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import cat.ifae.cta.lidar.logging.Logging;
 import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
 import picocli.CommandLine;
 
 import java.text.MessageFormat;
+import java.util.concurrent.CountDownLatch;
 
 @CommandLine.Command(name = "ll", mixinStandardHelpOptions = true)
 public class LowLevel implements Runnable {
@@ -43,6 +45,7 @@ public class LowLevel implements Runnable {
     @CommandLine.Option(names = "--ramp-single", description = "Modify voltage of a single DAC")
     private String ramp_single = "";
 
+    private OperationGrpc.OperationStub stub;
     private OperationGrpc.OperationBlockingStub blocking_stub;
     private LLCDriversGrpc.LLCDriversBlockingStub drivers_stub;
     private LLCSensorsGrpc.LLCSensorsBlockingStub sensors_stub;
@@ -50,6 +53,9 @@ public class LowLevel implements Runnable {
     @Override
     public void run() {
         var ch = Licli.sm.getCh();
+
+        stub = OperationGrpc.newStub(ch);
+        stub = Licli.sm.addMetadata(stub);
 
         blocking_stub = OperationGrpc.newBlockingStub(ch);
         blocking_stub = Licli.sm.addMetadata(blocking_stub);
@@ -93,7 +99,7 @@ public class LowLevel implements Runnable {
         return new java.awt.geom.Point2D.Float(p_x, p_y);
     }
 
-    private void initSequence() {
+    private void initSequence() throws InterruptedException {
         var p = getPosition();
         var point_req = Point2D.newBuilder().setX(p.getX()).setY(p.getY()).build();
 
@@ -107,7 +113,25 @@ public class LowLevel implements Runnable {
         var req = InitSequenceOptions.newBuilder().setPosition(point_req).putPmtDacVoltages(0, vlts_0).putPmtDacVoltages(1, vlts_1)
                 .putPmtDacVoltages(2, vlts_2).putPmtDacVoltages(3, vlts_3)
                 .putPmtDacVoltages(4, vlts_4).putPmtDacVoltages(5, vlts_5).build();
-        blocking_stub.executeMicroInitSequence(req);
+
+        var finishedLatch = new CountDownLatch(1);
+
+        stub.executeMicroInitSequence(req, new StreamObserver<>() {
+            public void onNext(TraceOperation response) {
+                System.out.println(response.getLine());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
     }
 
     private void microShutdownSequence() {
@@ -128,17 +152,36 @@ public class LowLevel implements Runnable {
         blocking_stub.moveArmToAlignmentPos(req);
     }
 
-    private void rampSingle(String s) {
+    private void rampSingle(String s) throws InterruptedException {
         String[] components = Helpers.split(s, 2);
 
         int dac = Integer.parseInt(components[0]);
         int voltage = Integer.parseInt(components[1]);
 
         var c = DAC.newBuilder().setIdx(dac).setVoltage(voltage).build();
-        blocking_stub.rampUpSingleDAC(c);
+
+        var finishedLatch = new CountDownLatch(1);
+
+        stub.rampUpSingleDAC(c, new StreamObserver<>() {
+            public void onNext(TraceOperation response) {
+                System.out.println(response.getLine());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
+
     }
 
-    private void rampUp() {
+    private void rampUp() throws InterruptedException {
         var vlts_0 = Configuration.pmt_dac_vlts_0;
         var vlts_1 = Configuration.pmt_dac_vlts_1;
         var vlts_2 = Configuration.pmt_dac_vlts_2;
@@ -150,12 +193,47 @@ public class LowLevel implements Runnable {
                 .putPmtDacVoltages(1, vlts_1).putPmtDacVoltages(2, vlts_2)
                 .putPmtDacVoltages(3, vlts_3).putPmtDacVoltages(4, vlts_4)
                 .putPmtDacVoltages(5, vlts_5).build();
-        blocking_stub.rampUpDACs(req);
+
+        var finishedLatch = new CountDownLatch(1);
+
+        stub.rampUpDACs(req, new StreamObserver<>() {
+            public void onNext(TraceOperation response) {
+                System.out.println(response.getLine());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
     }
 
-    private void rampDown() {
+    private void rampDown() throws InterruptedException {
+        var finishedLatch = new CountDownLatch(1);
+
         var req = Null.newBuilder().build();
-        blocking_stub.rampDownDACs(req);
+        stub.rampDownDACs(req, new StreamObserver<>() {
+            public void onNext(TraceOperation response) {
+                System.out.println(response.getLine());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
     }
 
     private void initalizeLaser() {
