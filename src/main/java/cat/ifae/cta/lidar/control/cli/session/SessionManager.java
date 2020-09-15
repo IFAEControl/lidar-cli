@@ -9,6 +9,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractStub;
 
+import javax.net.ssl.SSLException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,10 +32,13 @@ public class SessionManager {
             port = 50051;
         }
 
-        grpc = new gRPCManager(ip, port);
-
-        initializeToken();
-        scanner.close();
+        try {
+            grpc = new gRPCManager(ip, port);
+            initializeToken();
+            scanner.close();
+        } catch(SSLException e) {
+            System.err.println("Error: " + e);
+        }
     }
 
     private void initializeToken() {
