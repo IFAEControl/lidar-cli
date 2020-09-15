@@ -14,6 +14,12 @@ public class Configuration {
       public static final Integer wl_ch_4 = cfg.getInteger("wavelength_ch_4");
    }
 
+   public static class Networking {
+      private static final Config cfg = new Config("client", "networking");
+
+      public static final Integer port = cfg.getInteger("port");
+   }
+
    private static final Config cfg = new Config("client", "micro_init_sequence");
 
    public static final Float arm_alignment_x = cfg.getFloat("allignment_arm_X");
