@@ -41,6 +41,7 @@
 \author{David Roman \\  \href{mailto:droman@ifae.es}{droman@ifae.es} }
 \affil{IFAE}
 \maketitle
+\footnote{All commands referenced in this manual were tested using an Ubuntu 18.04.5 LTS version. }
 \pagestyle{empty}
 \newpage
 \tableofcontents
@@ -245,7 +246,7 @@ Low level operations
 	\item[-{}-] \textbf{ramp-up}: Ramp up all DACs
 \end{itemize}
 
-\section{Configuration}
+\section{Configuration} \label{cfg}
 Configuration files can be found on \textit{\~{}/.config/lidar/client/}. 
 \begin{itemize}
 	\item acquisition.properties: This config file is mandatory. It have four fields named wavelength\_ch\_N where N goes from 1 to 4. This specifies the wavelength for each channel. 
@@ -254,20 +255,25 @@ Configuration files can be found on \textit{\~{}/.config/lidar/client/}.
 \end{itemize} 
 
 \section{Troubleshooting}
-In case of unknown problems, increase verbosity level to gather more information. To do this define \emph{LIDAR\_VERBOSITY} with an integer in the range of [1, 4].
+In case of unknown problems, increase verbosity level to gather more information. To do this define \emph{LIDAR\_VERBOSITY} environment variable with an integer in the range of [1, 4], then execute licli again.
 \subsection{The Token's Signature resulted invalid...}
-This happens when the cached token is not correct. To fix it simply remove \textit{\~{}/.cache/lidar/token} and try again. This way a new token will be generated.\\
+Once we introduce the correct password a token is generated and save in our machine. This token allows us to execute new commands without having to introduce the password each time. Next time we execute a command the token (which is an encrypted message) will be sent to the server, validated and, if valid, it will execute our command. However, our local token may be invalid for multiple reasons (e.g: server password changed). The fix should be straightforward; remove \textit{\~{}/.cache/lidar/token} and try again. This way a new (valid) token will be generated.\\
 \subsection{This method is not safe/read-only}
 This means that the keylock is on which means that only those commands that don't produce side effects are allowed (ie: read-only commands) for example to read the status, etc. To fix it someone have to go physically and switch off the keylock.\\
-Note that enabling the keylock doesn't kill current running commands
+Note: \textbf{enabling the keylock doesn't kill current running commands}
 \subsection{Connection problems}
-Ping \textbf{lidar.ifae.es}. The server may take 10m to be completely operational, if after this time the the server is not operational, power off and on the lidar.
+Execute \textbf{ping lidar.ifae.es} and see if there is an answer. The server may take up to 10 minutes to be completely operational, if after this time the the server doesn't answer ping requests, power off and on the lidar.
 
-If the server is running, try to check if lidar service is also running. To do it check if port 81 is open. If not power off and on the lidar.
+If the server is responding to ping requests, try to check if lidar service is also running. To do it check if port 81 is open (you can use a command like  \textbf{nc -vz lidar.ifae.es 81} to check it). If it isn't, power off and on the lidar.
 \subsection{Where is X,Y,Z file/directory}
 This program follow the XDG Base Directory specification. The full specification may be found on \url{https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html}\\
 \linebreak
-In short: config files are in \textit{ \~{}/.config/lidar}. Data is in \textit{\~{}/.local/share/lidar}. Cache content is in \textit{\~{}/.cache/lidar}.
+In short
+\begin{itemize}
+	\item \textit{ \~{}/.config/lidar}: Were config files are stored. See section \ref{cfg}.
+	\item \textit{\~{}/.local/share/lidar}: Data directory. Licel, raw files and all related lidar output is stored here. 
+	\item \textit{\~{}/.cache/lidar}: Cache dir. Only the token is stored there.
+\end{itemize}
 
 \newpage
 
