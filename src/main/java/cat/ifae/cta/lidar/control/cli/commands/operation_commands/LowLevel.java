@@ -88,10 +88,6 @@ public class LowLevel implements Runnable {
 
     // Private methods
 
-    private static int getDacVoltage() {
-        return Configuration.pmt_dac_voltage;
-    }
-
     private static java.awt.geom.Point2D getPosition() {
         var p_x = Configuration.arm_alignment_x;
         var p_y = Configuration.arm_alignment_y;
@@ -253,7 +249,7 @@ public class LowLevel implements Runnable {
 
     private static void printHelp() {
         System.out.println("Properties");
-        System.out.println("DAC Voltage: " + getDacVoltage());
+        //System.out.println("DAC Voltage: " + getDacVoltage());
         System.out.println("Position: " + getPosition());
     }
 }
