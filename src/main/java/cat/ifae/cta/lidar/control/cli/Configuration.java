@@ -24,7 +24,6 @@ public class Configuration {
 
    public static final Float arm_alignment_x = cfg.getFloat("allignment_arm_X");
    public static final Float arm_alignment_y = cfg.getFloat("allignment_arm_Y");
-   public static final Integer pmt_dac_voltage = cfg.getInteger("pmt_dac_voltage");
 
    public static final Integer pmt_dac_vlts_0 = cfg.getInteger("pmt_dac_vlts_0");
    public static final Integer pmt_dac_vlts_1 = cfg.getInteger("pmt_dac_vlts_1");
