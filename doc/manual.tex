@@ -37,7 +37,7 @@
 
 
 \begin{document}
-\title{LIDAR CLI User Manual - 1.0.1}
+\title{LIDAR CLI User Manual - 1.1.0}
 \author{David Roman \\  \href{mailto:droman@ifae.es}{droman@ifae.es} }
 \affil{IFAE}
 \maketitle
@@ -59,7 +59,7 @@ In case that it's not the first time and jwt secret has changed we can have some
 
 Open doors: \textbf{./licli motors doors \texttt{-{}-}open}\\
 Get converted sensors values: \textbf{./licli llc sensors}\\
-Make 4 shots with disc level 2: \textbf{./licli operation acq \texttt{-{}-}shots=4 \texttt{-{}-}disc=2}. Output data will be in \textit{\~{}/.local/share/lidar-cli}.
+Make 4 shots with disc level 2: \textbf{./licli operation acq \texttt{-{}-}shots=4 \texttt{-{}-}disc=2:2:2:2}. Output data will be in \textit{\~{}/.local/share/lidar-cli}.
 
 \subsection{Start up}
 To start up the system in the standard way execute the "startup" command of \ref{operationcmds}.\\
@@ -67,16 +67,16 @@ To start up the system in the standard way execute the "startup" command of \ref
 If for some reason this fails we can do it manually with the next commands:
 \begin{itemize}
 	\item \textbf{./licli motors doors \texttt{-{}-}open}
-	\item \textbf{./licli operation ll  \texttt{-{}-}micro-init}
 	\item \textbf{./licli motors telescope \texttt{-{}-}sz=600}
+	\item \textbf{./licli operation ll  \texttt{-{}-}micro-init}
 	\item \textbf{./licli motors petals \texttt{-{}-}open}
 	\item \textbf{./licli llc laser \texttt{-{}-}init}
 	\item  \textbf{./licli llc laser \texttt{-{}-}power=5}
 \end{itemize}
 \subsection{Data acquisition}
-When an acquisition is made the server stores the data in the licel format and returns an ID, this file can be afterwards downloaded using that identifier. For example to make an acquisition with discriminator at 4 and 100 shots:\\
-\textbf{./licli operation acq \texttt{-{}-}shots=100 \texttt{-{}-}disc=4}  (this will return the file ID, 1234 for example)
-\textbf{./licli operation acq \texttt{-{}-}download=1234 \texttt{-{}-}disc=4}
+When an acquisition is made the server stores the data in the licel format and returns an ID, this file can be afterwards downloaded using that identifier. For example to make an acquisition with discriminator levels 1,2,1 and 10 and 100 shots:\\
+\textbf{./licli operation acq \texttt{-{}-}shots=100 \texttt{-{}-}disc=1:2:1:10}  (this will return the file ID, 1234 for example)
+\textbf{./licli operation acq \texttt{-{}-}download=1234 \texttt{-{}-}disc=1:2:1:10}
 \subsection{Shutdown}
 To shutdown the system in the standard way execute the "shutdown" command (section \ref{operationcmds} briefly describes what it does). \\
 
@@ -186,7 +186,7 @@ Monitoring of sensors.
 	\item[-{}-] \textbf{last-value} (can be used in combination): Show the last value reading
 \end{itemize}
 \subsubsection{Motors}
-Monitoring of the motor monitoring board. Currently it only prints the encoders position.
+Monitoring of the motor monitoring board. It can show encoders position or a bitmap of the current status.
 
 \subsection{Alarms}
 Waits for alarm messages. Alarms are triggered whenever a sensor exceeds the safe limit. Message are sent in the form of strings informing of the problem.
@@ -206,14 +206,15 @@ Command for debugging purposes
 \subsubsection{Acquisition}
 The acquired data is first stored in the server in licel file format. The server will return a file ID so we can download that file at anytime. Files are also downloaded automatically so we don't need to download it manually.
 \begin{itemize}
-	\item[-{}-] \textbf{disc}: Discriminator level. Always required.
+	\item[-{}-] \textbf{disc}: Discriminator levels. Always required.
 	\item[-{}-] \textbf{download}: Download licel file. Argument is the ID (unsigned integer) of the licel file we want to download.
 	\item[-{}-] \textbf{shots}: Acquire a given number of shots. Argument is an unsigned integer greater than 1. 
 	\item[-{}-] \textbf{start}: Start acquisition manually
 	\item[-{}-] \textbf{stop}: Stop acquisition
 	\item[-{}-] \textbf{analog-data}: Save a file with all analog values using space character as separator.
 	\item[-{}-] \textbf{analog-combined}: Save a file with normalized analog values.
-	\item[-{}-] \textbf{raws}: Save lsw and msw arrays in raw format.
+	\item[-{}-] \textbf{raw-analog}: Save lsw and msw arrays in raw format.
+	\item[-{}-] \textbf{raw-squared}: Save squared data in raw format.
 \end{itemize}
 \subsubsection{Telescope}
 Telescope motors operations. When going to parking position it will first try to go to the last know good value (ie: the position we know that doors can be closed), if it's not possible it will go to the hardcoded values.
@@ -222,6 +223,7 @@ Telescope motors operations. When going to parking position it will first try to
 	\item[-{}-] \textbf{go-azimuth-parking}: Go to azimuth parking position
 	\item[-{}-] \textbf{go-parking}: Go to parking position
 	\item[-{}-] \textbf{go-zenith-parking}: Go zenith parking position
+	\item[-{}-] \textbf{go-zenith}: Go to zenith inclination in degrees
 	\item[-{}-] \textbf{start-test}: Execute telescope tests (move azmiuth and zenith to their maximum, minimum and parking position).
 	\item[-{}-] \textbf{stop}: Stop any telescope movement
 	\item[-{}-] \textbf{to-max-azimuth}: Go to maximum azimuth
@@ -244,7 +246,12 @@ Low level operations
 \end{itemize}
 
 \section{Configuration}
-Configuration files can be found on \textit{\~{}/.config/lidar/client/}. Currently there is only one file, micro\_init\_sequence.properties which can be used to defines arm alignment position, pmt voltages.
+Configuration files can be found on \textit{\~{}/.config/lidar/client/}. 
+\begin{itemize}
+	\item acquisition.properties: This config file is mandatory. It have four fields named wavelength\_ch\_N where N goes from 1 to 4. This specifies the wavelength for each channel. 
+	\item micro\_init\_sequence.properties: Can be used to defines arm alignment position, pmt voltages and temperature threshold.
+	\item networking.properties: Can be used to specify TCP port of the server.
+\end{itemize} 
 
 \section{Troubleshooting}
 In case of unknown problems, increase verbosity level to gather more information. To do this define \emph{LIDAR\_VERBOSITY} with an integer in the range of [1, 4].
@@ -253,6 +260,10 @@ This happens when the cached token is not correct. To fix it simply remove \text
 \subsection{This method is not safe/read-only}
 This means that the keylock is on which means that only those commands that don't produce side effects are allowed (ie: read-only commands) for example to read the status, etc. To fix it someone have to go physically and switch off the keylock.\\
 Note that enabling the keylock doesn't kill current running commands
+\subsection{Connection problems}
+Ping \textbf{lidar.ifae.es}. The server may take 10m to be completely operational, if after this time the the server is not operational, power off and on the lidar.
+
+If the server is running, try to check if lidar service is also running. To do it check if port 81 is open. If not power off and on the lidar.
 \subsection{Where is X,Y,Z file/directory}
 This program follow the XDG Base Directory specification. The full specification may be found on \url{https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html}\\
 \linebreak
