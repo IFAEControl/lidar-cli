@@ -44,7 +44,7 @@ class Telescope implements Runnable {
     private boolean azimuth_parking_postiion = false;
 
     @CommandLine.Option(names = "--go-zenith", description = "Go to zenith inclination in degrees")
-    private int zenith_inclination = -1;
+    private int zenith_inclination = -999;
 
     private TelescopeGrpc.TelescopeStub stub;
     private TelescopeGrpc.TelescopeBlockingStub blocking_stub;
@@ -69,7 +69,7 @@ class Telescope implements Runnable {
             else if(get_parking_position) getParkingPosition();
             else if(zenith_parking_position) goToZenithParkingPosition();
             else if(azimuth_parking_postiion) goToAzimuthParkingPosition();
-            else if(zenith_inclination > 0) goToZenith();
+            else if(zenith_inclination != -999) goToZenith();
         } catch (StatusRuntimeException e) {
             log.error(e.getLocalizedMessage());
         } catch(Exception e) {

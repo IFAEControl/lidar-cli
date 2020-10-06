@@ -4,17 +4,17 @@ import cat.ifae.cta.lidar.AppDirs;
 import cat.ifae.cta.lidar.AuthGrpc;
 import cat.ifae.cta.lidar.Helpers;
 import cat.ifae.cta.lidar.Password;
+import cat.ifae.cta.lidar.control.cli.Configuration;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractStub;
 
+import javax.net.ssl.SSLException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
-
-// TODO: Handle error if token has not valid characters
 
 public class SessionManager {
     private static gRPCManager grpc;
@@ -24,10 +24,21 @@ public class SessionManager {
 
     public SessionManager() {
         var ip = Helpers.getEnv("LIDAR_ADDR");
-        grpc = new gRPCManager(ip, 50051);
 
-        initializeToken();
-        scanner.close();
+        int port;
+        try {
+            port = Configuration.Networking.port;
+        } catch(RuntimeException e) {
+            port = 50051;
+        }
+
+        try {
+            grpc = new gRPCManager(ip, port);
+            initializeToken();
+            scanner.close();
+        } catch(SSLException e) {
+            System.err.println("Error: " + e);
+        }
     }
 
     private void initializeToken() {

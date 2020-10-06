@@ -349,8 +349,8 @@ public class Acquisition implements Runnable {
          var disc_parts = Helpers.split(_disc, tr_num);
 
          var builder =
-                 AcqConfig.newBuilder().setMaxBins(_max_bins).setWavelengthCh1(wl1).setWavelengthCh2(wl2).
-                         setWavelengthCh3(wl3).setWavelengthCh4(wl4);
+                 AcqConfig.newBuilder().setMaxBins(_max_bins).putWavelengths(1, wl1)
+                         .putWavelengths(2, wl2).putWavelengths(3, wl3).putWavelengths(4, wl4);
 
          for(var d : disc_parts)
             builder.addDiscriminator(Integer.parseInt(d));
