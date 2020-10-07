@@ -193,7 +193,10 @@ Monitoring of the motor monitoring board. It can show encoders position or a bit
 Waits for alarm messages. Alarms are triggered whenever a sensor exceeds the safe limit. Message are sent in the form of strings informing of the problem.
 
 \subsection{Config}
-Returns current configuration of the server.
+\begin{itemize}
+	\item[-{}-] \textbf{get}: Returns current configuration of the server.
+	\item[-{}-] \textbf{check}: Check client configuration. If no errors are found it will print \emph{Configuration OK}.
+\end{itemize}
 
 \subsection{Trace}
 Command for debugging purposes
