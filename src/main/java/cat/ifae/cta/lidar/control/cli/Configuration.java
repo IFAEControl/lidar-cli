@@ -18,6 +18,7 @@ public class Configuration {
       private static final Config cfg = new Config("client", "networking");
 
       public static final Integer port = cfg.getInteger("port");
+      public static final String address = cfg.getString("address");
    }
 
    private static final Config cfg = new Config("client", "micro_init_sequence");

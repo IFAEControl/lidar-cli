@@ -23,17 +23,10 @@ public class SessionManager {
     private Scanner scanner = new Scanner(System. in);
 
     public SessionManager() {
-        var ip = Helpers.getEnv("LIDAR_ADDR");
-
-        int port;
-        try {
-            port = Configuration.Networking.port;
-        } catch(RuntimeException e) {
-            port = 50051;
-        }
+        int port = Configuration.Networking.port;
+        String address = Configuration.Networking.address;
 
         boolean insecure = false;
-
         try {
             insecure = Boolean.parseBoolean(Helpers.getEnv("LIDAR_INSECURE"));
         } catch(RuntimeException e) {
@@ -42,9 +35,9 @@ public class SessionManager {
 
         try {
             if(insecure) {
-                grpc = new InsecureGrpcManager(ip, port);
+                grpc = new InsecureGrpcManager(address, port);
             } else {
-                grpc = new GrpcManager(ip, port);
+                grpc = new GrpcManager(address, port);
             }
 
             initializeToken();
