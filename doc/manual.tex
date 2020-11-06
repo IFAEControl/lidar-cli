@@ -37,7 +37,7 @@
 
 
 \begin{document}
-\title{LIDAR CLI User Manual - 1.1.0}
+\title{LIDAR CLI User Manual - 1.2.0}
 \author{David Roman \\  \href{mailto:droman@ifae.es}{droman@ifae.es} }
 \affil{IFAE}
 \maketitle
@@ -51,8 +51,6 @@
 
 \section{Running licli}
 \subsection{First steps}
-To be able to run licli the first step is to specify the IP address of the server. This is done by defining LIDAR\_ADDR environment variable. For example if the server is running in the local host we can \emph{export LIDAR\_ADDR="127.0.0.1"}\\
-\linebreak
 If it's the first time we run licli it would ask us to introduce a password. This password is defined in the configuration file of the lidar server software. 
 In case that it's not the first time and jwt secret has changed we can have some errors like \textbf{"The Token's Signature resulted invalid when verified using the Algorithm"}. If it's the case remove \textit{\~{}/.cache/lidar/token} and try again.\\
 
@@ -255,8 +253,13 @@ Configuration files can be found on \textit{\~{}/.config/lidar/client/}.
 \begin{itemize}
 	\item acquisition.properties: This config file is mandatory. It have four fields named wavelength\_ch\_N where N goes from 1 to 4. This specifies the wavelength for each channel. 
 	\item micro\_init\_sequence.properties: Can be used to defines arm alignment position, pmt voltages and temperature threshold.
-	\item networking.properties: Can be used to specify TCP port of the server.
+	\item networking.properties: Can be used to specify address and TCP port of the server. By default it connects to \textbf{lidar.ifae.es}.
 \end{itemize} 
+\subsection{Environment variables}
+\begin{itemize}
+	\item LIDAR\_INSECURE: By default licli uses tls encryption. If this variable is set to true licli won't use any encryption method. Note that the server must also allow plain text connections.
+	\item LIDAR\_VERBOSITY: Increase verbosity level. Valid levels are 1,2,3, and 4.
+\end{itemize}
 
 \section{Troubleshooting}
 In case of unknown problems, increase verbosity level to gather more information. To do this define \emph{LIDAR\_VERBOSITY} environment variable with an integer in the range of [1, 4], then execute licli again.
