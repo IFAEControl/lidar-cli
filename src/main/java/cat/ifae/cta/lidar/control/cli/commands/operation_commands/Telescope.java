@@ -1,9 +1,6 @@
 package cat.ifae.cta.lidar.control.cli.commands.operation_commands;
 
-import cat.ifae.cta.lidar.EncoderPosition;
-import cat.ifae.cta.lidar.Inclination;
-import cat.ifae.cta.lidar.Null;
-import cat.ifae.cta.lidar.TelescopeGrpc;
+import cat.ifae.cta.lidar.*;
 import cat.ifae.cta.lidar.control.cli.Licli;
 import cat.ifae.cta.lidar.logging.Logging;
 import io.grpc.StatusRuntimeException;
@@ -155,9 +152,26 @@ class Telescope implements Runnable {
         blocking_stub.goToMinimumAzimuthPosition(req);
     }
 
-    private void goToParkingPosition() {
+    private void goToParkingPosition() throws InterruptedException {
+        var finishedLatch = new CountDownLatch(1);
+
         Null req = Null.newBuilder().build();
-        blocking_stub.goToParkingPosition(req);
+        stub.goToParkingPosition(req, new StreamObserver<>() {
+            public void onNext(TraceOperation response) {
+                System.out.println(response.getLine());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
     }
 
     private void getParkingPosition() {
@@ -177,9 +191,26 @@ class Telescope implements Runnable {
         blocking_stub.goToAzimuthParkingPosition(req);
     }
 
-    private void goToZenith() {
+    private void goToZenith() throws InterruptedException {
+        var finishedLatch = new CountDownLatch(1);
+
         var req = Inclination.newBuilder().setDegrees(zenith_inclination).build();
-        blocking_stub.goToZenithInclination(req);
+        stub.goToZenithInclination(req, new StreamObserver<>() {
+            public void onNext(TraceOperation response) {
+                System.out.println(response.getLine());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
     }
 
 }
