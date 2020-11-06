@@ -4,30 +4,47 @@ import cat.ifae.cta.lidar.AppDirs;
 import cat.ifae.cta.lidar.AuthGrpc;
 import cat.ifae.cta.lidar.Helpers;
 import cat.ifae.cta.lidar.Password;
+import cat.ifae.cta.lidar.control.cli.Configuration;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractStub;
 
+import javax.net.ssl.SSLException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
-// TODO: Handle error if token has not valid characters
-
 public class SessionManager {
-    private static gRPCManager grpc;
+    private static BaseGrpcManager grpc;
 
     private final static AppDirs appDirs = new AppDirs();
     private Scanner scanner = new Scanner(System. in);
 
     public SessionManager() {
-        var ip = Helpers.getEnv("LIDAR_ADDR");
-        grpc = new gRPCManager(ip, 50051);
+        int port = Configuration.Networking.port;
+        String address = Configuration.Networking.address;
 
-        initializeToken();
-        scanner.close();
+        boolean insecure = false;
+        try {
+            insecure = Boolean.parseBoolean(Helpers.getEnv("LIDAR_INSECURE"));
+        } catch(RuntimeException e) {
+            // leave default as is
+        }
+
+        try {
+            if(insecure) {
+                grpc = new InsecureGrpcManager(address, port);
+            } else {
+                grpc = new GrpcManager(address, port);
+            }
+
+            initializeToken();
+            scanner.close();
+        } catch(SSLException e) {
+            System.err.println("Error: " + e);
+        }
     }
 
     private void initializeToken() {
@@ -95,7 +112,7 @@ public class SessionManager {
         return grpc.channel;
     }
 
-    public gRPCManager getGrpc() {
+    public BaseGrpcManager getGrpc() {
         return grpc;
     }
 }

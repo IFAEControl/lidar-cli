@@ -36,6 +36,9 @@ public class LowLevel implements Runnable {
     @CommandLine.Option(names = "--laser-power-off", description = "Power off laser")
     private  boolean laser_power_off = false;
 
+    @CommandLine.Option(names = "--laser-fire", description = "Initialize laser")
+    private  boolean laser_fire = false;
+
     @CommandLine.Option(names = "--ramp-up", description = "Execute ramp up DACs")
     private  boolean ramp_up = false;
 
@@ -74,6 +77,7 @@ public class LowLevel implements Runnable {
             else if(laser_init) initalizeLaser();
             else if(laser_power_on) laserPowerOn();
             else if(laser_power_off) laserPowerOff();
+            else if(laser_fire) laserFire();
             else if(ramp_up) rampUp();
             else if(ramp_down) rampDown();
             else if(!ramp_single.isEmpty()) rampSingle(ramp_single);
@@ -87,10 +91,6 @@ public class LowLevel implements Runnable {
     }
 
     // Private methods
-
-    private static int getDacVoltage() {
-        return Configuration.pmt_dac_voltage;
-    }
 
     private static java.awt.geom.Point2D getPosition() {
         var p_x = Configuration.arm_alignment_x;
@@ -251,9 +251,14 @@ public class LowLevel implements Runnable {
         blocking_stub.powerOffLaser(req);
     }
 
+    private void laserFire() {
+        var req = Null.newBuilder().build();
+        blocking_stub.fireLaser(req);
+    }
+
     private static void printHelp() {
         System.out.println("Properties");
-        System.out.println("DAC Voltage: " + getDacVoltage());
+        //System.out.println("DAC Voltage: " + getDacVoltage());
         System.out.println("Position: " + getPosition());
     }
 }
