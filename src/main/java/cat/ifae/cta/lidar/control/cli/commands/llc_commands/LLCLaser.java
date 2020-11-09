@@ -21,6 +21,9 @@ class LLCLaser implements Runnable {
     @CommandLine.Option(names = "--fire", description = "Fire laser")
     private boolean is_fire = false;
 
+    @CommandLine.Option(names = "--fire-single", description = "Fire laser")
+    private boolean is_fire_single = false;
+
     @CommandLine.Option(names = "--stop", description = "Stop laser")
     private boolean is_stop = false;
 
@@ -36,6 +39,9 @@ class LLCLaser implements Runnable {
     @CommandLine.Option(names = "--get-temp", description = "Get laser temperature")
     private boolean laser_temp = false;
 
+    @CommandLine.Option(names = "--get-counter", description = "Get shot counter")
+    private boolean shot_counter = false;
+
     @Override
     public final void run() {
         stub = LLCLaserGrpc.newBlockingStub(Licli.sm.getCh());
@@ -46,11 +52,13 @@ class LLCLaser implements Runnable {
         try {
             if(is_init) init();
             else if(is_fire) fire();
+            else if(is_fire_single) fireSingle();
             else if(is_stop) stop();
             else if(is_pause) pause();
             else if(power > -1) setPower(power);
             else if(power_us > -1) setPowerUs(power_us);
             else if(laser_temp) getTemp();
+            else if(shot_counter) getShotCounter();
         } catch (StatusRuntimeException e) {
             _log.error(e.getLocalizedMessage());
         } catch(RuntimeException e) {
@@ -66,6 +74,11 @@ class LLCLaser implements Runnable {
     private void fire() {
         Null req = Null.newBuilder().build();
         stub.fire(req);
+    }
+
+    private void fireSingle() {
+        Null req = Null.newBuilder().build();
+        stub.fireSingle(req);
     }
 
     private void stop() {
@@ -92,5 +105,11 @@ class LLCLaser implements Runnable {
         var req = Null.newBuilder().build();
         var resp = stub.getTemperature(req);
         System.out.println(resp.getTemperature());
+    }
+
+    private void getShotCounter() {
+        var req = Null.newBuilder().build();
+        var resp = stub.getShotCounter(req);
+        System.out.println(resp.getCounter());
     }
 }
