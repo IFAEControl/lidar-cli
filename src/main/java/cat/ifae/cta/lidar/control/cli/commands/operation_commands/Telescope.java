@@ -43,6 +43,10 @@ class Telescope implements Runnable {
     @CommandLine.Option(names = "--go-zenith", description = "Go to zenith inclination in degrees")
     private int zenith_inclination = -999;
 
+    @CommandLine.Option(names = "--go-azimuth", description = "Go to azimuth inclination in " +
+            "degrees")
+    private int azimuth_inclination = -999;
+
     private TelescopeGrpc.TelescopeStub stub;
     private TelescopeGrpc.TelescopeBlockingStub blocking_stub;
 
@@ -67,6 +71,7 @@ class Telescope implements Runnable {
             else if(zenith_parking_position) goToZenithParkingPosition();
             else if(azimuth_parking_postiion) goToAzimuthParkingPosition();
             else if(zenith_inclination != -999) goToZenith();
+            else if(azimuth_inclination != -999) goToAzimuth();
         } catch (StatusRuntimeException e) {
             log.error(e.getLocalizedMessage());
         } catch(Exception e) {
@@ -196,6 +201,28 @@ class Telescope implements Runnable {
 
         var req = Inclination.newBuilder().setDegrees(zenith_inclination).build();
         stub.goToZenithInclination(req, new StreamObserver<>() {
+            public void onNext(TraceOperation response) {
+                System.out.println(response.getLine());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
+    }
+
+    private void goToAzimuth() throws InterruptedException {
+        var finishedLatch = new CountDownLatch(1);
+
+        var req = Inclination.newBuilder().setDegrees(azimuth_inclination).build();
+        stub.goToAzimuthInclination(req, new StreamObserver<>() {
             public void onNext(TraceOperation response) {
                 System.out.println(response.getLine());
             }
