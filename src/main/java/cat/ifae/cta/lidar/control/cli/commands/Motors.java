@@ -138,6 +138,10 @@ class TelescopeMotors implements Runnable {
     @CommandLine.Option(names = "--sa", paramLabel = "Steps", description = "Set azimuth")
     private int azimuth_steps = -1;
 
+    @CommandLine.Option(names = "--get-parking-position", description = "Get firmware parking " +
+            "position")
+    private boolean get_parking = false;
+
     @CommandLine.Option(names = "--home", description = "Go home")
     private boolean home = false;
 
@@ -153,6 +157,7 @@ class TelescopeMotors implements Runnable {
             else if(zenith_steps > 0) setZenith(zenith_steps);
             else if(get_azimuth) getAzimuth();
             else if(azimuth_steps > 0) setAzimuth(azimuth_steps);
+            else if(get_parking) getParkingPosition();
             else if(home) goHome();
         } catch (StatusRuntimeException e) {
             _log.error(e.getLocalizedMessage());
@@ -182,6 +187,12 @@ class TelescopeMotors implements Runnable {
     private void getAzimuth() {
         Null req = Null.newBuilder().build();
         Position resp = stub.getAzimuth(req);
+        System.out.println(resp);
+    }
+
+    private void getParkingPosition() {
+        Null req = Null.newBuilder().build();
+        var resp = stub.getParkingPosition(req);
         System.out.println(resp);
     }
 
