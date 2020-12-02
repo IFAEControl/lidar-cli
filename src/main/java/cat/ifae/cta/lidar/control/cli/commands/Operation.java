@@ -27,6 +27,9 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "--shutdown", description = "Shutdown")
     private boolean shutdown = false;
 
+    @CommandLine.Option(names = "--ignore-humidity", description = "Ignore humidity check")
+    private boolean _ignore_humidity = false;
+
     private OperationGrpc.OperationStub stub;
     private OperationGrpc.OperationBlockingStub blocking_stub;
 
@@ -58,7 +61,7 @@ public class Operation implements Runnable {
     private void warmUp() throws InterruptedException {
         var finishedLatch = new CountDownLatch(1);
 
-        var req = Null.newBuilder().build();
+        var req = Flags.newBuilder().setDisableHumidity(_ignore_humidity).build();
         stub.warmUp(req, new StreamObserver<>() {
             public void onNext(TraceOperation response) {
                 System.out.println(response.getLine());
@@ -94,7 +97,8 @@ public class Operation implements Runnable {
                 InitSequenceOptions.newBuilder().setPosition(point_req)
                         .putPmtDacVoltages(0, vlts_0).putPmtDacVoltages(1, vlts_1)
                         .putPmtDacVoltages(2, vlts_2).putPmtDacVoltages(3, vlts_3)
-                        .putPmtDacVoltages(4, vlts_4).putPmtDacVoltages(5, vlts_5).build();
+                        .putPmtDacVoltages(4, vlts_4).putPmtDacVoltages(5, vlts_5)
+                        .setDisableHumidity(_ignore_humidity).build();
         stub.startUpNormalMode(req, new StreamObserver<>() {
             public void onNext(TraceOperation response) {
                 System.out.println(response.getLine());
