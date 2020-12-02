@@ -17,23 +17,29 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class SessionManager {
-    private static gRPCManager grpc;
+    private static BaseGrpcManager grpc;
 
     private final static AppDirs appDirs = new AppDirs();
     private Scanner scanner = new Scanner(System. in);
 
     public SessionManager() {
-        var ip = Helpers.getEnv("LIDAR_ADDR");
+        int port = Configuration.Networking.port;
+        String address = Configuration.Networking.address;
 
-        int port;
+        boolean insecure = false;
         try {
-            port = Configuration.Networking.port;
+            insecure = Boolean.parseBoolean(Helpers.getEnv("LIDAR_INSECURE"));
         } catch(RuntimeException e) {
-            port = 50051;
+            // leave default as is
         }
 
         try {
-            grpc = new gRPCManager(ip, port);
+            if(insecure) {
+                grpc = new InsecureGrpcManager(address, port);
+            } else {
+                grpc = new GrpcManager(address, port);
+            }
+
             initializeToken();
             scanner.close();
         } catch(SSLException e) {
@@ -106,7 +112,7 @@ public class SessionManager {
         return grpc.channel;
     }
 
-    public gRPCManager getGrpc() {
+    public BaseGrpcManager getGrpc() {
         return grpc;
     }
 }

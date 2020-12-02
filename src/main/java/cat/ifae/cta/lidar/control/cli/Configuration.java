@@ -3,7 +3,7 @@ package cat.ifae.cta.lidar.control.cli;
 import cat.ifae.cta.lidar.config.Config;
 
 public class Configuration {
-   public static final String VERSION = "1.1.0";
+   public static final String VERSION = "1.2.0";
 
    public static class Acquisition {
       private static final Config cfg = new Config("client", "acquisition");
@@ -18,6 +18,7 @@ public class Configuration {
       private static final Config cfg = new Config("client", "networking");
 
       public static final Integer port = cfg.getInteger("port");
+      public static final String address = cfg.getString("address");
    }
 
    private static final Config cfg = new Config("client", "micro_init_sequence");

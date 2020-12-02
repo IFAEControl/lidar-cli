@@ -1,7 +1,7 @@
 \documentclass[letterpaper, 10 pt]{article}
 \pagenumbering{Roman}
 
-\usepackage[margin=1.25in]{geometry}
+\usepackage[margin=1.00in]{geometry}
 \usepackage{color}
 \usepackage{hyperref}
 \usepackage{graphicx}
@@ -11,6 +11,11 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage[english]{babel}
 \usepackage{framed}
+\usepackage{indentfirst}
+
+\setlength{\parindent}{0.5cm}
+
+\makeatother
 
 \hypersetup{
     colorlinks,
@@ -34,10 +39,10 @@
 \makeatother
 
 \newcommand\ProcessThreeDashes{\llap{\color{cyan}\mdseries-{-}-}}
-
+\newcommand{\cmdsection}[1]{\paragraph{#1}\mbox{}\par}
 
 \begin{document}
-\title{LIDAR CLI User Manual - 1.1.0}
+\title{LIDAR CLI User Manual - 1.2.0}
 \author{David Roman \\  \href{mailto:droman@ifae.es}{droman@ifae.es} }
 \affil{IFAE}
 \maketitle
@@ -51,8 +56,6 @@
 
 \section{Running licli}
 \subsection{First steps}
-To be able to run licli the first step is to specify the IP address of the server. This is done by defining LIDAR\_ADDR environment variable. For example if the server is running in the local host we can \emph{export LIDAR\_ADDR="127.0.0.1"}\\
-\linebreak
 If it's the first time we run licli it would ask us to introduce a password. This password is defined in the configuration file of the lidar server software. 
 In case that it's not the first time and jwt secret has changed we can have some errors like \textbf{"The Token's Signature resulted invalid when verified using the Algorithm"}. If it's the case remove \textit{\~{}/.cache/lidar/token} and try again.\\
 
@@ -88,162 +91,223 @@ The command for the warm up is described in section \ref{operationcmds}.
 There are two switches. One of them is used for all the devices that are accessible from outside the container, the other contains all devices connected to the internal network. To access this network connect a laptop with an ethernet cable to this internal switch with 255.255.255.0 as the mask and an IP equal or below 192.168.127.230. Inside this local network the server is at 192.168.127.253.
 
 \section{Commands reference}
-\textbf{Note: }Commands marked as \textbf{debug} are commands used for debugging purposes.\\
-\linebreak
-Unless other commands, operation commands (\ref{operationcmds}) are complex commands. Those complex commands can be macros (ie: a couple of commands executed sequentially) or control functions which makes use of the other functions. 
 \subsection{LLC}
 This command contains all the commands related with the low level control board.
 \subsubsection{Arms}
-Command to control and monitor the laser arm. Only one action will be executed at a time. If more than one action is specified, only one will be executed and the others will be ignored.
+\cmdsection{Synopsis} \textbf{licli llc arms [OPTION]}\\
+
+\cmdsection{Description} Command to control and monitor laser arm. \\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{check-node} (debug): Check communication with node N (N must be either "1" or "2")
-	\item[-{}-] \textbf{emergency-stop} (debug): Execute emergency stop
-	\item[-{}-] \textbf{get-pos}: Get current position
-	\item[-{}-] \textbf{go}: Go to current position. Argument must follow the format X:Y (eg: 1000:10000)
-	\item[-{}-] \textbf{init}: Initialize arm
-	\item[-{}-] \textbf{set-speed} (debug): Set speed. Argument must follow the format Axis:speed.
+	\item[] \textbf{-{}-check-node=N} Check communication with node N (N must be either "1" or "2")
+	\item[] \textbf{-{}-emergency-stop} Execute emergency stop
+	\item[] \textbf{-{}-get-pos} Get arm current position
+	\item[] \textbf{-{}-go=X:Y} Go to current position. Argument must follow the format X:Y (eg: 1000:10000)
+	\item[] \textbf{-{}-init} Initialize arm
+	\item[] \textbf{-{}-set-speed=axis:speed} Set speed. Argument must follow the format Axis:speed.
 \end{itemize}
 \subsubsection{DAC}
-Control dac voltages.
+\addtolength{\leftskip}{10 mm}
+\cmdsection{Synopsis} \textbf{licli llc dac [OPTION] \\}
+
+\cmdsection{Description} Command for controlling DAC voltages.\\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{set-voltage}: Set dac voltage. Argument must follow the format dac:voltage (0:100).
+	\item[] \textbf{-{}-set-voltage=idx:voltage} Set DAC voltage. \textbf{idx} is the index of the desired DAC. Voltage is in mV. Setting a voltage of 1000 mV will produce a reading of 1 Volt, but note that the final voltage which will be multiplied by 1000 Volts by the PMT. 
 \end{itemize}
+\addtolength{\leftskip}{-10 mm}
 
 \subsubsection{Drivers}
-Get information about the drivers
+\cmdsection{Synopsis} \textbf{licli llc drivers [OPTION] \\}
+
+\cmdsection{Description} Get information about the drivers.\\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{status}: Get a list of drivers status
+	\item[] \textbf{-{}-status} Get a list of drivers status
 \end{itemize}
 
 \subsubsection{Hotwind}
-Controls the hotwind. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
-\begin{itemize}
-	\item[-{}-] \textbf{error} (debug): Set error ¿?
-	\item[-{}-] \textbf{lock} (debug): Lock
-	\item[-{}-] \textbf{unlock} (debug): Unlock
-\end{itemize}
+\cmdsection{Synopsis} \textbf{licli llc hotwind [OPTION]}\\
 
-\subsubsection{Laser}
-Commands to control the laser. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
+\cmdsection{Description} Hotwind control.\\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{fire}: Fire the laser
-	\item[-{}-] \textbf{get-temp}: Get laser temperature.
-	\item[-{}-] \textbf{init}: Initialize laser
-	\item[-{}-] \textbf{pause}: Pause the laser
-	\item[-{}-] \textbf{power}: Set power in \%
-	\item[-{}-] \textbf{power-us}: Set power in microseconds.
-	\item[-{}-] \textbf{stop}: Stop the laser
+	\item[] \textbf{-{}-error} Set error ¿?
+	\item[] \textbf{-{}-lock} Lock
+	\item[] \textbf{-{}-unlock} Unlock
+\end{itemize}
+\subsubsection{Laser}
+\cmdsection{Synopsis} \textbf{licli llc laser [OPTION]}\\
+
+\cmdsection{Description} Laser control.\\
+\cmdsection{Options}
+\begin{itemize}
+	\item[] \textbf{-{}-fire} Fire the laser
+	\item[] \textbf{-{}-fire-single} Fire a single shot
+	\item[] \textbf{-{}-get-temp} Get laser temperature.
+	\item[] \textbf{-{}-get-counter} Get shots counter.
+	\item[] \textbf{-{}-init} Initialize laser
+	\item[] \textbf{-{}-pause} Pause the laser
+	\item[] \textbf{-{}-power} Set power in \%
+	\item[] \textbf{-{}-power-us} Set power in microseconds.
+	\item[] \textbf{-{}-stop} Stop the laser.
 \end{itemize}
 
 \subsubsection{Relays}
-Commands to switch on/off relays. Only one action will be executed at a time. If more than one action is specified, only one will be executed, other will be ignored.
+\cmdsection{Synopsis} \textbf{licli llc relays [OPTION]}\\
+
+\cmdsection{Description} Commands to switch on/off relays.\\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{status}: Get relays status
-	\item[-{}-] \textbf{hotwind-off}: Disable hotwind
-	\item[-{}-] \textbf{hotwind-on}: Enable hotwind. When the temperature reaches the target it will be stopped.
-	\item[-{}-] \textbf{laser-on}: Enable laser
-	\item[-{}-] \textbf{laser-off}: Disable laser
-	\item[-{}-] \textbf{licel-on}: Enable laser
-	\item[-{}-] \textbf{licel-off}: Disable laser
+	\item[] \textbf{-{}-status} Get relays status
+	\item[] \textbf{-{}-hotwind-off} Disable hotwind
+	\item[] \textbf{-{}-hotwind-on} Enable hotwind. When the temperature reaches the target it will be stopped.
+	\item[] \textbf{-{}-laser-on} Enable laser
+	\item[] \textbf{-{}-laser-off} Disable laser
+	\item[] \textbf{-{}-licel-on} Enable laser
+	\item[] \textbf{-{}-licel-off} Disable laser
 \end{itemize}
 
 \subsubsection{Sensors}
-Commands to get sensor information from low level control board. There are other sensors that this command doesn't read, for example the temperature of the head of the laser.\\
-If no option is specified it will print values in human readable form.
+\cmdsection{Synopsis} \textbf{licli llc sensors [OPTION]}\\
+
+\cmdsection{Description} Commands to get sensor information from low level control board. There are other sensors that this command doesn't read, for example the temperature of the head of the laser.\\
+If no option is specified it will print values in human readable form.\\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{raw} (debug): Get raw sensor values
+	\item[] \textbf{-{}-raw} Get raw sensor values
 \end{itemize}
 
 \subsection{Motors}
 \subsubsection{Doors}
+\cmdsection{Synopsis} \textbf{licli motors doors [OPTION]}\\
+
+\cmdsection{Description} Commands to control motor doors \\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{close}: Close doors.
-	\item[-{}-] \textbf{open}: Open doors
-	\item[-{}-] \textbf{stop}: Stop doors. 
-	\item[-{}-] \textbf{status}: Print current status of the doors (OPEN, CLOSE or INTERSTATE if it's something in the middle)
+	\item[] \textbf{-{}-close} Close doors.
+	\item[] \textbf{-{}-open} Open doors
+	\item[] \textbf{-{}-stop} Stop doors. 
+	\item[] \textbf{-{}-status} Print current status of the doors (OPEN, CLOSE or INTERSTATE if it's something in the middle)
 \end{itemize}
 \subsubsection{Petals}
+\cmdsection{Synopsis} \textbf{licli motors petals [OPTION]}\\
+
+\cmdsection{Description} Commands to control petals doors.\\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{close}: Close petals.
-	\item[-{}-] \textbf{open}: Open petals
-	\item[-{}-] \textbf{stop}: Stop petals. 
-	\item[-{}-] \textbf{status}: Print current status of the petals (CLOSED or UNKNOWN if there is something else)
+	\item[] \textbf{-{}-close} Close petals.
+	\item[] \textbf{-{}-open} Open petals
+	\item[] \textbf{-{}-stop} Stop petals. 
+	\item[] \textbf{-{}-status} Print current status of the petals (CLOSED or UNKNOWN if there is something else)
 \end{itemize}
 \subsubsection{Telescope}
+\cmdsection{Synopsis} \textbf{licli motors telescope [OPTION]}\\
+
+\cmdsection{Description} Commands to control telescope motors. \\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{ga}: Get current azimuth position
-	\item[-{}-] \textbf{gz}: Get current zenith position
-	\item[-{}-] \textbf{home}: Go home. If tries to go to the position registered before opening the doors, if it's not possible it defaults to the hardcoded values, which may not be the correct ones. For this reason it's important to start the server when the doors are closed.
-	\item[-{}-] \textbf{sa}: Go to the given azimuth encoder position (an unsigned integer)
-	\item[-{}-] \textbf{sz}: Go to the given zenith encoder position (an unsigned integer)
+	\item[] \textbf{-{}-ga} Get current azimuth position
+	\item[] \textbf{-{}-gz} Get current zenith position
+	\item[] \textbf{-{}-home} Go home. If tries to go to the position registered before opening the doors, if it's not possible it defaults to the hardcoded values, which may not be the correct ones. For this reason it's important to start the server when the doors are closed.
+	\item[] \textbf{-{}-sa} Go to the given azimuth encoder position (an unsigned integer)
+	\item[] \textbf{-{}-sz} Go to the given zenith encoder position (an unsigned integer)
 \end{itemize}
 \subsection{Monitoring}
 Monitoring commands
 \subsubsection{Sensors}
-Monitoring of sensors. 
+\cmdsection{Synopsis} \textbf{licli monitoring sensors [OPTION]}\\
+
+\cmdsection{Description} Monitoring of sensors.\\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{humidity}: Show readings of humidity values 
-	\item[-{}-] \textbf{env-temperature}: Show readings of environment temperatures
-	\item[-{}-] \textbf{last-value} (can be used in combination): Show the last value reading
+	\item[] \textbf{-{}-humidity} Show readings of humidity values 
+	\item[] \textbf{-{}-env-temperature} Show readings of environment temperatures
+	\item[] \textbf{-{}-last-value} (can be used in combination): Show the last value reading
 \end{itemize}
 \subsubsection{Motors}
-Monitoring of the motor monitoring board. It can show encoders position or a bitmap of the current status.
+\cmdsection{Synopsis} \textbf{licli monitoring motors}\\
+
+\cmdsection{Description} Monitoring of the motor monitoring board. It can show encoders position or a bitmap of the current status.
 
 \subsection{Alarms}
-Waits for alarm messages. Alarms are triggered whenever a sensor exceeds the safe limit. Message are sent in the form of strings informing of the problem.
+\cmdsection{Synopsis} \textbf{licli monitoring alarms}\\
+
+\cmdsection{Description} Waits for alarm messages. Alarms are triggered whenever a sensor exceeds the safe limit. Message are sent in the form of strings informing of the problem.
 
 \subsection{Config}
-Returns current configuration of the server.
+\cmdsection{Synopsis} \textbf{licli monitoring config [OPTION]}\\
+
+\cmdsection{Description} Config related operations. \\
+\cmdsection{Options}
+\begin{itemize}
+	\item[] \textbf{-{}-get} Returns current configuration of the server.
+	\item[] \textbf{-{}-check} Check client configuration. If no errors are found it will print \emph{Configuration OK}.
+\end{itemize}
 
 \subsection{Trace}
-Command for debugging purposes
+\cmdsection{Description} Command for debugging purposes
 
 \subsection{Operation} \label{operationcmds}
+\cmdsection{Synopsis} \textbf{licli operation [OPTION]}\\
+
+\cmdsection{Description} Unless other commands, operation commands (\ref{operationcmds}) are complex commands. Those complex commands can be macros (ie: a couple of commands executed sequentially) or control functions which makes use of the other functions. \\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{startup}: Prepare the laser to shoot. Open the doors, power on all subsystems and move telescope to a good position (ie:above tilt).
-	\item[-{}-] \textbf{shutdown}: Power off all subsystems, close petals, move the telescope to parking position and close the doors.
-	\item[-{}-] \textbf{warmup}: Start warm up. Enable hotwind and wait until it gets to the target temperature.
+	\item[] \textbf{-{}-startup} Prepare the laser to shoot. Open the doors, power on all subsystems and move telescope to a good position (ie:above tilt).
+	\item[] \textbf{-{}-shutdown} Power off all subsystems, close petals, move the telescope to parking position and close the doors.
+	\item[] \textbf{-{}-warmup} Start warm up. Enable hotwind and wait until it gets to the target temperature.
 \end{itemize}
 \subsubsection{Acquisition}
-The acquired data is first stored in the server in licel file format. The server will return a file ID so we can download that file at anytime. Files are also downloaded automatically so we don't need to download it manually.
+\cmdsection{Synopsis} \textbf{licli operation acq [OPTION]}\\
+
+\cmdsection{Description} The acquired data is first stored in the server in licel file format. The server will return a file ID so we can download that file at anytime. Files are also downloaded automatically so we don't need to download it manually.\\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{disc}: Discriminator levels. Always required.
-	\item[-{}-] \textbf{download}: Download licel file. Argument is the ID (unsigned integer) of the licel file we want to download.
-	\item[-{}-] \textbf{shots}: Acquire a given number of shots. Argument is an unsigned integer greater than 1. 
-	\item[-{}-] \textbf{start}: Start acquisition manually
-	\item[-{}-] \textbf{stop}: Stop acquisition
-	\item[-{}-] \textbf{analog-data}: Save a file with all analog values using space character as separator.
-	\item[-{}-] \textbf{analog-combined}: Save a file with normalized analog values.
-	\item[-{}-] \textbf{raw-analog}: Save lsw and msw arrays in raw format.
-	\item[-{}-] \textbf{raw-squared}: Save squared data in raw format.
+	\item[] \textbf{-{}-disc=A:B..} Discriminator levels. Always required. It's an array of discriminators levels separated by a ":". First value corresponds to the first discriminator and so.
+	\item[] \textbf{-{}-download=N} Download licel file. Argument is the ID (unsigned integer) of the licel file we want to download.
+	\item[] \textbf{-{}-shots=N} Acquire a given number of shots. Argument is an unsigned integer greater than 1. 
+	\item[] \textbf{-{}-start} Start acquisition manually
+	\item[] \textbf{-{}-stop} Stop acquisition
+	\item[] \textbf{-{}-analog-data} Save a file with all analog values using space character as separator.
+	\item[] \textbf{-{}-analog-combined} Save a file with normalized analog values.
+	\item[] \textbf{-{}-raw-analog} Save lsw and msw arrays in raw format.
+	\item[] \textbf{-{}-raw-squared} Save squared data in raw format.
 \end{itemize}
 \subsubsection{Telescope}
-Telescope motors operations. When going to parking position it will first try to go to the last know good value (ie: the position we know that doors can be closed), if it's not possible it will go to the hardcoded values.
+\cmdsection{Synopsis} \textbf{licli operation telescope [OPTION]}\\
+
+\cmdsection{Description} Telescope motors operations. When going to parking position it will first try to go to the last know good value (ie: the position we know that doors can be closed), if it's not possible it will go to the hardcoded values.\\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{get-azimuth}: Get azimuth position
-	\item[-{}-] \textbf{go-azimuth-parking}: Go to azimuth parking position
-	\item[-{}-] \textbf{go-parking}: Go to parking position
-	\item[-{}-] \textbf{go-zenith-parking}: Go zenith parking position
-	\item[-{}-] \textbf{go-zenith}: Go to zenith inclination in degrees
-	\item[-{}-] \textbf{start-test}: Execute telescope tests (move azmiuth and zenith to their maximum, minimum and parking position).
-	\item[-{}-] \textbf{stop}: Stop any telescope movement
-	\item[-{}-] \textbf{to-max-azimuth}: Go to maximum azimuth
-	\item[-{}-] \textbf{to-max-zenith}: Go to maximum zenith
-	\item[-{}-] \textbf{to-min-azimuth}: Go to minimum azimuth		
+	\item[] \textbf{-{}-get-azimuth} Get azimuth position
+	\item[] \textbf{-{}-go-azimuth-parking} Go to azimuth parking position
+	\item[] \textbf{-{}-go-parking} Go to parking position
+	\item[] \textbf{-{}-go-zenith-parking} Go zenith parking position
+	\item[] \textbf{-{}-go-zenith=N} Go to zenith inclination in degrees
+	\item[] \textbf{-{}-start-test} Execute telescope tests (move azmiuth and zenith to their maximum, minimum and parking position).
+	\item[] \textbf{-{}-stop} Stop any telescope movement
+	\item[] \textbf{-{}-to-max-azimuth} Go to maximum azimuth
+	\item[] \textbf{-{}-to-max-zenith} Go to maximum zenith
+	\item[] \textbf{-{}-to-min-azimuth} Go to minimum azimuth		
 \end{itemize}
 \subsubsection{Low level}
-Low level operations
+\cmdsection{Synopsis} \textbf{licli operation ll [OPTION]}\\
+
+\cmdsection{Description} Low level operations.\\
+\cmdsection{Options}
 \begin{itemize}
-	\item[-{}-] \textbf{arm-align}: Move arm to alignment position (first it must be initialized)
-	\item[-{}-] \textbf{arm-init}: Initialize arm
-	\item[-{}-] \textbf{laser-init}: Initialize laser (first it must be powered-on)
-	\item[-{}-] \textbf{laser-power-off}: Power off laser
-	\item[-{}-] \textbf{laser-power-on} Power on laser
-	\item[-{}-] \textbf{micro-init}: Micro initialization sequence. Prepare laser, arm and rump up all DACs.
-	\item[-{}-] \textbf{micro-shutdown}: Micro shutdown sequence. Power off laser hotwind and ramp down DACs
-	\item[-{}-] \textbf{ramp-down}: Ramp down all DACs
-	\item[-{}-] \textbf{ramp-single}: Modify voltage of a single DAC. Argument must follow the format idx:voltage.
-	\item[-{}-] \textbf{ramp-up}: Ramp up all DACs
+	\item[] \textbf{-{}-arm-align} Move arm to alignment position (first it must be initialized)
+	\item[] \textbf{-{}-arm-init} Initialize arm
+	\item[] \textbf{-{}-laser-init} Initialize laser (first it must be powered-on)
+	\item[] \textbf{-{}-laser-power-off} Power off laser
+	\item[] \textbf{-{}-laser-power-on} Power on laser
+	\item[] \textbf{-{}-laser-fire} Fire the laser
+	\item[] \textbf{-{}-micro-init} Micro initialization sequence. Prepare laser, arm and rump up all DACs.
+	\item[] \textbf{-{}-micro-shutdown} Micro shutdown sequence. Power off laser hotwind and ramp down DACs
+	\item[] \textbf{-{}-ramp-down} Ramp down all DACs
+	\item[] \textbf{-{}-ramp-single} Modify voltage of a single DAC. Argument must follow the format idx:voltage.
+	\item[] \textbf{-{}-ramp-up} Ramp up all DACs
 \end{itemize}
 
 \section{Configuration} \label{cfg}
@@ -251,8 +315,13 @@ Configuration files can be found on \textit{\~{}/.config/lidar/client/}.
 \begin{itemize}
 	\item acquisition.properties: This config file is mandatory. It have four fields named wavelength\_ch\_N where N goes from 1 to 4. This specifies the wavelength for each channel. 
 	\item micro\_init\_sequence.properties: Can be used to defines arm alignment position, pmt voltages and temperature threshold.
-	\item networking.properties: Can be used to specify TCP port of the server.
+	\item networking.properties: Can be used to specify address and TCP port of the server. By default it connects to \textbf{lidar.ifae.es}.
 \end{itemize} 
+\subsection{Environment variables}
+\begin{itemize}
+	\item LIDAR\_INSECURE: By default licli uses tls encryption. If this variable is set to true licli won't use any encryption method. Note that the server must also allow plain text connections.
+	\item LIDAR\_VERBOSITY: Increase verbosity level. Valid levels are 1,2,3, and 4.
+\end{itemize}
 
 \section{Troubleshooting}
 In case of unknown problems, increase verbosity level to gather more information. To do this define \emph{LIDAR\_VERBOSITY} environment variable with an integer in the range of [1, 4], then execute licli again.
