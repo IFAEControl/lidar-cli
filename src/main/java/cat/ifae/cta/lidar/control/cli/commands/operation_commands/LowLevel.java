@@ -139,9 +139,26 @@ public class LowLevel implements Runnable {
         blocking_stub.executeMicroShutdownSequence(req);
     }
 
-    private void initializeArm() {
+    private void initializeArm() throws InterruptedException {
         var req = Null.newBuilder().build();
-        blocking_stub.initializeArm(req);
+        var finishedLatch = new CountDownLatch(1);
+
+        stub.initializeArm(req, new StreamObserver<>() {
+            public void onNext(TraceOperation response) {
+                System.out.println(response.getLine());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
     }
 
     private void moveArmToAlignmentPos() {
