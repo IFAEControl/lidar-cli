@@ -118,7 +118,7 @@ class Doors implements Runnable {
     private void getStatus() {
         Null req = Null.newBuilder().build();
         MotorStatus resp = stub.getStatusDoors(req);
-        System.out.println(resp);
+        System.out.println("Status: " + resp.getStatus());
     }
 }
 
