@@ -45,7 +45,7 @@ class Petals implements Runnable {
     private void getStatus() {
         Null req = Null.newBuilder().build();
         MotorStatus resp = stub.getStatusPetals(req);
-        System.out.println(resp);
+        System.out.println("Status: " + resp.getStatus());
     }
 
     private void close() {
