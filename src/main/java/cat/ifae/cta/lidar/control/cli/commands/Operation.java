@@ -30,6 +30,9 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "--ignore-humidity", description = "Ignore humidity check")
     private boolean _ignore_humidity = false;
 
+    @CommandLine.Option(names = "--without-ramp", description = "Startup without ramp up")
+    private boolean _disable_ramp = false;
+
     private OperationGrpc.OperationStub stub;
     private OperationGrpc.OperationBlockingStub blocking_stub;
 
@@ -98,7 +101,7 @@ public class Operation implements Runnable {
                         .putPmtDacVoltages(0, vlts_0).putPmtDacVoltages(1, vlts_1)
                         .putPmtDacVoltages(2, vlts_2).putPmtDacVoltages(3, vlts_3)
                         .putPmtDacVoltages(4, vlts_4).putPmtDacVoltages(5, vlts_5)
-                        .setDisableHumidity(_ignore_humidity).build();
+                        .setDisableHumidity(_ignore_humidity).setDisableRamp(_disable_ramp).build();
         stub.startUpNormalMode(req, new StreamObserver<>() {
             public void onNext(TraceOperation response) {
                 System.out.println(response.getLine());
