@@ -27,6 +27,9 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "--shutdown", description = "Shutdown")
     private boolean shutdown = false;
 
+    @CommandLine.Option(names = "--emergency-stop", description = "Execute emergency stop")
+    private boolean _emergency_stop = false;
+
     @CommandLine.Option(names = "--ignore-humidity", description = "Ignore humidity check")
     private boolean _ignore_humidity = false;
 
@@ -52,6 +55,7 @@ public class Operation implements Runnable {
             if(warmup) warmUp();
             else if(startup_normal_mode) startUpNormalMode();
             else if(shutdown) shutdownSequence();
+            else if(_emergency_stop) emergencyStop();
             else printHelp();
         } catch (StatusRuntimeException e) {
             log.error(e.getLocalizedMessage());
@@ -125,6 +129,28 @@ public class Operation implements Runnable {
 
         var req = Null.newBuilder().build();
         stub.shutdown(req, new StreamObserver<>() {
+            public void onNext(TraceOperation response) {
+                System.out.println(response.getLine());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
+    }
+
+    private void emergencyStop() throws InterruptedException {
+        var finishedLatch = new CountDownLatch(1);
+
+        var req = Null.newBuilder().build();
+        stub.emergencyStop(req, new StreamObserver<>() {
             public void onNext(TraceOperation response) {
                 System.out.println(response.getLine());
             }
