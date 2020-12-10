@@ -342,10 +342,31 @@ Monitoring commands
 \end{itemize}
 
 \section{Configuration} \label{cfg}
-Configuration files can be found on \textit{\~{}/.config/lidar/client/}. 
+Configuration files can be found on \textit{\~{}/.config/lidar/client/}. After modifying configuration files execute \textbf{licli config -{}-check} to ensure there are not syntax mistakes.
 \begin{itemize}
 	\item acquisition.properties: This config file is mandatory. It have four fields named wavelength\_ch\_N where N goes from 1 to 4. This specifies the wavelength for each channel. 
-	\item micro\_init\_sequence.properties: Can be used to defines arm alignment position, pmt voltages and temperature threshold.
+	\item micro\_init\_sequence.properties: Is used to defines arm alignment position, PMT voltages and temperature threshold.	\\
+	
+	Example: 
+	\begin{verbatim}
+temperature_threshold = 123
+
+# PMT 355, Licel channel 1
+pmt_dac_vlts_0 = 600
+# PMT 607, Licel channel ??
+pmt_dac_vlts_1 = 1500
+# PMT 532, Licel channel 3
+pmt_dac_vlts_2 = 600
+# PMT 387, Licel channel 2
+pmt_dac_vlts_3 = 1500
+# near range
+pmt_dac_vlts_4 = 1500
+# not used
+pmt_dac_vlts_5 = 1500
+
+allignment_arm_X = 1610000
+allignment_arm_Y = 960000
+	\end{verbatim}
 	\item networking.properties: Can be used to specify address and TCP port of the server. By default it connects to \textbf{lidar.ifae.es}.
 \end{itemize} 
 \subsection{Environment variables}
