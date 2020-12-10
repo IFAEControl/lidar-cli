@@ -45,6 +45,8 @@ public class Licli implements Runnable {
             CommandLine.run(client, System.err, args);
         } catch (CommandLine.MissingParameterException | CommandLine.UnmatchedArgumentException e) {
             System.err.println(e.getMessage());
+            System.err.println("To gather debug information please run: cd " +
+                                       "/path/to/licli/repo/misc && bash ./retrieve_debug_info.sh");
         } finally {
             sm.shutdown();
         }
