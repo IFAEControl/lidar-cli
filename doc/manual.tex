@@ -59,10 +59,41 @@
 If it's the first time we run licli it would ask us to introduce a password. This password is defined in the configuration file of the lidar server software. 
 In case that it's not the first time and jwt secret has changed we can have some errors like \textbf{"The Token's Signature resulted invalid when verified using the Algorithm"}. If it's the case remove \textit{\~{}/.cache/lidar/token} and try again.\\
 
-\subsection{Examples}
+\subsection{Cheat sheet}
+\subsubsection{Taking data}
 
-Open doors: \textbf{./licli motors doors \texttt{-{}-}open}\\
-Get converted sensors values: \textbf{./licli llc sensors}\\
+\begin{enumerate}
+	\item Startup everything\\
+	 > licli operation -{}-startup\\
+	 
+	Open/Close only the container doors \\
+		> licli motors doors --open\\
+		> licli motors doors --close\\
+		
+	\item Remove the black plastic cap from the liquid light guide at the focus \\
+	\item Move telescope to max. zenith\\
+	> licli operation telescope --to-max-zenith\\
+	
+	Go to another zenith angle\\
+	> licli operation telescope --go-zenith=XX       (XX=zenith angle in deg ) \\
+	\item Check for airplanes at: \url{https://www.flightradar24.com/41.52,2.07/11}\\
+	\item Set the laser power\\
+	> licli llc laser --power=XX    (X= percent of laser power, from 0 to 100)\\
+	\item Shoot the laser\\
+	> licli llc laser --fire\\
+	\item Take data (remember that the laser must be firing to take data) \\
+	> licli operation acq --shots=500 --disc=1:2:1:8\\
+	\item Pause the laser\\
+	> licli llc laser --pause\\
+	\item Shutdown everything\\
+	> licli operation --shutdown 
+\end{enumerate}
+
+\subsection{Examples}
+Open doors: \textbf{./licli motors doors \texttt{-{}-}open}
+
+Get converted sensors values: \textbf{./licli llc sensors}
+
 Make 4 shots with disc level 2: \textbf{./licli operation acq \texttt{-{}-}shots=4 \texttt{-{}-}disc=2:2:2:2}. Output data will be in \textit{\~{}/.local/share/lidar-cli}.
 
 \subsection{Start up}
