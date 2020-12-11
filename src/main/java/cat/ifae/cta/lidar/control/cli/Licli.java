@@ -1,12 +1,19 @@
 package cat.ifae.cta.lidar.control.cli;
 
 import cat.ifae.cta.lidar.Helpers;
+import cat.ifae.cta.lidar.Null;
+import cat.ifae.cta.lidar.SystemGrpc;
 import cat.ifae.cta.lidar.control.cli.commands.*;
 import cat.ifae.cta.lidar.control.cli.session.SessionManager;
+import io.grpc.Status;
+import io.grpc.StatusException;
+import io.grpc.StatusRuntimeException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
+
+import java.io.IOException;
 
 @CommandLine.Command(version = Configuration.VERSION, mixinStandardHelpOptions = true, subcommands =
         {Admin.class, LLControl.class, Licel.class, SystemInfo.class,
@@ -36,6 +43,19 @@ public class Licli implements Runnable {
 
         // If configuration file contains errors we want to make it fail fail ASAP
         new Configuration().checkConfiguration();
+
+        try {
+            var stub = SystemGrpc.newBlockingStub(Licli.sm.getCh());
+            stub = Licli.sm.addMetadata(stub);
+            var req = Null.newBuilder().build();
+            stub.checkCommunication(req);
+        } catch(StatusRuntimeException e) {
+            if(e.getStatus().getCode().equals(Status.Code.UNAVAILABLE))
+                System.err.println("Error: Could not connect to server. Note that the " +
+                                           "server can take up to 10 minutes to start. ");
+            System.exit(1);
+        }
+
     }
 
     public static void main(String[] args) throws InterruptedException {

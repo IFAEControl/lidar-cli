@@ -271,6 +271,7 @@ public class LowLevel implements Runnable {
     private void laserFire() {
         var req = Null.newBuilder().build();
         blocking_stub.fireLaser(req);
+        System.out.println("Remember that laser must be firing while licel acquires data");
     }
 
     private static void printHelp() {
