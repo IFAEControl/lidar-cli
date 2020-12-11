@@ -36,7 +36,7 @@ class Petals implements Runnable {
             else if(is_stop) stop();
             else if(is_status) getStatus();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch(Exception e) {
             System.out.println(e.toString());
         }
@@ -45,7 +45,7 @@ class Petals implements Runnable {
     private void getStatus() {
         Null req = Null.newBuilder().build();
         MotorStatus resp = stub.getStatusPetals(req);
-        System.out.println(resp);
+        System.out.println("Status: " + resp.getStatus());
     }
 
     private void close() {
@@ -94,7 +94,7 @@ class Doors implements Runnable {
             else if(is_stop) stop();
             else if(is_status) getStatus();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch(Exception e) {
             System.out.println(e.toString());
         }
@@ -118,7 +118,7 @@ class Doors implements Runnable {
     private void getStatus() {
         Null req = Null.newBuilder().build();
         MotorStatus resp = stub.getStatusDoors(req);
-        System.out.println(resp);
+        System.out.println("Status: " + resp.getStatus());
     }
 }
 

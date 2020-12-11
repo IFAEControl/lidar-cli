@@ -384,6 +384,7 @@ public class Acquisition implements Runnable {
    }
 
    private void acquireShots(AcqConfig.Builder builder, DataSelection ds) throws IOException {
+      System.out.println("Remember: laser must be firing in order to take data");
       var b = ds.getBitmap();
       var req = builder.setShots(acquire_shots).setDataToRetrieve(b).build();
       var resp = blocking_stub.acquireShots(req);
@@ -392,6 +393,7 @@ public class Acquisition implements Runnable {
    }
 
    private void acquisitionStart(AcqConfig.Builder builder, DataSelection ds) {
+      System.out.println("Remember: laser must be firing in order to take data");
       var b = ds.getBitmap();
       var req = builder.setDataToRetrieve(b)
               .build();

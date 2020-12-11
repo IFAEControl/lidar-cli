@@ -27,6 +27,15 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "--shutdown", description = "Shutdown")
     private boolean shutdown = false;
 
+    @CommandLine.Option(names = "--emergency-stop", description = "Execute emergency stop")
+    private boolean _emergency_stop = false;
+
+    @CommandLine.Option(names = "--ignore-humidity", description = "Ignore humidity check")
+    private boolean _ignore_humidity = false;
+
+    @CommandLine.Option(names = "--without-ramp", description = "Startup without ramp up")
+    private boolean _disable_ramp = false;
+
     private OperationGrpc.OperationStub stub;
     private OperationGrpc.OperationBlockingStub blocking_stub;
 
@@ -46,6 +55,7 @@ public class Operation implements Runnable {
             if(warmup) warmUp();
             else if(startup_normal_mode) startUpNormalMode();
             else if(shutdown) shutdownSequence();
+            else if(_emergency_stop) emergencyStop();
             else printHelp();
         } catch (StatusRuntimeException e) {
             log.error(e.getLocalizedMessage());
@@ -58,7 +68,7 @@ public class Operation implements Runnable {
     private void warmUp() throws InterruptedException {
         var finishedLatch = new CountDownLatch(1);
 
-        var req = Null.newBuilder().build();
+        var req = Flags.newBuilder().setDisableHumidity(_ignore_humidity).build();
         stub.warmUp(req, new StreamObserver<>() {
             public void onNext(TraceOperation response) {
                 System.out.println(response.getLine());
@@ -94,7 +104,8 @@ public class Operation implements Runnable {
                 InitSequenceOptions.newBuilder().setPosition(point_req)
                         .putPmtDacVoltages(0, vlts_0).putPmtDacVoltages(1, vlts_1)
                         .putPmtDacVoltages(2, vlts_2).putPmtDacVoltages(3, vlts_3)
-                        .putPmtDacVoltages(4, vlts_4).putPmtDacVoltages(5, vlts_5).build();
+                        .putPmtDacVoltages(4, vlts_4).putPmtDacVoltages(5, vlts_5)
+                        .setDisableHumidity(_ignore_humidity).setDisableRamp(_disable_ramp).build();
         stub.startUpNormalMode(req, new StreamObserver<>() {
             public void onNext(TraceOperation response) {
                 System.out.println(response.getLine());
@@ -118,6 +129,28 @@ public class Operation implements Runnable {
 
         var req = Null.newBuilder().build();
         stub.shutdown(req, new StreamObserver<>() {
+            public void onNext(TraceOperation response) {
+                System.out.println(response.getLine());
+            }
+
+            public void onError(Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+                finishedLatch.countDown();
+            }
+
+            public void onCompleted() {
+                finishedLatch.countDown();
+            }
+        });
+
+        finishedLatch.await();
+    }
+
+    private void emergencyStop() throws InterruptedException {
+        var finishedLatch = new CountDownLatch(1);
+
+        var req = Null.newBuilder().build();
+        stub.emergencyStop(req, new StreamObserver<>() {
             public void onNext(TraceOperation response) {
                 System.out.println(response.getLine());
             }
