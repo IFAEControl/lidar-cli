@@ -36,7 +36,7 @@ class Petals implements Runnable {
             else if(is_stop) stop();
             else if(is_status) getStatus();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch(Exception e) {
             System.out.println(e.toString());
         }
@@ -94,7 +94,7 @@ class Doors implements Runnable {
             else if(is_stop) stop();
             else if(is_status) getStatus();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getStatus().getCause().getLocalizedMessage());
+            _log.error(e.getLocalizedMessage());
         } catch(Exception e) {
             System.out.println(e.toString());
         }
