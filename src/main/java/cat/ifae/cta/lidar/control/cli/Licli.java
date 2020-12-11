@@ -53,6 +53,9 @@ public class Licli implements Runnable {
             if(e.getStatus().getCode().equals(Status.Code.UNAVAILABLE))
                 System.err.println("Error: Could not connect to server. Note that the " +
                                            "server can take up to 10 minutes to start. ");
+            else
+                System.err.println("Unknown error: " + e.getStatus());
+
             System.exit(1);
         }
 
