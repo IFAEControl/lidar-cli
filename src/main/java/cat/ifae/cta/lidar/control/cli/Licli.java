@@ -17,7 +17,7 @@ import java.io.IOException;
 
 @CommandLine.Command(version = Configuration.VERSION, mixinStandardHelpOptions = true, subcommands =
         {Admin.class, LLControl.class, Licel.class, SystemInfo.class,
-        Motors.class, Monitoring.class, Operation.class, Alarms.class, Config.class, Trace.class})
+        Motors.class, Monitoring.class, Operation.class, Config.class, Trace.class})
 public class Licli implements Runnable {
     public static SessionManager sm = new SessionManager();
 
