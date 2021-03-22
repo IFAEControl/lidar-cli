@@ -129,20 +129,20 @@ class TelescopeMotors implements Runnable {
     @CommandLine.Option(names = "--gz", description = "Get zenith")
     private boolean get_zenith = false;
 
-    @CommandLine.Option(names = "--sz", paramLabel = "Steps", description = "Set zenith")
+    @CommandLine.Option(names = "--sz", paramLabel = "Steps", description = "Move zenith to position")
     private int zenith_steps = -1;
 
     @CommandLine.Option(names = "--ga", description = "Get azimuth")
     private boolean get_azimuth = false;
 
-    @CommandLine.Option(names = "--sa", paramLabel = "Steps", description = "Set azimuth")
+    @CommandLine.Option(names = "--sa", paramLabel = "Steps", description = "Move azimuth to position")
     private int azimuth_steps = -1;
 
     @CommandLine.Option(names = "--get-parking-position", description = "Get firmware parking " +
             "position")
     private boolean get_parking = false;
 
-    @CommandLine.Option(names = "--home", description = "Go home")
+    @CommandLine.Option(names = "--home", description = "Go fallback home")
     private boolean home = false;
 
     private MotorsGrpc.MotorsBlockingStub stub = null;
