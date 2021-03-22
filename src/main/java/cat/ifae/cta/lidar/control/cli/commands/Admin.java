@@ -9,7 +9,7 @@ import picocli.CommandLine;
 
 @CommandLine.Command(name = "admin", description = "Admin command", mixinStandardHelpOptions = true)
 public class Admin implements Runnable {
-   private final static Logging _log = new Logging(Alarms.class);
+   private final static Logging _log = new Logging(Admin.class);
 
    private AdminGrpc.AdminBlockingStub stub;
 
