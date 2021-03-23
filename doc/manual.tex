@@ -305,7 +305,7 @@ Monitoring commands
 \subsubsection{Telescope}
 \cmdsection{Synopsis} \textbf{licli operation telescope [OPTION]}\\
 
-\cmdsection{Description} Telescope motors operations. When going to parking position it will first try to go to the last know good value (ie: the position we know that doors can be closed), if it's not possible it will go to the hardcoded values.\\
+\cmdsection{Description} Telescope motors operations.\\
 \cmdsection{Options}
 \begin{itemize}
 	\item[] \textbf{-{}-get-azimuth} Get azimuth position
@@ -364,7 +364,12 @@ pmt_dac_vlts_5 = 1500
 allignment_arm_X = 1610000
 allignment_arm_Y = 960000
 	\end{verbatim}
-	\item networking.properties: Can be used to specify address and TCP port of the server. By default it connects to \textbf{lidar.ifae.es}.
+	\item networking.properties: Can be used to specify address and TCP port of the server. By default it connects to \textbf{lidar.ifae.es}. \\
+		Example: 
+	\begin{verbatim}
+address=lidar.ifae.es
+port=81
+	\end{verbatim}
 \end{itemize} 
 \subsection{Environment variables}
 \begin{itemize}
