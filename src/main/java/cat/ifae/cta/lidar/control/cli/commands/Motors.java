@@ -36,7 +36,7 @@ class Petals implements Runnable {
             else if(is_stop) stop();
             else if(is_status) getStatus();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getLocalizedMessage());
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
             System.out.println(e.toString());
         }
@@ -94,7 +94,7 @@ class Doors implements Runnable {
             else if(is_stop) stop();
             else if(is_status) getStatus();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getLocalizedMessage());
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
             System.out.println(e.toString());
         }
@@ -143,7 +143,7 @@ class TelescopeMotors implements Runnable {
     private boolean get_parking = false;
 
     @CommandLine.Option(names = "--set-parking-position", description = "Set firmware parking position")
-    private String set_parking;
+    private String set_parking = "";
 
     @CommandLine.Option(names = "--get-az-es", description = "Get azimuth end switch value")
     private boolean get_az_es = false;
@@ -164,8 +164,9 @@ class TelescopeMotors implements Runnable {
             else if(!set_parking.isEmpty()) setParkingPosition(set_parking);
             else if(get_az_es) getAzimuthES();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getLocalizedMessage());
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
+            e.printStackTrace();
             System.out.println(e.toString());
         }
     }
