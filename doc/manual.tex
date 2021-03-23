@@ -239,10 +239,11 @@ If no option is specified it will print values in human readable form.\\
 \cmdsection{Options}
 \begin{itemize}
 	\item[] \textbf{-{}-ga} Get current azimuth position
-	\item[] \textbf{-{}-gz} Get current zenith position
-	\item[] \textbf{-{}-home} Go home. If tries to go to the position registered before opening the doors, if it's not possible it defaults to the hardcoded values, which may not be the correct ones. For this reason it's important to start the server when the doors are closed.
+	\item[] \textbf{-{}-gz} Get current zenith position.
 	\item[] \textbf{-{}-sa} Go to the given azimuth encoder position (an unsigned integer)
 	\item[] \textbf{-{}-sz} Go to the given zenith encoder position (an unsigned integer)
+	\item[] \textbf{-{}-get-parking-position} Reads firmware parking position
+	\item[] \textbf{-{}-set-parking-position} Writes parking position to firmware
 \end{itemize}
 \subsection{Monitoring}
 Monitoring commands

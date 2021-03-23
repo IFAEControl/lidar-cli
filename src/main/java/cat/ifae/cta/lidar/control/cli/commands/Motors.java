@@ -145,9 +145,6 @@ class TelescopeMotors implements Runnable {
     @CommandLine.Option(names = "--set-parking-position", description = "Set firmware parking position")
     private String set_parking;
 
-    @CommandLine.Option(names = "--home", description = "Go fallback home")
-    private boolean home = false;
-
     private MotorsGrpc.MotorsBlockingStub stub = null;
 
     @Override
@@ -162,7 +159,6 @@ class TelescopeMotors implements Runnable {
             else if(azimuth_steps > 0) setAzimuth(azimuth_steps);
             else if(get_parking) getParkingPosition();
             else if(!set_parking.isEmpty()) setParkingPosition(set_parking);
-            else if(home) goHome();
         } catch (StatusRuntimeException e) {
             _log.error(e.getLocalizedMessage());
         } catch(Exception e) {
@@ -208,11 +204,6 @@ class TelescopeMotors implements Runnable {
 
         var req = ParkingPosition.newBuilder().setAzimuth(azimuth).setZenith(zenith).build();
         stub.setParkingPosition(req);
-    }
-
-    private void goHome() {
-        Null req = Null.newBuilder().build();
-        stub.goHome(req);
     }
 }
 
