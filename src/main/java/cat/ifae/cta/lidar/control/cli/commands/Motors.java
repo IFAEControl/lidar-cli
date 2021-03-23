@@ -145,6 +145,9 @@ class TelescopeMotors implements Runnable {
     @CommandLine.Option(names = "--set-parking-position", description = "Set firmware parking position")
     private String set_parking;
 
+    @CommandLine.Option(names = "--get-az-es", description = "Get azimuth end switch value")
+    private boolean get_az_es = false;
+
     private MotorsGrpc.MotorsBlockingStub stub = null;
 
     @Override
@@ -159,6 +162,7 @@ class TelescopeMotors implements Runnable {
             else if(azimuth_steps > 0) setAzimuth(azimuth_steps);
             else if(get_parking) getParkingPosition();
             else if(!set_parking.isEmpty()) setParkingPosition(set_parking);
+            else if(get_az_es) getAzimuthES();
         } catch (StatusRuntimeException e) {
             _log.error(e.getLocalizedMessage());
         } catch(Exception e) {
@@ -204,6 +208,12 @@ class TelescopeMotors implements Runnable {
 
         var req = ParkingPosition.newBuilder().setAzimuth(azimuth).setZenith(zenith).build();
         stub.setParkingPosition(req);
+    }
+
+    private void getAzimuthES() {
+        Null req = Null.newBuilder().build();
+        var resp = stub.getAzimuthES(req);
+        System.out.println(resp);
     }
 }
 
