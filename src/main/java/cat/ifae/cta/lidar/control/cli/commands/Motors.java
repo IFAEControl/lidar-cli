@@ -142,6 +142,9 @@ class TelescopeMotors implements Runnable {
             "position")
     private boolean get_parking = false;
 
+    @CommandLine.Option(names = "--set-parking-position", description = "Set firmware parking position")
+    private String set_parking;
+
     @CommandLine.Option(names = "--home", description = "Go fallback home")
     private boolean home = false;
 
@@ -158,6 +161,7 @@ class TelescopeMotors implements Runnable {
             else if(get_azimuth) getAzimuth();
             else if(azimuth_steps > 0) setAzimuth(azimuth_steps);
             else if(get_parking) getParkingPosition();
+            else if(!set_parking.isEmpty()) setParkingPosition(set_parking);
             else if(home) goHome();
         } catch (StatusRuntimeException e) {
             _log.error(e.getLocalizedMessage());
@@ -194,6 +198,16 @@ class TelescopeMotors implements Runnable {
         Null req = Null.newBuilder().build();
         var resp = stub.getParkingPosition(req);
         System.out.println(resp);
+    }
+
+    private void setParkingPosition(String p) {
+        String[] components = Helpers.split(p, 2);
+
+        int azimuth = Integer.parseInt(components[0]);
+        int zenith = Integer.parseInt(components[1]);
+
+        var req = ParkingPosition.newBuilder().setAzimuth(azimuth).setZenith(zenith).build();
+        stub.setParkingPosition(req);
     }
 
     private void goHome() {
