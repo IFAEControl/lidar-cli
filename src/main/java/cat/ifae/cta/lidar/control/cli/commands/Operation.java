@@ -19,13 +19,13 @@ public class Operation implements Runnable {
     private final static Logging log = new Logging(Operation.class);
 
     @CommandLine.Option(names = "--warmup", description = "Heat the laser")
-    private boolean warmup = false;
+    private boolean _warmup = false;
 
     @CommandLine.Option(names = "--startup", description = "Start up normal mode")
-    private boolean startup_normal_mode = false;
+    private boolean _startup_normal = false;
 
     @CommandLine.Option(names = "--shutdown", description = "Shutdown")
-    private boolean shutdown = false;
+    private boolean _shutdown = false;
 
     @CommandLine.Option(names = "--emergency-stop", description = "Execute emergency stop")
     private boolean _emergency_stop = false;
@@ -52,10 +52,10 @@ public class Operation implements Runnable {
         CommandLine.populateCommand(this);
 
         try {
-            if(warmup) warmUp();
-            else if(startup_normal_mode) startUp(true);
+            if(_warmup) warmUp();
+            else if(_startup_normal) startUp(true);
             else if(_startup_without_ramp) startUp(false);
-            else if(shutdown) shutdownSequence();
+            else if(_shutdown) shutdownSequence();
             else if(_emergency_stop) emergencyStop();
             else printHelp();
         } catch (StatusRuntimeException e) {
