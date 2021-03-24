@@ -27,7 +27,7 @@ public class SystemInfo implements Runnable {
          if(_get_moxa) {
             var req = Null.newBuilder().build();
             var resp = stub.getMoxaPins(req);
-            System.out.println(resp.getAllFields());
+            System.out.println(resp);
          }
       } catch (StatusRuntimeException e) {
          _log.error(e.getLocalizedMessage());
