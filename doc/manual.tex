@@ -42,7 +42,7 @@
 \newcommand{\cmdsection}[1]{\paragraph{#1}\mbox{}\par}
 
 \begin{document}
-\title{LIDAR CLI User Manual - 1.2.0}
+\title{LIDAR CLI User Manual - 2.0.0}
 \author{David Roman \\  \href{mailto:droman@ifae.es}{droman@ifae.es} }
 \affil{IFAE}
 \maketitle
@@ -239,10 +239,11 @@ If no option is specified it will print values in human readable form.\\
 \cmdsection{Options}
 \begin{itemize}
 	\item[] \textbf{-{}-ga} Get current azimuth position
-	\item[] \textbf{-{}-gz} Get current zenith position
-	\item[] \textbf{-{}-home} Go home. If tries to go to the position registered before opening the doors, if it's not possible it defaults to the hardcoded values, which may not be the correct ones. For this reason it's important to start the server when the doors are closed.
+	\item[] \textbf{-{}-gz} Get current zenith position.
 	\item[] \textbf{-{}-sa} Go to the given azimuth encoder position (an unsigned integer)
 	\item[] \textbf{-{}-sz} Go to the given zenith encoder position (an unsigned integer)
+	\item[] \textbf{-{}-get-parking-position} Reads firmware parking position
+	\item[] \textbf{-{}-set-parking-position} Writes parking position to firmware
 \end{itemize}
 \subsection{Monitoring}
 Monitoring commands
@@ -281,6 +282,7 @@ Monitoring commands
 \cmdsection{Options}
 \begin{itemize}
 	\item[] \textbf{-{}-startup} Prepare the laser to shoot. Open the doors, power on all subsystems and move telescope to a good position (ie:above tilt).
+	\item[] \textbf{-{}-startup-without-ramp} Same as before but without ramping up DACs voltage.
 	\item[] \textbf{-{}-shutdown} Power off all subsystems, close petals, move the telescope to parking position and close the doors.
 	\item[] \textbf{-{}-warmup} Start warm up. Enable hotwind and wait until it gets to the target temperature.
 \end{itemize}
@@ -303,7 +305,7 @@ Monitoring commands
 \subsubsection{Telescope}
 \cmdsection{Synopsis} \textbf{licli operation telescope [OPTION]}\\
 
-\cmdsection{Description} Telescope motors operations. When going to parking position it will first try to go to the last know good value (ie: the position we know that doors can be closed), if it's not possible it will go to the hardcoded values.\\
+\cmdsection{Description} Telescope motors operations.\\
 \cmdsection{Options}
 \begin{itemize}
 	\item[] \textbf{-{}-get-azimuth} Get azimuth position
@@ -362,7 +364,12 @@ pmt_dac_vlts_5 = 1500
 allignment_arm_X = 1610000
 allignment_arm_Y = 960000
 	\end{verbatim}
-	\item networking.properties: Can be used to specify address and TCP port of the server. By default it connects to \textbf{lidar.ifae.es}.
+	\item networking.properties: Can be used to specify address and TCP port of the server. By default it connects to \textbf{lidar.ifae.es}. \\
+		Example: 
+	\begin{verbatim}
+address=lidar.ifae.es
+port=81
+	\end{verbatim}
 \end{itemize} 
 \subsection{Environment variables}
 \begin{itemize}

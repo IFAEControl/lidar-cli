@@ -27,7 +27,16 @@ public class SystemInfo implements Runnable {
          if(_get_moxa) {
             var req = Null.newBuilder().build();
             var resp = stub.getMoxaPins(req);
-            System.out.println(resp);
+            System.out.println("access: " + resp.getAccess());
+            System.out.println("btn door: " + resp.getBtnDoor());
+            System.out.println("btn outside: " + resp.getBtnOutside());
+            System.out.println("btn rack: " + resp.getBtnRack());
+            System.out.println("key switch: " + resp.getKeySwitch());
+            System.out.println("laser interlock: " + resp.getLaserInterlock());
+            System.out.println("fence: " + resp.getFence());
+            System.out.println("pk azimuth: " + resp.getPkAzimuth());
+            System.out.println("pk zenith: " + resp.getPkZenith());
+            System.out.println("tilt: " + resp.getTilt());
          }
       } catch (StatusRuntimeException e) {
          _log.error(e.getLocalizedMessage());

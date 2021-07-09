@@ -19,13 +19,13 @@ public class Operation implements Runnable {
     private final static Logging log = new Logging(Operation.class);
 
     @CommandLine.Option(names = "--warmup", description = "Heat the laser")
-    private boolean warmup = false;
+    private boolean _warmup = false;
 
     @CommandLine.Option(names = "--startup", description = "Start up normal mode")
-    private boolean startup_normal_mode = false;
+    private boolean _startup_normal = false;
 
     @CommandLine.Option(names = "--shutdown", description = "Shutdown")
-    private boolean shutdown = false;
+    private boolean _shutdown = false;
 
     @CommandLine.Option(names = "--emergency-stop", description = "Execute emergency stop")
     private boolean _emergency_stop = false;
@@ -33,8 +33,8 @@ public class Operation implements Runnable {
     @CommandLine.Option(names = "--ignore-humidity", description = "Ignore humidity check")
     private boolean _ignore_humidity = false;
 
-    @CommandLine.Option(names = "--without-ramp", description = "Startup without ramp up")
-    private boolean _disable_ramp = false;
+    @CommandLine.Option(names = "--startup-without-ramp", description = "Startup without ramp up")
+    private boolean _startup_without_ramp = false;
 
     private OperationGrpc.OperationStub stub;
     private OperationGrpc.OperationBlockingStub blocking_stub;
@@ -52,9 +52,10 @@ public class Operation implements Runnable {
         CommandLine.populateCommand(this);
 
         try {
-            if(warmup) warmUp();
-            else if(startup_normal_mode) startUpNormalMode();
-            else if(shutdown) shutdownSequence();
+            if(_warmup) warmUp();
+            else if(_startup_normal) startUp(true);
+            else if(_startup_without_ramp) startUp(false);
+            else if(_shutdown) shutdownSequence();
             else if(_emergency_stop) emergencyStop();
             else printHelp();
         } catch (StatusRuntimeException e) {
@@ -87,7 +88,7 @@ public class Operation implements Runnable {
         finishedLatch.await();
     }
 
-    private void startUpNormalMode() throws InterruptedException {
+    private void startUp(boolean iSramp) throws InterruptedException {
         var finishedLatch = new CountDownLatch(1);
 
         var p = getPosition();
@@ -105,7 +106,7 @@ public class Operation implements Runnable {
                         .putPmtDacVoltages(0, vlts_0).putPmtDacVoltages(1, vlts_1)
                         .putPmtDacVoltages(2, vlts_2).putPmtDacVoltages(3, vlts_3)
                         .putPmtDacVoltages(4, vlts_4).putPmtDacVoltages(5, vlts_5)
-                        .setDisableHumidity(_ignore_humidity).setDisableRamp(_disable_ramp).build();
+                        .setDisableHumidity(_ignore_humidity).setDisableRamp(iSramp).build();
         stub.startUpNormalMode(req, new StreamObserver<>() {
             public void onNext(TraceOperation response) {
                 System.out.println(response.getLine());

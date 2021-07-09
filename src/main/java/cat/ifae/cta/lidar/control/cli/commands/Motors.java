@@ -36,7 +36,7 @@ class Petals implements Runnable {
             else if(is_stop) stop();
             else if(is_status) getStatus();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getLocalizedMessage());
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
             System.out.println(e.toString());
         }
@@ -94,7 +94,7 @@ class Doors implements Runnable {
             else if(is_stop) stop();
             else if(is_status) getStatus();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getLocalizedMessage());
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
             System.out.println(e.toString());
         }
@@ -143,10 +143,10 @@ class TelescopeMotors implements Runnable {
     private boolean get_parking = false;
 
     @CommandLine.Option(names = "--set-parking-position", description = "Set firmware parking position")
-    private String set_parking;
+    private String set_parking = "";
 
-    @CommandLine.Option(names = "--home", description = "Go fallback home")
-    private boolean home = false;
+    @CommandLine.Option(names = "--get-az-es", description = "Get azimuth end switch value")
+    private boolean get_az_es = false;
 
     private MotorsGrpc.MotorsBlockingStub stub = null;
 
@@ -162,10 +162,11 @@ class TelescopeMotors implements Runnable {
             else if(azimuth_steps > 0) setAzimuth(azimuth_steps);
             else if(get_parking) getParkingPosition();
             else if(!set_parking.isEmpty()) setParkingPosition(set_parking);
-            else if(home) goHome();
+            else if(get_az_es) getAzimuthES();
         } catch (StatusRuntimeException e) {
-            _log.error(e.getLocalizedMessage());
+            _log.error(e.getStatus().getCause().getLocalizedMessage());
         } catch(Exception e) {
+            e.printStackTrace();
             System.out.println(e.toString());
         }
     }
@@ -210,9 +211,10 @@ class TelescopeMotors implements Runnable {
         stub.setParkingPosition(req);
     }
 
-    private void goHome() {
+    private void getAzimuthES() {
         Null req = Null.newBuilder().build();
-        stub.goHome(req);
+        var resp = stub.getAzimuthES(req);
+        System.out.println(resp);
     }
 }
 
